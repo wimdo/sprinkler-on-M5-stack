@@ -7,6 +7,7 @@
 
 //lijn toegevoegd voor controle github
 //lijn toegevoegd voor controle github
+//lijn 3 toegevoegd voor controle github
 #define VERSION "Version 05/06/23"  
 #define nameprefix "HOME"
 #define moduletype "SPRINKLER"
@@ -293,7 +294,7 @@ bool InitI2SSpeakOrMic(int mode) {  // Init I2S.  初始化I2S
                                         // 固定为12位立体声MSB
         .channel_format =
             I2S_CHANNEL_FMT_ONLY_RIGHT,  // Set the channel format. 设置频道格式
-#if ESP_IDF_VERSION > ESP_IDF_VERSION_VAL(4, 1, 0)
+#if (ESP_IDF_VERSION > ESP_IDF_VERSION_VAL(4, 1, 0))
         .communication_format =
             I2S_COMM_FORMAT_STAND_I2S,  // Set the format of the communication.
 #else                                   // 设置通讯格式
