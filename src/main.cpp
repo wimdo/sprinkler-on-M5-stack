@@ -6,6 +6,7 @@
 //#include <SPI.h>
 
 //lijn toegevoegd voor controle github
+//lijn toegevoegd voor controle github
 #define VERSION "Version 05/06/23"  
 #define nameprefix "HOME"
 #define moduletype "SPRINKLER"
