@@ -523,7 +523,7 @@ int resetOptions(){
 int settingsMenu()
 {
   drawInfoBox(0,19,272,240,1, "INSTELLINGEN");
-  int keuze = menuDropbox(settingsMenu_table, sizeof(settingsMenu_table) / sizeof(*settingsMenu_table));
+  int keuze = menuTouchbox(settingsMenu_table, sizeof(settingsMenu_table) / sizeof(*settingsMenu_table));
   switch (keuze)
   {
   case buttonNone:
@@ -549,10 +549,15 @@ int settingsMenu()
   return 1;
 }
 
+
+
+
+
+
 int mainMenu()
 {
   drawInfoBox(0,19,272,240,1, "HOOFDMENU");
-  int keuze = menuDropbox(mainMenu_table, sizeof(mainMenu_table) / sizeof(*mainMenu_table));
+  int keuze = menuTouchbox(mainMenu_table, sizeof(mainMenu_table) / sizeof(*mainMenu_table));
   switch (keuze)
   {
   case buttonNone:

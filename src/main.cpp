@@ -387,7 +387,8 @@ void buttonPressedCheck()
     if (b1.wasPressed()||b2.wasPressed()) {
       soundsBeep(1000, 100, 1);
       sprinkler.keyboardInput = true;
-      button.buttonPressed = mainMenu();
+      //button.buttonPressed = mainMenu();
+      button.buttonPressed =mainMenu();
       outlineMainscreen();
       sprinkler.updateRelaisSlider = true;
       sprinkler.updateSprinklerSlider = true;

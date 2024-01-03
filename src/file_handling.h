@@ -431,14 +431,14 @@ void checkFileSystem()
 void loadDataFromFile()
 {
     checkFileSystem();
-    //reWriteRelaisProgramFile();
-    //reWriteMySprinklerFile();
-    //reWriteMyServerFile();
-    /*
+    reWriteRelaisProgramFile();
+    reWriteMySprinklerFile();
+    reWriteMyServerFile();
+    
     for (int i = 1; i < 5; i++){
        reWriteProgramFile(i); 
     } 
-    */  
+      
     readMyServerFile();
     readProgramFile();
     readMySpriklerFile(); 

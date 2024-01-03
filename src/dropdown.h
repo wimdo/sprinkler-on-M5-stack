@@ -112,6 +112,49 @@ int inputDropbox(boolean withSelect, int widthPositionData, char *menuTable[], i
     
 }
 
+int menuTouchbox(char *menuTable[], int rijen){
+  for (int i = 0; i < rijen ; i++)
+    {
+      M5.Lcd.fillRect(2, 28+i*33, 236, 30, DARKGREY);
+      M5.Lcd.setTextColor(BLACK);
+      M5.Lcd.setTextSize(2);
+      M5.lcd.setCursor(4,28+i*33+6);
+      M5.Lcd.print(menuTable[i]); 
+    }
+  long previousMillis = millis();
+   while (1)
+  {
+    if (clockData.checkSecond)
+      readTime();
+    if ((millis() - previousMillis) > 10000)
+      return buttonNone;
+    M5.update();  
+    if ( M5.Touch.changed ){
+      int coordinate = M5.Touch.point[0].y;
+      int keuze =-1;
+      for (int i = 0; i < rijen; i++){
+          if ((coordinate > 28+i*33 )&& (coordinate <28+(i+1)*33)){
+            soundsBeep(1000, 100, 1);
+            return i;
+          }
+      }
+    } 
+    if (b1.wasPressed()) {
+      soundsBeep(1000, 100, 1);
+      return buttonNone;
+    } else if (b2.wasPressed()){
+      soundsBeep(1000, 100, 1);
+      return buttonNone;
+    } else if (b3.wasPressed()){
+      soundsBeep(1000, 100, 1);
+      return buttonNone;
+    }  else if (b4.wasPressed()){
+      soundsBeep(1000, 100, 1);
+      return buttonNone;
+    }
+  }
+}
+
 int menuDropbox(char *menuTable[], int rijen)
 {
     int positie = 0;
