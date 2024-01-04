@@ -13,6 +13,45 @@ void drawInfoBox(int xposBox,int yposBox,int heightBox,int widhtBox,int textSize
   }
 }
 
+void drawTouchButton(touchButton *a, int textSize, boolean centerText){
+  M5.Lcd.fillRect(a->x, a->y, a->widht, a->height, a->backgroundColor);
+  M5.Lcd.setTextColor(a->textColor);
+  M5.Lcd.setTextSize(textSize);
+  int ypos = a->y+ (a->height-textSize*8)/2;
+  int xpos =a->x+2;
+  if (centerText){
+    xpos= a->x+(a->widht-(a->text.length()*(textSize*6)))/2;
+  } 
+  M5.lcd.setCursor(xpos,ypos);
+  M5.Lcd.print(a->text); 
+}
+
+boolean checkTouchButton(touchButton *a, int x, int y){
+  if (x >= a->x && x <= a->x+a->widht){
+    if(y >= a->y && y <= a->y+a->height){
+      return 1;
+    }
+  }
+  return 0;
+}
+
+void printTouchButton(touchButton *a, int x, int y){
+  Serial.print(x);
+  Serial.print(":");
+  Serial.print(a->x);
+  Serial.print("-");
+  Serial.print(a->x+a->widht);
+  Serial.print("   ");
+  Serial.print(y);
+  Serial.print(":");
+  Serial.print(a->y);
+  Serial.print("-");
+  Serial.println(a->y+a->height);
+}
+void clearButtonBar(){
+M5.Lcd.fillRect(0, 292, 240, 30, BLACK); 
+} 
+
 void drawButtonBar4(String buttonString1, int color1,String buttonString2,int color2, String buttonString3,int color3,String buttonString4,int color4){
   int base =292;
   M5.Lcd.fillRect(0, base, 240, 30, BLACK);  

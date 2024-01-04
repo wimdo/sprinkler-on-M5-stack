@@ -242,73 +242,125 @@ int relaisSelectie()
   }
 }
 
+int sprinklerSelectieTouch(){
+  
+  boolean sprinklerSelected = false;
+  boolean timeSelected = false;  // de 8 knoppen laten zien
+  int sprinklerKeuze = -1;
+  int sprinklerKeuzePrevious = -1;
+  int sprinklerTime = 0;
 
-int sprinklerSelectie()
-{
-  int localSprinkler = 0;
-  int localTime = 15;
-  int widthLocationData = 120;
+  touchButton sprinklerButton[8];
+  touchButton sprinklerTimeButton;
+  touchButton upButton;
+  touchButton downButton; 
+  touchButton escapeButton; 
+  touchButton startButton; 
+
+  sprinklerTimeButton =(touchButton) {120+5,127,40,30,DARKGREY,BLACK,"0"};
+  upButton =(touchButton) {120+5+5+40,127-5-30+15,60,30,DARKGREY,BLACK,"UP"};
+  downButton =(touchButton) {120+5+5+40,127+5+15,60,30,DARKGREY,BLACK,"DOWN"};
+  escapeButton =(touchButton) {0,292,56+4+56+2,30,DARKGREY,BLACK,"ESCAPE"};
+  startButton =(touchButton) {120,292,56+4+56+4,30,DARKGREY,DARKGREY,"START"};
+
   drawInfoBox(0,19,272,240,1, "SPRINKLER SELECTIE");
+  clearButtonBar();
+  for (int i = 0; i < 8 ; i++)
+  {
+    sprinklerButton[i] =(touchButton) {2,28+i*33,116,30,DARKGREY,BLACK,sprinklerName_table[i+1]};
+    drawTouchButton(&sprinklerButton[i],2,1); 
+  }
+  drawTouchButton(&sprinklerTimeButton,2,1);
+  drawTouchButton(&upButton,2,1); 
+  drawTouchButton(&downButton,2,1); // test// test
+  drawTouchButton(&escapeButton,2,1);
+  drawTouchButton(&startButton,2,1);
+  long previousMillis = millis();
   while (1)
   {
-    drawInfoBox(0,19,272,240,1, "SPRINKLER SELECTIE");
-    snprintf(&data_table[0][0], 10, "%s", sprinklerName_table[localSprinkler]);
-    snprintf(&data_table[1][0], 10, "%d", localTime);
-    int keuze = inputDropbox(1, widthLocationData, sprinklerManueel_table, 2);
-    switch (keuze)
-    {
-    case -1:
-      return keuze;
-      break;
-    case 0:
-      localSprinkler = localDropbox(localSprinkler, widthLocationData, keuze, sprinklerName_table, 9);
-      if (localSprinkler == -1)
-        return -1;
-      break;
-    case 1:
-      localTime = getalDropDown(widthLocationData, keuze, localTime, 5, 60, 1);
-      if (localTime == -1)
-        return -1;
-      break;
-    }
-    drawInfoBox(0,19,272,240,1, "SPRINKLER SELECTIE");
-    snprintf(&data_table[0][0], 10, "%s", sprinklerName_table[localSprinkler]);
-    snprintf(&data_table[1][0], 10, "%d", localTime);
-    keuze = inputDropbox(0, widthLocationData, sprinklerManueel_table, 2);
-    if (localSprinkler > 0)
-    {
-      keuze = keyboardButtonBar("ESC", "UP", "DOWN","START");
-    }
-    else
-    {
-      keuze = keyboardButtonBar("ESC", "UP", "DOWN","");
-    }
-    switch (keuze)
-    {
-    case buttonNone:
-      return keuze;
-      break;
-    case 0:
-      return keuze;
-      break;
-    case button1:
+    if (clockData.checkSecond)
+      readTime();
+    if ((millis() - previousMillis) > 10000)
       return buttonNone;
-      break;
-    case button2:
-      break;
-    case button3: 
-      break;
-    case button4:
-      if (localSprinkler > 0)
-      {
-        SprinklerProgram[0].valve[0]=localSprinkler;
-        SprinklerProgram[0].valveTime[0]=localTime;  
-        laadProgramma(0);
-        keuze = 0;
-        return keuze;
+    M5.update();  
+    if ( M5.Touch.changed ){ 
+      Serial.println( M5.Touch.point[0]);
+      int coordinateY = M5.Touch.point[0].y;
+      int coordinateX = M5.Touch.point[0].x;
+      int keuze =-1;
+      boolean checkButton;
+      for (int i = 0; i < 8; i++){
+        if (checkButton = checkTouchButton(&sprinklerButton[i], coordinateX, coordinateY)){
+          soundsBeep(1000, 100, 1);
+          previousMillis = millis();
+          if (!sprinklerSelected){
+            sprinklerKeuze = i;
+            sprinklerKeuzePrevious = i;
+            sprinklerSelected=true;
+            sprinklerButton[sprinklerKeuze].textColor=WHITE;
+            drawTouchButton(&sprinklerButton[sprinklerKeuze],2,1);
+          } else {
+            soundsBeep(1000, 100, 1);
+            sprinklerKeuze = i;
+            if (sprinklerKeuze !=sprinklerKeuzePrevious){
+              sprinklerButton[sprinklerKeuze].textColor=WHITE;
+              sprinklerButton[sprinklerKeuzePrevious].textColor=BLACK;
+              drawTouchButton(&sprinklerButton[sprinklerKeuze],2,1);
+              drawTouchButton(&sprinklerButton[sprinklerKeuzePrevious],2,1);
+              sprinklerKeuzePrevious=sprinklerKeuze;
+            }
+          }  
+        }
+      }
+      if (sprinklerSelected){
+        if (checkButton = checkTouchButton(&upButton, coordinateX, coordinateY)){
+          soundsBeep(1000, 100, 1);
+          Serial.println( M5.Touch.point[0]);
+          printTouchButton(&upButton, coordinateX, coordinateY);
+          previousMillis = millis();
+          if (sprinklerTime <60){
+            sprinklerTime = sprinklerTime +5;
+            sprinklerTimeButton.text=String(sprinklerTime);
+            drawTouchButton(&sprinklerTimeButton,2,1);
+            timeSelected = true;
+            startButton.textColor=BLACK;
+            drawTouchButton(&startButton,2,1);
+          }
+        }
+        if (checkButton = checkTouchButton(&downButton, coordinateX, coordinateY)){
+          soundsBeep(1000, 100, 1); 
+          Serial.println( M5.Touch.point[0]);
+          printTouchButton(&upButton, coordinateX, coordinateY);
+          previousMillis = millis();
+          if (sprinklerTime >0){
+            sprinklerTime=sprinklerTime-5;
+            if (sprinklerTime==0){
+              timeSelected=false;
+              startButton.textColor=DARKGREY;
+              drawTouchButton(&startButton,2,1);
+            }
+            sprinklerTimeButton.text=String(sprinklerTime);
+            drawTouchButton(&sprinklerTimeButton,2,1);              
+          } else {
+            timeSelected = false;
+          }
+        }
+      }
+      if (sprinklerSelected && timeSelected) {
+        if (checkButton = checkTouchButton(&startButton, coordinateX, coordinateY)){
+          soundsBeep(1000, 100, 1);
+          SprinklerProgram[0].valve[0]=sprinklerKeuze+1;
+          SprinklerProgram[0].valveTime[0]=sprinklerTime;  
+          laadProgramma(0);
+          keuze = 0;
+          return keuze;
+        }
       } 
-      break;
-    }
+      if (checkButton = checkTouchButton(&escapeButton, coordinateX, coordinateY)){
+          soundsBeep(1000, 100, 1);
+          return buttonNone;
+      }
+    } 
   }
 }
 
@@ -568,7 +620,8 @@ int mainMenu()
     return keuze;
     break;
   case 1:
-    keuze = sprinklerSelectie();
+    keuze = sprinklerSelectieTouch();
+    //keuze = sprinklerSelectie();
     return keuze;
     break;
   case 2:

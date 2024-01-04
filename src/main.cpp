@@ -240,6 +240,17 @@ Button b2(60,290,60,30);
 Button b3(120,290,60,30);
 Button b4(180,290,60,30);
 
+  typedef struct
+  {
+    int x;
+    int y;
+    int widht;
+    int height;
+    int backgroundColor;
+    int textColor;
+    String text;
+  } touchButton;
+
 #include "display.h"
 #include "keyboardTime.h"
 #include "dropdown.h"
@@ -408,7 +419,7 @@ void buttonPressedCheck()
     } else if (sprinklerZone.wasPressed()) {
       soundsBeep(1000, 100, 1);
       sprinkler.keyboardInput = true;
-      button.buttonPressed = sprinklerSelectie();
+      button.buttonPressed = sprinklerSelectieTouch();
       outlineMainscreen();
       sprinkler.updateRelaisSlider = true;
       sprinkler.updateSprinklerSlider = true;
