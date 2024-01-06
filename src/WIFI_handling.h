@@ -17,9 +17,49 @@ void configModeCallback (WiFiManager *myWiFiManager) {
   */
 }
 
+void setupHostName(){
+  uint16_t maxlen = strlen(nameprefix) + 7;
+  uint8_t mac[6];
+  WiFi.macAddress(mac);
+  snprintf(fullhostname, maxlen, "%s-%02X%02X%02X", nameprefix, mac[3], mac[4], mac[5]); 
+}
+
+void connectWithWiFi(){
+  if (myServer.connectToWIFI) { 
+    WiFi.begin();// verbinding maken
+    long previousMillis = millis();
+    while (WiFi.status() != WL_CONNECTED) 
+    { 
+      if (clockData.checkSecond)
+      readTime();
+      if ((millis() - previousMillis) > 10000){
+        Serial.println("WIFI : not connected");
+        WiFi.mode(WIFI_AP);
+        WiFi.softAP(fullhostname);
+        Serial.printf("WIFI : Start webserver @ %s %s\n",fullhostname, "192.186.4.1");
+        server.begin();
+        return;
+      }
+    }  
+    if (WiFi.status() == WL_CONNECTED)  {
+      if (myServer.connectToMQTT ) {
+        Serial.println("MQTT : start");
+        clientEsp.setServer(&myServer.serverMQTT[0], myServer.port);
+        clientEsp.setCallback(callback);
+        connectMQTT();
+      }
+      setupTime();
+      setupOTA();
+      Serial.printf("WIFI : connected");
+      server.begin();
+      Serial.printf("WIFI : Start webserver @ %d.%d.%d.%d\n",myIP[0],myIP[1],myIP[2],myIP[3]);
+    } 
+  }
+
+}
+/*
 void reconnectWifiManager(){
-  Serial.println(millis());
-  if (myServer.connectToWIFI) {  
+   if (myServer.connectToWIFI) {  
     //display.setCursor(2, 26);
     //display.print("reconnecting to network");
     WiFiManager wifiManager;
@@ -43,18 +83,12 @@ void reconnectWifiManager(){
   }
   Serial.println("WIFI : Start webserver");
   server.begin();
-  Serial.println(millis());
 }
-
+*/
 
 void setupWifiManager(){
-  uint16_t maxlen = strlen(nameprefix) + 7;
-  uint8_t mac[6];
-  WiFi.macAddress(mac);
-  snprintf(fullhostname, maxlen, "%s-%02X%02X%02X", nameprefix, mac[3], mac[4], mac[5]);  
+
   if (myServer.connectToWIFI) { 
-    //display.setCursor(2, 26);      
-    //display.print("connecting to network");
     WiFiManager wifiManager;  
     wifiManager.setAPCallback(configModeCallback);
     wifiManager.setConfigPortalTimeout(60);

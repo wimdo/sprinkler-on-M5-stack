@@ -61,7 +61,7 @@ void readMyServerFile()
 void reWriteMyServerFile()
 {
     //myServer = (connection) { 5, 0,1, 1,  "192.168.0.121", 1883, "garden/publish2","http://worldtimeapi.org/api/timezone/Europe/Brussels"};
-    myServer = (connection) { 5, 0,0, 0,  "192.168.0.121", 1883, "garden/publish2","http://worldtimeapi.org/api/timezone/Europe/Brussels"};
+    myServer = (connection) { 15, 0,1, 1,  "192.168.0.121", 1883, "garden/publish2","http://worldtimeapi.org/api/timezone/Europe/Brussels"};
     writeMyServerFile();
 }
 
