@@ -17,6 +17,7 @@ void ota_handle( void * parameter ) {
 
 void setupOTA() {
   // Configure the hostname
+  /*
   uint16_t maxlen = strlen(nameprefix) + 7;
   char *fullhostname = new char[maxlen];
   uint8_t mac[6];
@@ -26,6 +27,7 @@ void setupOTA() {
   
   ArduinoOTA.setHostname(fullhostname);
   Serial.println(fullhostname);
+  */
   //delete[] fullhostname;
 /*
   // Configure and start the WiFi station
@@ -80,9 +82,9 @@ void setupOTA() {
 
   ArduinoOTA.begin();
 
-  Serial.println("OTA Initialized");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+  Serial.println("WIFI : OTA Initialized");
+  //Serial.print("IP address: ");
+  //Serial.println(WiFi.localIP());
 
 #if defined(ESP32_RTOS) && defined(ESP32)
   xTaskCreate(
