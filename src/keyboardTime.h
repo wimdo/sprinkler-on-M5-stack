@@ -14,8 +14,9 @@ void readTime()
 
 void setupTime() {
   if (WiFi.status() == WL_CONNECTED) {
-    Serial.println("WIFI : ntp time request");
-    const char *ntpServer = "be.pool.ntp.org";
+    //const char *ntpServer = "be.pool.ntp.org";
+    const char *ntpServer = myServer.timeRequestURL;
+    Serial.printf("WIFI : ntp time request @ %s\n",ntpServer);
     int timeZone = 3600;
     int daylightOffset=3600;
     configTime(timeZone, daylightOffset, ntpServer);
