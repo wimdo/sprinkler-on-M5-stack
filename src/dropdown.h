@@ -94,16 +94,16 @@ int inputDropbox(boolean withSelect, int widthPositionData, char *menuTable[], i
         case buttonNone:
             return buttonNone;
             break;
-        case buttonEscape:
+        case button1:
             return buttonNone;
             break;
-        case buttonLeft:
+        case button2:
             (positie < rijen - 1) ? positie++ : positie = 0;
             break;
-        case buttonCenter:
+        case button4:
             return positie;
             break;
-        case buttonRight:
+        case button3:
             (positie == 0) ? positie = rijen - 1 : positie--;
             break;
         }
@@ -187,20 +187,20 @@ int stringDropBox(int WidthPosition, int DepthPosition, char changeArray[])
         case buttonNone:
             return buttonNone;
             break;
-        case buttonEscape:
+        case button1:
             return buttonNone;
             break;
-        case buttonUp:
+        case button2:
             (keyboardLocation < sizeof(keyboard) - 2) ? keyboardLocation++ : keyboardLocation = 0;
             localChangeArray[localChangeArrayPosition] = keyboard[keyboardLocation];
             break;
-        case buttonDown:
+        case button3:
             (localChangeArrayPosition < lengteArray) ? localChangeArrayPosition++ : localChangeArrayPosition = 0;
             keyboardLocation = 0;
             while (localChangeArray[localChangeArrayPosition] != keyboard[keyboardLocation])
                 keyboardLocation++;
             break;
-        case buttonOK:
+        case button4:
             for (int i = 0; i <= lengteArray; i++)
             {
                 changeArray[i] = localChangeArray[i];
@@ -242,17 +242,17 @@ int getalDropDown(int WidthPosition, int DepthPosition, int startWaarde, int min
         case buttonNone:
             return buttonNone;
             break;
-        case buttonEscape:
+        case button1:
             return startWaarde;
             break;
-        case buttonUp:
+        case button2:
             if (waarde > minimum) waarde = waarde - stap;
 
             break;
-        case buttonDown:
+        case button3:
             if (waarde < maximum)waarde = waarde + stap;
             break;
-        case buttonOK:
+        case button4:
             return waarde;
             break;
         }

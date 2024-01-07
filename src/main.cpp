@@ -1,30 +1,25 @@
 #include <M5Tough.h>
 #include "Core2_Sounds.h"
 
-//#include <Arduino.h>
-//#include "Wire.h"
-//#include <SPI.h>
-
-//lijn toegevoegd voor controle github
-//lijn toegevoegd voor controle github
-//lijn 3 toegevoegd voor controle github
-#define VERSION "Version 05/06/23"  
-#define nameprefix "HOME"
-#define moduletype "SPRINKLER"
 
 #include <WebServer.h>
 #include "SPIFFS.h"
 #include <WiFi.h>
 #include <HTTPClient.h>
 #include <PubSubClient.h>
+#include <WiFiManager.h>
+#include "OTA.h"
 #include "time.h"
 #include <OneWire.h>
 #include <DallasTemperature.h>
-#include <WiFiManager.h>
-#include "OTA.h"
 #include <ArduinoJson.h>
 #include <sunset.h>
-SunSet sun;
+
+
+#define VERSION "Version 01/24/23"  
+#define nameprefix "HOME"
+#define moduletype "SPRINKLER"
+
 #define LATITUDE        51.17554
 #define LONGITUDE        2.29546
 #define DST_OFFSET      1
@@ -45,64 +40,46 @@ char fullhostname[40];
 IPAddress myIP ;
 
 
-
-PubSubClient clientEsp(clientMQTT);
+#define commandPrefix "cmnd"
+#define dataPrefix "data"
+#define infoPrefix "info"
 char myPayload[1024];
 char myTopic[64];
 String myPayloadString = ""; // a string for incoming text
-char serialArray[50];
+//char serialArray[50];
+PubSubClient clientEsp(clientMQTT);
 
 StaticJsonDocument<2048> doc;
 
 RTC_TimeTypeDef RTCtime;
 RTC_DateTypeDef RTCDate;
 
+SunSet sun;
+
 #define ONE_WIRE_BUS 26
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature temperatuur(&oneWire);
 
-#define commandPrefix "cmnd"
-#define dataPrefix "data"
-#define infoPrefix "info"
-
 #define RelayI2C 0x39
 #define SprinklerI2C 0x20
-
 //#define RelayI2C 0x38
 //#define SprinklerI2C 0x38
 
+// sprinkler states
 #define modeAutorun 1
 #define modeManueel 0
-
 #define Wacht 1
 #define Start 2
 #define Loopt 3
 #define Pauze 4
 #define End 5
 
-#define btnTIMEOUT -1
 // program defined buttons
 #define buttonNone -1
-#define buttonLeft 1
-#define buttonDown 1
-#define buttonCenter 2
-#define buttonOK 2
-#define buttonRight 3
-#define buttonUp 3
-#define buttonEscape 4
-
 #define button1 4
 #define button2 1
 #define button3 3
 #define button4 2
-
-typedef struct
-{
-  int buttonPressed;
-
-} buttonData;
-static buttonData button;
-
 typedef struct
 {
   int lastSecond;
@@ -121,7 +98,7 @@ typedef struct
   int programCounter;
   int valveSelected = 0;
   int sliderStateValve = 0;
-  int sliderStateRelais =0;
+  int sliderStateRelais = 0;
   int hourNext;
   int minuteNext;
   int sunrise;
@@ -131,6 +108,7 @@ typedef struct
   boolean timeSetByNTP;
   boolean keyboardInput;
   int keyboardHold = 0;
+  int buttonPressed;
   boolean debugMode;
   boolean updateSprinklerSlider;
   boolean updateRelaisSlider;
@@ -212,6 +190,24 @@ struct connection
 };
 struct connection myServer;
 
+typedef struct
+{
+  int x;
+  int y;
+  int widht;
+  int height;
+  int backgroundColor;
+  int textColor;
+  String text;
+} touchButton;
+
+Button sprinklerZone (0,19+68,118,68+68);
+Button relaisZone (120,19+68,120,68+68);
+Button b1(0,290,60,30);
+Button b2(60,290,60,30);
+Button b3(120,290,60,30);
+Button b4(180,290,60,30);
+
 //char *mainMenu_table[] = {"programma kiezen", "sprinkler kiezen", "relais kiezen", "programma wijzigen", "instellingen"};
 char *mainMenu_table[] = {"programma kiezen", "sprinkler kiezen", "relais kiezen", "programma wijzigen","settings"};
 char *settingsMenu_table[] = {"tijd wijzigen", "datum wijzigen", "sprinkler settings", "reset options"};
@@ -233,23 +229,7 @@ char data_table[9][10] = {"XXXXXXXXZ", "XXXXXXXXZ", "XXXXXXXXZ", "XXXXXXXXZ", "X
 char **sprinklerName_table;
 char **relaisName_table;
 
-Button sprinklerZone (0,19+68,118,68+68);
-Button relaisZone (120,19+68,120,68+68);
-Button b1(0,290,60,30);
-Button b2(60,290,60,30);
-Button b3(120,290,60,30);
-Button b4(180,290,60,30);
 
-  typedef struct
-  {
-    int x;
-    int y;
-    int widht;
-    int height;
-    int backgroundColor;
-    int textColor;
-    String text;
-  } touchButton;
 
 #include "display.h"
 #include "keyboardTime.h"
@@ -274,7 +254,7 @@ hw_timer_t *systemTimer = NULL;
 void setup()
 {
   M5.begin(true, false, true, true); 
-  I2Cscan();
+  //I2Cscan();
   //sprinkler.debugMode = true;
   sprinkler.staat = Wacht;
   sprinkler.keyboardInput = true;
@@ -290,14 +270,13 @@ void setup()
   showSprinklerSlider();
   disableRelais();
   showRelaySlider();
-  WiFi.begin("57_home", "wonderfulcurtain962");
+  //WiFi.begin("57_home", "wonderfulcurtain962");
   setupHostName();
   connectWithWiFi();
   calculateSolarTime();
   setupTemperature();
   sprinkler.keyboardInput = false;
-  Serial.print(F("Ready :"));
-  Serial.println(F(VERSION));
+  Serial.printf("SYSTEM : /s\n",VERSION);
   startRelaisProgram();
   controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay);
   myServer.connectToWIFI = true;
@@ -310,8 +289,7 @@ void buttonPressedCheck()
     if (b1.wasPressed()||b2.wasPressed()) {
       soundsBeep(1000, 100, 1);
       sprinkler.keyboardInput = true;
-      //button.buttonPressed = mainMenu();
-      button.buttonPressed =mainMenu();
+      sprinkler.buttonPressed =mainMenu();
       outlineMainscreen();
       sprinkler.updateRelaisSlider = true;
       sprinkler.updateSprinklerSlider = true;
@@ -320,7 +298,7 @@ void buttonPressedCheck()
         if (sprinkler.staat == Wacht){
         soundsBeep(1000, 100, 1);
         sprinkler.keyboardInput = true;
-        button.buttonPressed = settingsMenu();
+        sprinkler.buttonPressed = settingsMenu();
         outlineMainscreen();
         sprinkler.updateRelaisSlider = true;
         sprinkler.updateSprinklerSlider = true;
@@ -331,7 +309,7 @@ void buttonPressedCheck()
     } else if (sprinklerZone.wasPressed()) {
       soundsBeep(1000, 100, 1);
       sprinkler.keyboardInput = true;
-      button.buttonPressed = sprinklerSelectieTouch();
+      sprinkler.buttonPressed = sprinklerSelectieTouch();
       outlineMainscreen();
       sprinkler.updateRelaisSlider = true;
       sprinkler.updateSprinklerSlider = true;
@@ -339,7 +317,7 @@ void buttonPressedCheck()
     } else if (relaisZone.wasPressed()) {
       soundsBeep(1000, 100, 1);
       sprinkler.keyboardInput = true;
-      button.buttonPressed = relaisSelectie();
+      sprinkler.buttonPressed = relaisSelectie();
       outlineMainscreen();
       sprinkler.updateRelaisSlider = true;
       sprinkler.updateSprinklerSlider = true;

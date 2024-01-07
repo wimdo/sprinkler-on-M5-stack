@@ -14,7 +14,6 @@ void readTime()
 
 void setupTime() {
   if (WiFi.status() == WL_CONNECTED) {
-    //const char *ntpServer = "be.pool.ntp.org";
     const char *ntpServer = myServer.timeRequestURL;
     Serial.printf("WIFI : ntp time request @ %s\n",ntpServer);
     int timeZone = 3600;
@@ -93,7 +92,7 @@ int keyboardScan()
     if (clockData.checkSecond)
       readTime();
     if ((millis() - previousMillis) > 10000)
-      return btnTIMEOUT;
+      return buttonNone;
     M5.update();  
     if (b1.wasPressed()) {
       soundsBeep(1000, 100, 1);
@@ -112,7 +111,6 @@ int keyboardScan()
   return 0;
 }
 
-
 int keyboardButtonBar(String buttonString1, String buttonString2, String buttonString3,String buttonString4)
 {
   drawButtonBar4(buttonString1,BLACK,buttonString2,BLACK,buttonString3,BLACK,buttonString4,BLACK);
@@ -122,31 +120,27 @@ int keyboardButtonBar(String buttonString1, String buttonString2, String buttonS
     if (clockData.checkSecond)
       readTime();
     if ((millis() - previousMillis) > 10000)
-      return btnTIMEOUT;
+      return buttonNone;
     M5.update();  
     if (b1.wasPressed()) {
       if (buttonString1.length()>0){
         soundsBeep(1000, 100, 1);
-        return button1;
-        return buttonEscape;       
+        return button1;    
       }
     } else if (b2.wasPressed()){
       if (buttonString2.length()>0){
         soundsBeep(1000, 100, 1);
         return button2;
-        return buttonLeft;
       }
     } else if (b3.wasPressed()){
       if (buttonString3.length()>0){
         soundsBeep(1000, 100, 1);
         return button3;
-        return buttonRight;
       }
     }  else if (b4.wasPressed()){
       if (buttonString4.length()>0){
         soundsBeep(1000, 100, 1);
         return button4;
-        return buttonCenter;
       }
     }
   }
@@ -164,7 +158,7 @@ int keyboardButtonBar2(String buttonString1, String buttonString2)
       if (clockData.checkSecond)
         readTime();
       if ((millis() - previousMillis) > 10000)
-        return btnTIMEOUT;
+        return buttonNone;
       M5.update();  
       if (b1.wasPressed()) {
         soundsBeep(1000, 100, 1);
@@ -183,35 +177,4 @@ int keyboardButtonBar2(String buttonString1, String buttonString2)
     return 0;
   }
 }
-/*
-int keyboardButtonBar(String button1, String button2, String button3)
-{
-  showButtonBar(button1, button2, button3);
-  while (1)
-  {
-    int keuze = keyboardScan();
-    switch (keuze)
-    {
-    case btnTIMEOUT:
-      return buttonNone;
-      break;
-    case btnESC:
-      return buttonEscape;
-      break;
-    case btnLEFT:
-      if (button1 != "")
-        return buttonLeft;
-      break;
-    case btnSELECT:
-      if (button2 != "")
-        return buttonCenter;
-      break;
-    case btnRIGHT:
-      if (button3 != "")
-        return buttonRight;
-      break;
-    }
-  }
-}
-*/
 
