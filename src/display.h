@@ -13,6 +13,10 @@ void drawInfoBox(int xposBox,int yposBox,int heightBox,int widhtBox,int textSize
   }
 }
 
+void hideTouchButton(touchButton *a){
+  M5.Lcd.fillRoundRect(a->x, a->y, a->widht, a->height,8,BLACK);
+}
+
 void drawTouchButton(touchButton *a, int textSize, boolean centerText){
   M5.Lcd.fillRoundRect(a->x, a->y, a->widht, a->height,8,a->backgroundColor);
   M5.Lcd.setTextColor(a->textColor);
