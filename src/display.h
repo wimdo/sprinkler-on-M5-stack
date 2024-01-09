@@ -14,7 +14,7 @@ void drawInfoBox(int xposBox,int yposBox,int heightBox,int widhtBox,int textSize
 }
 
 void drawTouchButton(touchButton *a, int textSize, boolean centerText){
-  M5.Lcd.fillRect(a->x, a->y, a->widht, a->height, a->backgroundColor);
+  M5.Lcd.fillRoundRect(a->x, a->y, a->widht, a->height,8,a->backgroundColor);
   M5.Lcd.setTextColor(a->textColor);
   M5.Lcd.setTextSize(textSize);
   int ypos = a->y+ (a->height-textSize*8)/2;
@@ -48,6 +48,7 @@ void printTouchButton(touchButton *a, int x, int y){
   Serial.print("-");
   Serial.println(a->y+a->height);
 }
+
 void clearButtonBar(){
 M5.Lcd.fillRect(0, 292, 240, 30, BLACK); 
 } 

@@ -213,6 +213,69 @@ int stringDropBox(int WidthPosition, int DepthPosition, char changeArray[])
    return 0;
 }
 
+int getalTouchBox (int x, int y, int startWaarde, int minimum, int maximum, int stap, char *title){
+        
+    if (title !=""){
+        touchButton textButton =(touchButton) {x+3,y+5,106,16,BLACK,WHITE,title};
+        M5.Lcd.fillRoundRect(x, y, 110, 130,8, BLACK);
+        M5.Lcd.drawRoundRect(x, y, 110, 130,8, WHITE); 
+        drawTouchButton(&textButton,2,1);
+        y=y+20;   
+    } else {
+        M5.Lcd.fillRoundRect(x, y, 110, 110,8, BLACK);
+        M5.Lcd.drawRoundRect(x, y, 110, 110,8, WHITE);
+    }
+    touchButton getalButton =(touchButton) {x+4,y+21,50,30,DARKGREY,BLACK,String(startWaarde)};
+    touchButton upButton =(touchButton) {x+56,y+5,50,30,DARKGREY,BLACK,"UP"};
+    touchButton downButton =(touchButton) {x+56,y+40,50,30,DARKGREY,BLACK,"DOWN"};
+    touchButton escapeButton =(touchButton) {x+4,y+75,50,30,DARKGREY,BLACK,"ESC"};
+    touchButton OKButton =(touchButton) {x+56,y+75,50,30,DARKGREY,BLACK,"OK"};
+    drawTouchButton(&getalButton,2,1);
+    drawTouchButton(&upButton,2,1); 
+    drawTouchButton(&downButton,2,1);
+    drawTouchButton(&escapeButton,2,1);
+    drawTouchButton(&OKButton,2,1);
+    long previousMillis = millis();
+    int waarde = startWaarde;
+    while (1)
+    {
+        if (clockData.checkSecond)
+        readTime();
+        if ((millis() - previousMillis) > 10000)
+        return buttonNone;
+        M5.update();  
+        if ( M5.Touch.changed ){ 
+            int coordinateY = M5.Touch.point[0].y;
+            int coordinateX = M5.Touch.point[0].x;
+            boolean checkButton;
+            if (checkButton = checkTouchButton(&upButton, coordinateX, coordinateY)){
+                soundsBeep(1000, 100, 1);
+                previousMillis = millis();
+                if (waarde < maximum) waarde = waarde + stap;
+                getalButton.text=String(waarde);
+                drawTouchButton(&getalButton,2,1);    
+            }
+            if (checkButton = checkTouchButton(&downButton, coordinateX, coordinateY)){
+                soundsBeep(1000, 100, 1);
+                previousMillis = millis();
+                if (waarde > minimum) waarde = waarde - stap;
+                getalButton.text=String(waarde);
+                drawTouchButton(&getalButton,2,1);   
+            }
+            if (checkButton = checkTouchButton(&escapeButton, coordinateX, coordinateY)){
+                soundsBeep(1000, 100, 1); 
+                previousMillis = millis();
+                return startWaarde;
+            }
+            if (checkButton = checkTouchButton(&OKButton, coordinateX, coordinateY)){
+                soundsBeep(1000, 100, 1); 
+                return waarde;
+            }
+        }
+    }
+}
+
+
 int getalDropDown(int WidthPosition, int DepthPosition, int startWaarde, int minimum, int maximum, int stap)
 
 {
