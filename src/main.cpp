@@ -46,7 +46,6 @@ IPAddress myIP ;
 char myPayload[1024];
 char myTopic[64];
 String myPayloadString = ""; // a string for incoming text
-//char serialArray[50];
 PubSubClient clientEsp(clientMQTT);
 
 StaticJsonDocument<2048> doc;
