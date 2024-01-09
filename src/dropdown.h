@@ -217,13 +217,13 @@ int getalTouchBox (int x, int y, int startWaarde, int minimum, int maximum, int 
         
     if (title !=""){
         touchButton textButton =(touchButton) {x+3,y+5,106,16,BLACK,WHITE,title};
-        M5.Lcd.fillRoundRect(x, y, 110, 130,8, BLACK);
-        M5.Lcd.drawRoundRect(x, y, 110, 130,8, WHITE); 
+        M5.Lcd.fillRect(x, y, 110, 130, BLACK);
+        M5.Lcd.drawRect(x, y, 110, 130, WHITE); 
         drawTouchButton(&textButton,2,1);
         y=y+20;   
     } else {
-        M5.Lcd.fillRoundRect(x, y, 110, 110,8, BLACK);
-        M5.Lcd.drawRoundRect(x, y, 110, 110,8, WHITE);
+        M5.Lcd.fillRect(x, y, 110, 110, BLACK);
+        M5.Lcd.drawRect(x, y, 110, 110, WHITE);
     }
     touchButton getalButton =(touchButton) {x+4,y+21,50,30,DARKGREY,BLACK,String(startWaarde)};
     touchButton upButton =(touchButton) {x+56,y+5,50,30,DARKGREY,BLACK,"UP"};
@@ -264,11 +264,20 @@ int getalTouchBox (int x, int y, int startWaarde, int minimum, int maximum, int 
             }
             if (checkButton = checkTouchButton(&escapeButton, coordinateX, coordinateY)){
                 soundsBeep(1000, 100, 1); 
-                previousMillis = millis();
+                if (title !=""){
+                    M5.Lcd.fillRect(x, y-20, 110, 130, BLACK);
+                } else {
+                    M5.Lcd.fillRect(x, y, 110, 110, BLACK);
+                }
                 return startWaarde;
             }
             if (checkButton = checkTouchButton(&OKButton, coordinateX, coordinateY)){
                 soundsBeep(1000, 100, 1); 
+                if (title !=""){
+                    M5.Lcd.fillRect(x, y-20, 110, 130,BLACK);
+                } else {
+                    M5.Lcd.fillRect(x, y, 110, 110,BLACK);
+                }
                 return waarde;
             }
         }
