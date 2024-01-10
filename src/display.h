@@ -1,3 +1,70 @@
+bool M5Screen2bmp(int xPos, int yPos, int width, int height,const char * path){
+  // Open file for writing
+  // The existing image file will be replaced
+  File file = SPIFFS.open(path, "w");
+  if(file){
+    int image_height = height;
+    int image_width = width;
+    // horizontal line must be a multiple of 4 bytes long
+    // add padding to fill lines with 0
+    const uint pad=(4-(3*image_width)%4)%4;
+    // header size is 54 bytes:
+    //    File header = 14 bytes
+    //    Info header = 40 bytes
+    uint filesize=54+(3*image_width+pad)*image_height; 
+    unsigned char header[54] = { 
+      'B','M',  // BMP signature (Windows 3.1x, 95, NT, …)
+      0,0,0,0,  // image file size in bytes
+      0,0,0,0,  // reserved
+      54,0,0,0, // start of pixel array
+      40,0,0,0, // info header size
+      0,0,0,0,  // image width
+      0,0,0,0,  // image height
+      1,0,      // number of color planes
+      24,0,     // bits per pixel
+      0,0,0,0,  // compression
+      0,0,0,0,  // image size (can be 0 for uncompressed images)
+      0,0,0,0,  // horizontal resolution (dpm)
+      0,0,0,0,  // vertical resolution (dpm)
+      0,0,0,0,  // colors in color table (0 = none)
+      0,0,0,0 };// important color count (0 = all colors are important)
+    // fill filesize, width and heigth in the header array
+    for(uint i=0; i<4; i++) {
+        header[ 2+i] = (char)((filesize>>(8*i))&255);
+        header[18+i] = (char)((image_width   >>(8*i))&255);
+        header[22+i] = (char)((image_height  >>(8*i))&255);
+    }
+    // write the header to the file
+    file.write(header, 54);
+    
+    // To keep the required memory low, the image is captured line by line
+    unsigned char line_data[image_width*3+pad];
+    // initialize padded pixel with 0 
+    for(int i=(image_width-1)*3; i<(image_width*3+pad); i++){
+      line_data[i]=0;
+    }
+    // The coordinate origin of a BMP image is at the bottom left.
+    // Therefore, the image must be read from bottom to top.
+    for(int y=image_height; y>0; y--){
+      // get one line of the screen content
+      M5.Lcd.readRectRGB(xPos, yPos+y-1, image_width, 1, line_data);
+      // BMP color order is: Blue, Green, Red
+      // return values from readRectRGB is: Red, Green, Blue
+      // therefore: R und B need to be swapped
+      for(int x=0; x<image_width; x++){
+        unsigned char r_buff = line_data[x*3];
+        line_data[x*3] = line_data[x*3+2];
+        line_data[x*3+2] = r_buff;
+      }
+      // write the line to the file
+      file.write(line_data, (image_width*3)+pad);
+    }
+    file.close();
+    return true;
+  }
+  return false;
+}
+
 
 void drawInfoBox(int xposBox,int yposBox,int heightBox,int widhtBox,int textSize, char title[]){
   int lengteTitle =strlen(title)*6*textSize;
