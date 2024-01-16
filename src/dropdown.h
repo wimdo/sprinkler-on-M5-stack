@@ -213,40 +213,34 @@ int stringDropBox(int WidthPosition, int DepthPosition, char changeArray[])
    return 0;
 }
 
-int getalTouchBox (int x, int y, int startWaarde, int minimum, int maximum, int stap, char *title){
+int getalTouchBoxSprite (int x, int y, int startWaarde, int minimum, int maximum, int stap, char *title){
 
-    int boxX ;
-    int boxY ;
-    
+    int offsetY = 0;
+    spr.setColorDepth(8);
     if (title !=""){
-        boxX = 110;
-        boxY = 130;
-        M5Screen2bmp(x, y, boxX, boxY,"/getalTouchBox.bmp");
-        touchButton textButton =(touchButton) {x+3,y+5,106,16,BLACK,WHITE,title};
-        M5.Lcd.fillRect(x, y, 110, 130, BLACK);
-        M5.Lcd.drawRect(x, y, 110, 130, WHITE); 
-        drawTouchButton(&textButton,2,1);
-        y=y+20;
+        box.createSprite(110,130);
+        touchButton textButton =(touchButton) {3,5,106,16,BLACK,WHITE,title};
+        box.fillRect(0, 0, 110, 130, BLACK);
+        box.drawRect(0, 0, 110, 130, WHITE); 
+        drawTouchButtonSprite(&box,&textButton,2,1);
+        offsetY=20;
+        y=y+offsetY;
     } else {
-        boxX = 110;
-        boxY = 110;
-        M5Screen2bmp(x, y-20, boxX, boxY,"/getalTouchBox.bmp");
-        M5.Lcd.fillRect(x, y, 110, 110, BLACK);
-        M5.Lcd.drawRect(x, y, 110, 110, WHITE);
+        box.createSprite(110,110);
+        box.fillRect(0, 0, 110, 110, BLACK);
+        box.drawRect(0, 0, 110, 110, WHITE);
     }   
-    touchButton getalButton =(touchButton) {x+4,y+21,50,30,DARKGREY,BLACK,String(startWaarde)};
-    touchButton upButton =(touchButton) {x+56,y+5,50,30,DARKGREY,BLACK,"UP"};
-    touchButton downButton =(touchButton) {x+56,y+40,50,30,DARKGREY,BLACK,"DOWN"};
-    touchButton escapeButton =(touchButton) {x+4,y+75,50,30,DARKGREY,BLACK,"ESC"};
-    touchButton OKButton =(touchButton) {x+56,y+75,50,30,DARKGREY,BLACK,"OK"};
-    drawTouchButton(&getalButton,2,1);
-    drawTouchButton(&upButton,2,1); 
-    drawTouchButton(&downButton,2,1);
-    drawTouchButton(&escapeButton,2,1);
-    drawTouchButton(&OKButton,2,1);
-    if (title !=""){
-        y=y-20;
-    }
+    touchButton getalButton =(touchButton) {4,offsetY+21,50,30,DARKGREY,BLACK,String(startWaarde)};
+    touchButton upButton =(touchButton) {56,offsetY+5,50,30,DARKGREY,BLACK,"UP"};
+    touchButton downButton =(touchButton) {56,offsetY+40,50,30,DARKGREY,BLACK,"DOWN"};
+    touchButton escapeButton =(touchButton) {4,offsetY+75,50,30,DARKGREY,BLACK,"ESC"};
+    touchButton OKButton =(touchButton) {56,offsetY+75,50,30,DARKGREY,BLACK,"OK"};
+    drawTouchButtonSprite(&box,&getalButton,2,1);
+    drawTouchButtonSprite(&box,&upButton,2,1); 
+    drawTouchButtonSprite(&box,&downButton,2,1);
+    drawTouchButtonSprite(&box,&escapeButton,2,1);
+    drawTouchButtonSprite(&box,&OKButton,2,1);
+    box.pushSprite(x,y);
     long previousMillis = millis();
     int waarde = startWaarde;
     while (1)
@@ -254,7 +248,6 @@ int getalTouchBox (int x, int y, int startWaarde, int minimum, int maximum, int 
         if (clockData.checkSecond)
         readTime();
         if ((millis() - previousMillis) > 10000){
-            M5.Lcd.drawBmpFile(SPIFFS, "/getalTouchBox.bmp", x, y);
             return buttonNone;
         }
         M5.update();  
@@ -262,30 +255,24 @@ int getalTouchBox (int x, int y, int startWaarde, int minimum, int maximum, int 
             int coordinateY = M5.Touch.point[0].y;
             int coordinateX = M5.Touch.point[0].x;
             boolean checkButton;
-            if (checkButton = checkTouchButton(&upButton, coordinateX, coordinateY)){
-                soundsBeep(1000, 100, 1);
+            if (checkButton = checkTouchButtonSprite(&upButton, x,y,coordinateX, coordinateY)){
                 previousMillis = millis();
                 if (waarde < maximum) waarde = waarde + stap;
                 getalButton.text=String(waarde);
-                drawTouchButton(&getalButton,2,1);    
+                drawTouchButtonSprite(&box,&getalButton,2,1);   
+                box.pushSprite(x,y); 
             }
-            if (checkButton = checkTouchButton(&downButton, coordinateX, coordinateY)){
-                soundsBeep(1000, 100, 1);
+            if (checkButton = checkTouchButtonSprite(&downButton, x,y,coordinateX, coordinateY)){
                 previousMillis = millis();
                 if (waarde > minimum) waarde = waarde - stap;
                 getalButton.text=String(waarde);
-                drawTouchButton(&getalButton,2,1);   
+                drawTouchButtonSprite(&box,&getalButton,2,1);   
+                box.pushSprite(x,y);
             }
-            if (checkButton = checkTouchButton(&escapeButton, coordinateX, coordinateY)){
-                soundsBeep(1000, 100, 1); 
-                Serial.println(millis());
-                M5.Lcd.drawBmpFile(SPIFFS, "/getalTouchBox.bmp", x, y);
-                Serial.println(millis());
+            if (checkButton = checkTouchButtonSprite(&escapeButton, x,y,coordinateX, coordinateY)){
                 return startWaarde;
             }
-            if (checkButton = checkTouchButton(&OKButton, coordinateX, coordinateY)){
-                soundsBeep(1000, 100, 1); 
-                M5.Lcd.drawBmpFile(SPIFFS, "/getalTouchBox.bmp", x, y);
+            if (checkButton = checkTouchButtonSprite(&OKButton, x,y,coordinateX, coordinateY)){
                 return waarde;
             }
         }

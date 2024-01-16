@@ -29,6 +29,9 @@ const uint8_t wifi_OK[] PROGMEM = {
 const uint8_t wifi_NOK[] PROGMEM = {
     0xF0, 0x40, 0x08, 0x40, 0xE4, 0x40, 0x12, 0x40, 0xCA, 0x00, 0x2A, 0x40};
 
+TFT_eSprite spr = TFT_eSprite(&M5.Lcd);
+TFT_eSprite box = TFT_eSprite(&M5.Lcd);
+
 WiFiClient client;
 WiFiClient clientMQTT;
 WiFiServer server(80); // Set web server port number to 80
@@ -36,9 +39,8 @@ String HTTPrequest;    // Variable to store the HTTP request
 unsigned long currentTime = millis();
 unsigned long previousTime = 0;
 const long timeoutTime = 2000;
-char fullhostname[40];
+char fullhostname[20];
 IPAddress myIP ;
-
 
 #define commandPrefix "cmnd"
 #define dataPrefix "data"
@@ -271,6 +273,7 @@ void setup()
   showRelaySlider();
   //WiFi.begin("57_home", "wonderfulcurtain962");
   setupHostName();
+  myServer.connectToWIFI = false;
   connectWithWiFi();
   calculateSolarTime();
   setupTemperature();
@@ -278,7 +281,6 @@ void setup()
   Serial.printf("SYSTEM : /s\n",VERSION);
   startRelaisProgram();
   controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay);
-  myServer.connectToWIFI = true;
 }
 
 void buttonPressedCheck()

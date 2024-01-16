@@ -247,38 +247,53 @@ int sprinklerSelectieTouch(){
   boolean sprinklerSelected = false;
   boolean timeSelected = false;  // de 8 knoppen laten zien
   boolean showTimeSelect = false;
+  boolean refreshSprite = true;
   int sprinklerKeuze = -1;
   int sprinklerKeuzePrevious = -1;
   int sprinklerTime = 0;
+  int spriteX = 0;
+  int spriteY = 19;
+  int spriteWidth = 240;
+  int spriteHeight = 320;
 
   touchButton sprinklerButton[8];
-  touchButton sprinklerTimeButton =(touchButton) {120+5,127,70,30,DARKGREY,WHITE,"x min"};
-  touchButton escapeButton =(touchButton) {0,292,56+4+56+2,30,DARKGREY,BLACK,"ESCAPE"};
-  touchButton startButton =(touchButton) {120,292,56+4+56+4,30,DARKGREY,DARKGREY,"START"};
-
-  drawInfoBox(0,19,272,240,1, "SPRINKLER SELECTIE");
-  clearButtonBar();
-  for (int i = 0; i < 8 ; i++)
+  touchButton sprinklerTimeButton =(touchButton) {120,9,80,30,BLACK,BLACK,"x min"};
+  touchButton escapeButton =(touchButton) {0,272,118,30,DARKGREY,BLACK,"ESCAPE"};
+  touchButton startButton =(touchButton) {120,272,118,30,DARKGREY,DARKGREY,"START"};
+   for (int i = 0; i < 8 ; i++)
   {
-    sprinklerButton[i] =(touchButton) {2,28+i*33,116,30,DARKGREY,BLACK,sprinklerName_table[i+1]};
-    drawTouchButton(&sprinklerButton[i],2,1); 
+    sprinklerButton[i] =(touchButton) {2,9+i*33,116,30,DARKGREY,BLACK,sprinklerName_table[i+1]};
   }
+  spr.setColorDepth(8);
+  spr.createSprite(spriteWidth,spriteHeight);
   long previousMillis = millis();
   while (1)
   {
+    if (refreshSprite) {
+      spr.fillRect(0,0,spriteWidth,spriteHeight, BLACK);
+      drawInfoBoxSprite(&spr,240,271,1,"SPRINKLER SELECTIE");
+      for (int i = 0; i < 8 ; i++)
+      {
+        drawTouchButtonSprite(&spr,&sprinklerButton[i],2,1); 
+      }
+      drawTouchButtonSprite(&spr,&escapeButton,2,1); 
+      drawTouchButtonSprite(&spr,&startButton,2,1);
+      drawTouchButtonSprite(&spr,&sprinklerTimeButton,2,1);    
+      spr.pushSprite(spriteX,spriteY);
+      refreshSprite =false;
+    }
     if (clockData.checkSecond)
       readTime();
     if ((millis() - previousMillis) > 10000)
       return buttonNone;
     M5.update();  
     if ( M5.Touch.changed ){ 
-      Serial.println( M5.Touch.point[0]);
       int coordinateY = M5.Touch.point[0].y;
       int coordinateX = M5.Touch.point[0].x;
       int keuze =-1;
       boolean checkButton;
       for (int i = 0; i < 8; i++){
-        if (checkButton = checkTouchButton(&sprinklerButton[i], coordinateX, coordinateY)){
+        if (checkButton = checkTouchButtonSprite(&sprinklerButton[i], spriteX, spriteY, coordinateX, coordinateY)){
           soundsBeep(1000, 100, 1);
           previousMillis = millis();
           if (!sprinklerSelected){
@@ -287,41 +302,62 @@ int sprinklerSelectieTouch(){
             sprinklerSelected=true;
             showTimeSelect = true;
             sprinklerButton[sprinklerKeuze].textColor=WHITE;
-            drawTouchButton(&sprinklerButton[sprinklerKeuze],2,1);
+            drawTouchButtonSprite(&spr,&sprinklerButton[sprinklerKeuze],2,1);
+            sprinklerTimeButton.y = 9+(sprinklerKeuze)*33; 
+            sprinklerTimeButton.textColor = BLACK;
+            sprinklerTimeButton.backgroundColor = DARKGREY;    
+            drawTouchButtonSprite(&spr,&sprinklerTimeButton,2,1);   
+            spr.pushSprite(spriteX,spriteY);
           } else {
             soundsBeep(1000, 100, 1);
             sprinklerKeuze = i;
             if (sprinklerKeuze !=sprinklerKeuzePrevious){
               sprinklerButton[sprinklerKeuze].textColor=WHITE;
               sprinklerButton[sprinklerKeuzePrevious].textColor=BLACK;
-              drawTouchButton(&sprinklerButton[sprinklerKeuze],2,1);
-              drawTouchButton(&sprinklerButton[sprinklerKeuzePrevious],2,1);
-              sprinklerTimeButton.y = 28+(sprinklerKeuzePrevious+1)*33;      
-              hideTouchButton(&sprinklerTimeButton);
+              drawTouchButtonSprite(&spr,&sprinklerButton[sprinklerKeuze],2,1);
+              drawTouchButtonSprite(&spr,&sprinklerButton[sprinklerKeuzePrevious],2,1);
+              sprinklerTimeButton.y = 9+(sprinklerKeuzePrevious)*33;      
+              hideTouchButtonSprite(&spr,&sprinklerTimeButton);
+              sprinklerTimeButton.y = 9+(sprinklerKeuze)*33;   
+              drawTouchButtonSprite(&spr,&sprinklerTimeButton,2,1);   
+              spr.pushSprite(spriteX,spriteY);
               sprinklerKeuzePrevious=sprinklerKeuze;
+              //showTimeSelect = true;
+            } else {
               showTimeSelect = true;
             }
           }  
         }
       }
       if (showTimeSelect){
-        sprinklerTime =getalTouchBox (120, 120, 0, 0, 60, 5,sprinklerName_table[sprinklerKeuze+1]);
+        sprinklerTime =getalTouchBoxSprite (50, 50, sprinklerTime, 0, 60, 5,sprinklerName_table[sprinklerKeuze+1]);
         if (sprinklerTime ==buttonNone){
           return buttonNone;
         } else if (sprinklerTime==0){
+          previousMillis = millis();
           timeSelected = false;
-        } else {
-          timeSelected = true;
-          sprinklerTimeButton.y = 28+(sprinklerSelected+1)*33;
+          sprinklerTimeButton.y = 9+(sprinklerKeuze)*33;
           sprinklerTimeButton.text=String(sprinklerTime)+" min";
-          drawTouchButton(&sprinklerTimeButton,2,1);
+          sprinklerTimeButton.textColor= BLACK;
           startButton.textColor=DARKGREY;
-          drawTouchButton(&startButton,2,1);  
+        } else {
+          previousMillis = millis();
+          timeSelected = true;
+          sprinklerTimeButton.y = 9+(sprinklerKeuze)*33;
+          sprinklerTimeButton.text=String(sprinklerTime)+" min";
+          sprinklerTimeButton.textColor= WHITE;
+          startButton.textColor=BLACK;
         }
         showTimeSelect = false;
+        refreshSprite = true;
       }
       if (sprinklerSelected && timeSelected) {
-        if (checkButton = checkTouchButton(&startButton, coordinateX, coordinateY)){
+        if (checkButton = checkTouchButtonSprite(&sprinklerTimeButton, spriteX, spriteY,coordinateX, coordinateY)){
+          soundsBeep(1000, 100, 1);
+          previousMillis = millis();
+          showTimeSelect = true;
+        }
+        if (checkButton = checkTouchButtonSprite(&startButton, spriteX, spriteY,coordinateX, coordinateY)){
           soundsBeep(1000, 100, 1);
           SprinklerProgram[0].valve[0]=sprinklerKeuze+1;
           SprinklerProgram[0].valveTime[0]=sprinklerTime;  
@@ -330,7 +366,7 @@ int sprinklerSelectieTouch(){
           return keuze;
         }
       } 
-      if (checkButton = checkTouchButton(&escapeButton, coordinateX, coordinateY)){
+      if (checkButton = checkTouchButtonSprite(&escapeButton, spriteX, spriteY,coordinateX, coordinateY)){
           soundsBeep(1000, 100, 1);
           return buttonNone;
       }
