@@ -51,6 +51,72 @@ int localDropbox(int positie, int WidthPosition, int DepthPosition, char *menuTa
     
 }
 
+int localMenuTouchBoxSprite (int x, int y, int startWaarde,char *menuTable[], char *title){    
+    int rijen = sizeof(menuTable) / sizeof(*menuTable);
+    int offsetY = 0;
+    spr.setColorDepth(8);
+    if (title !=""){
+        box.createSprite(110,130);
+        touchButton textButton =(touchButton) {3,5,106,16,BLACK,WHITE,title};
+        box.fillRect(0, 0, 110, 130, BLACK);
+        box.drawRect(0, 0, 110, 130, WHITE); 
+        drawTouchButtonSprite(&box,&textButton,2,1);
+        offsetY=20;
+        y=y+offsetY;
+    } else {
+        box.createSprite(110,110);
+        box.fillRect(0, 0, 110, 110, BLACK);
+        box.drawRect(0, 0, 110, 110, WHITE);
+    }   
+    touchButton localButton[rijen];
+    for (int i = 0; i < rijen ; i++)
+    {
+        if (i == startWaarde){
+            localButton[i] =(touchButton) {2,9+i*33,116,30,DARKGREY,WHITE,menuTable[i]};   
+        } else {
+            localButton[i] =(touchButton) {2,9+i*33,116,30,DARKGREY,BLACK,menuTable[i]};
+        }
+    }
+    touchButton escapeButton =(touchButton) {4,offsetY+75,50,30,DARKGREY,BLACK,"ESC"};
+    touchButton OKButton =(touchButton) {56,offsetY+75,50,30,DARKGREY,BLACK,"OK"};
+    for (int i = 0; i < rijen ; i++)
+    {
+        //touchbutton tekenenen 
+    }   
+    drawTouchButtonSprite(&box,&escapeButton,2,1);
+    drawTouchButtonSprite(&box,&OKButton,2,1);
+    box.pushSprite(x,y);
+    long previousMillis = millis();
+    int waarde = startWaarde;
+    while (1)
+    {
+        if (clockData.checkSecond)
+        readTime();
+        if ((millis() - previousMillis) > 10000){
+            return buttonNone;
+        }
+        M5.update();  
+        if ( M5.Touch.changed ){ 
+            int coordinateY = M5.Touch.point[0].y;
+            int coordinateX = M5.Touch.point[0].x;
+            boolean checkButton;
+            for (int i = 0; i < rijen ; i++)
+            {
+                if (checkButton = checkTouchButtonSprite(&localButton[i], x,y,coordinateX, coordinateY)){
+                    previousMillis = millis();
+                    //extra controles
+                    box.pushSprite(x,y); 
+                }
+            }  
+            if (checkButton = checkTouchButtonSprite(&escapeButton, x,y,coordinateX, coordinateY)){
+                return startWaarde;
+            }
+            if (checkButton = checkTouchButtonSprite(&OKButton, x,y,coordinateX, coordinateY)){
+                return waarde;
+            }
+        }
+    }
+}
 
 
 int inputDropbox(boolean withSelect, int widthPositionData, char *menuTable[], int rijen)
