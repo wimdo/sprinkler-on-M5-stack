@@ -87,6 +87,8 @@ int sprinklerSettingsSelectie()
     snprintf(&data_table[3][0], 8, "%s", onoff_table[debugKeuze]);
     snprintf(&data_table[4][0], 8, "%s", sprinklerName_table[valveKeuze]);
     snprintf(&data_table[5][0], 8, "%s", janee_table[wisselKeuze]);
+
+    int keuzeTest=localMenuTouchBoxSprite (50, 50, 1,test_table,3, "1234567890");
     int keuze = inputDropbox(1, widthLocationData, sprinklerSettings_table, 6);
     switch (keuze)
     {

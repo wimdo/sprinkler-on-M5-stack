@@ -51,37 +51,45 @@ int localDropbox(int positie, int WidthPosition, int DepthPosition, char *menuTa
     
 }
 
-int localMenuTouchBoxSprite (int x, int y, int startWaarde,char *menuTable[], char *title){    
-    int rijen = sizeof(menuTable) / sizeof(*menuTable);
-    int offsetY = 0;
-    spr.setColorDepth(8);
+int localMenuTouchBoxSprite (int x, int y, int startWaarde,char *menuTable[],int rijen, char *title){    
+    int buttonWidthFull = 140;
+    int buttonHeight = 30;
+    int spacing = 2;
+    int edge =1;
+    int header = 0;
+    int boxX= edge+spacing+buttonWidthFull+spacing+edge; ;
+    int boxY = 0;
+    int waardePrevious = startWaarde;
+    box.setColorDepth(8);
     if (title !=""){
-        box.createSprite(110,130);
-        touchButton textButton =(touchButton) {3,5,106,16,BLACK,WHITE,title};
-        box.fillRect(0, 0, 110, 130, BLACK);
-        box.drawRect(0, 0, 110, 130, WHITE); 
+        boxY = edge+spacing+buttonHeight+spacing+(buttonHeight+spacing)*rijen+buttonHeight+spacing+edge;
+        box.createSprite(boxX,boxY);
+        touchButton textButton =(touchButton) {edge+spacing,edge+spacing,buttonWidthFull,buttonHeight,BLACK,WHITE,title};
+        box.fillRect(0, 0, boxX, boxY, BLACK);
+        box.drawRect(0, 0, boxX, boxY, WHITE); 
         drawTouchButtonSprite(&box,&textButton,2,1);
-        offsetY=20;
-        y=y+offsetY;
+        header=buttonHeight;
+        y=y+header;
     } else {
-        box.createSprite(110,110);
-        box.fillRect(0, 0, 110, 110, BLACK);
-        box.drawRect(0, 0, 110, 110, WHITE);
+        boxY = edge+spacing+(buttonHeight+spacing)*rijen+buttonHeight+spacing+edge;
+        box.createSprite(boxX,boxY);
+        box.fillRect(0, 0, boxX, boxY, BLACK);
+        box.drawRect(0, 0, boxX, boxY, WHITE); 
     }   
     touchButton localButton[rijen];
     for (int i = 0; i < rijen ; i++)
     {
         if (i == startWaarde){
-            localButton[i] =(touchButton) {2,9+i*33,116,30,DARKGREY,WHITE,menuTable[i]};   
+            localButton[i] =(touchButton) {edge+spacing,edge+spacing+header+(buttonHeight+spacing)*i,buttonWidthFull,buttonHeight,DARKGREY,WHITE,menuTable[i]};   
         } else {
-            localButton[i] =(touchButton) {2,9+i*33,116,30,DARKGREY,BLACK,menuTable[i]};
+            localButton[i] =(touchButton) {edge+spacing,edge+spacing+header+(buttonHeight+spacing)*i,buttonWidthFull,buttonHeight,DARKGREY,BLACK,menuTable[i]};
         }
     }
-    touchButton escapeButton =(touchButton) {4,offsetY+75,50,30,DARKGREY,BLACK,"ESC"};
-    touchButton OKButton =(touchButton) {56,offsetY+75,50,30,DARKGREY,BLACK,"OK"};
+    touchButton escapeButton =(touchButton) {edge+spacing,header+spacing+(buttonHeight+spacing)*rijen+spacing,(buttonWidthFull-spacing)/2,buttonHeight,DARKGREY,BLACK,"ESC"};
+    touchButton OKButton =(touchButton) {edge+spacing+(buttonWidthFull-spacing)/2+spacing ,header+spacing+(buttonHeight+spacing)*rijen+spacing,(buttonWidthFull-spacing)/2,buttonHeight,DARKGREY,BLACK,"OK"};
     for (int i = 0; i < rijen ; i++)
     {
-        //touchbutton tekenenen 
+        drawTouchButtonSprite(&box,&localButton[i],2,1);
     }   
     drawTouchButtonSprite(&box,&escapeButton,2,1);
     drawTouchButtonSprite(&box,&OKButton,2,1);
@@ -93,6 +101,7 @@ int localMenuTouchBoxSprite (int x, int y, int startWaarde,char *menuTable[], ch
         if (clockData.checkSecond)
         readTime();
         if ((millis() - previousMillis) > 10000){
+            box.deleteSprite();
             return buttonNone;
         }
         M5.update();  
@@ -104,14 +113,23 @@ int localMenuTouchBoxSprite (int x, int y, int startWaarde,char *menuTable[], ch
             {
                 if (checkButton = checkTouchButtonSprite(&localButton[i], x,y,coordinateX, coordinateY)){
                     previousMillis = millis();
-                    //extra controles
-                    box.pushSprite(x,y); 
+                    waarde=i;
+                    if (waarde != waardePrevious){
+                       localButton[waarde].textColor=WHITE;
+                       drawTouchButtonSprite(&box,&localButton[waarde],2,1); 
+                       localButton[waardePrevious].textColor=BLACK;
+                       drawTouchButtonSprite(&box,&localButton[waardePrevious],2,1); 
+                       waardePrevious=waarde;
+                       box.pushSprite(x,y); 
+                    }
                 }
             }  
             if (checkButton = checkTouchButtonSprite(&escapeButton, x,y,coordinateX, coordinateY)){
+                box.deleteSprite();
                 return startWaarde;
             }
             if (checkButton = checkTouchButtonSprite(&OKButton, x,y,coordinateX, coordinateY)){
+                box.deleteSprite();
                 return waarde;
             }
         }
@@ -314,6 +332,7 @@ int getalTouchBoxSprite (int x, int y, int startWaarde, int minimum, int maximum
         if (clockData.checkSecond)
         readTime();
         if ((millis() - previousMillis) > 10000){
+            box.deleteSprite();
             return buttonNone;
         }
         M5.update();  
@@ -336,9 +355,11 @@ int getalTouchBoxSprite (int x, int y, int startWaarde, int minimum, int maximum
                 box.pushSprite(x,y);
             }
             if (checkButton = checkTouchButtonSprite(&escapeButton, x,y,coordinateX, coordinateY)){
+                box.deleteSprite();
                 return startWaarde;
             }
             if (checkButton = checkTouchButtonSprite(&OKButton, x,y,coordinateX, coordinateY)){
+                box.deleteSprite();
                 return waarde;
             }
         }

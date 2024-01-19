@@ -74,8 +74,8 @@ boolean checkTouchButton(touchButton *a, int x, int y){
 boolean checkTouchButtonSprite(touchButton *a, int spriteX, int spriteY, int x, int y){
   if (x >= a->x+spriteX && x <= a->x+a->widht+spriteX){
     if(y >= a->y+spriteY && y <= a->y+a->height+spriteY){
-      return 1;
       soundsBeep(1000, 100, 1);
+      return 1;
     }
   }
   return 0;

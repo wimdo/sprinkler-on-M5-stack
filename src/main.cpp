@@ -217,6 +217,8 @@ char *sprinklerSettings_table[] = {"Pomp tijd ", "Wacht tijd", "Modus     ", "De
 char *auto_table[] = {"MANUEEL", "AUTO   "};
 char *onoff_table[] = {"UIT", "AAN"};
 char *janee_table[] = {"NEE", "JA "};
+char *test_table[] = {"NEE", "JA","NIKS"};
+
 
 char *valveSettings_table[] = {"Naam", "werking", "Met Pomp"};
 char *sprinklerManueel_table[] = {"Zone", "Tijd"};
