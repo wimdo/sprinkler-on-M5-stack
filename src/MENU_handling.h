@@ -69,110 +69,170 @@ int valveSettingsSelectie(int localValve)
   }
 }
 
-int sprinklerSettingsSelectie()
-{
+int sprinklerSettingTouch(){
+  int spriteX = 0;
+  int spriteY = 19;
+  int spriteWidth = 240;
+  int spriteHeight = 320;
   int pumpTimeKeuze = mySprinkler.pumpTime;
   int pauzeTimeKeuze = mySprinkler.pauzeTime;
   int modusKeuze = mySprinkler.modus;
   int debugKeuze = sprinkler.debugMode;
   int valveKeuze = 0;
   int wisselKeuze = myServer.sensorToggle;
-  int widthLocationData = 130;
+  char buffer[15];
+  boolean refreshSprite = true;
+  boolean valueChanged[6] ={false,false,false,false,false,false};
+
+  touchButton localButton[6];
+  touchButton dataButton[6];
+  for (int i = 0; i < 6 ; i++)
+  {
+    localButton[i] =(touchButton) {2,9+i*33,126,30,DARKGREY,BLACK,sprinklerSettings_table[i]};
+    dataButton[i]= (touchButton) {130,9+i*33,90,30,DARKGREY,BLACK,""};
+  }
+  dataButton[0].text=String(pumpTimeKeuze);
+  dataButton[1].text=String(pauzeTimeKeuze);
+  dataButton[2].text=auto_table[modusKeuze];
+  dataButton[3].text=onoff_table[debugKeuze];
+  dataButton[4].text= "";
+  dataButton[5].text=janee_table[wisselKeuze];
+
+  touchButton escapeButton =(touchButton) {0,272,118,30,DARKGREY,BLACK,"ESC"};
+  touchButton saveButton =(touchButton) {120,272,118,30,DARKGREY,BLACK,"SAVE"};
+  spr.setColorDepth(8);
+  spr.createSprite(spriteWidth,spriteHeight);
+  long previousMillis = millis();
   while (1)
   {
-    drawInfoBox(0,19,272,240,1, "INSTELLINGEN");
-    snprintf(&data_table[0][0], 8, "%d", pumpTimeKeuze);
-    snprintf(&data_table[1][0], 8, "%d", pauzeTimeKeuze);
-    snprintf(&data_table[2][0], 8, "%s", auto_table[modusKeuze]);
-    snprintf(&data_table[3][0], 8, "%s", onoff_table[debugKeuze]);
-    snprintf(&data_table[4][0], 8, "%s", sprinklerName_table[valveKeuze]);
-    snprintf(&data_table[5][0], 8, "%s", janee_table[wisselKeuze]);
-
-    int keuzeTest=localMenuTouchBoxSprite (50, 50, 1,test_table,3, "1234567890");
-    int keuze = inputDropbox(1, widthLocationData, sprinklerSettings_table, 6);
-    switch (keuze)
-    {
-    case -1:
-      return keuze;
-      break;
-    case 0:
-      pumpTimeKeuze = getalDropDown(widthLocationData, keuze, pumpTimeKeuze, 0, 15, 1);
-      if (pumpTimeKeuze == -1)
-        return -1;
-      break;
-    case 1:
-      pauzeTimeKeuze = getalDropDown(widthLocationData, keuze, pauzeTimeKeuze, 0, 15, 1);
-      if (pauzeTimeKeuze == -1)
-        return -1;
-      break;
-    case 2:
-      modusKeuze = localDropbox(modusKeuze, widthLocationData, keuze, auto_table, sizeof(auto_table) / sizeof(*auto_table));
-      if (modusKeuze == -1)
-        return -1;
-      break;
-    case 3:
-      debugKeuze = localDropbox(debugKeuze, widthLocationData, keuze, onoff_table, sizeof(onoff_table) / sizeof(*onoff_table));
-      if (debugKeuze == -1)
-        return -1;
-      break;
-    case 4:
-      valveKeuze = localDropbox(valveKeuze, widthLocationData, keuze, sprinklerName_table, 9);
-      if (valveKeuze > 0)
+    if (refreshSprite) {
+      spr.fillRect(0,0,spriteWidth,spriteHeight, BLACK);
+      drawInfoBoxSprite(&spr,240,271,1,"INSTELLINGEN");
+      for (int i = 0; i < 6 ; i++)
       {
-        valveKeuze = valveSettingsSelectie(valveKeuze);
-        if (valveKeuze == -1)
-          return -1;
-        break;
+        drawTouchButtonSprite(&spr,&localButton[i],2,1); 
+        drawTouchButtonSprite(&spr,&dataButton[i],2,1); 
       }
-      else if (valveKeuze == 0)
-        break;
-      else
-        return -1;
-      break;
-    case 5:
-      wisselKeuze = localDropbox(wisselKeuze, widthLocationData, keuze, janee_table, sizeof(janee_table) / sizeof(*janee_table));
-      if (wisselKeuze == -1)
-        return -1;
-      break;
+      drawTouchButtonSprite(&spr,&escapeButton,2,1); 
+      drawTouchButtonSprite(&spr,&saveButton,2,1);
+      spr.pushSprite(spriteX,spriteY);
+      refreshSprite =false;
     }
-    drawInfoBox(0,19,272,240,1, "INSTELLINGEN");
-    snprintf(&data_table[0][0], 8, "%d", pumpTimeKeuze);
-    snprintf(&data_table[1][0], 8, "%d", pauzeTimeKeuze);
-    snprintf(&data_table[2][0], 8, "%s", auto_table[modusKeuze]);
-    snprintf(&data_table[3][0], 8, "%s", onoff_table[debugKeuze]);
-    snprintf(&data_table[4][0], 8, "%s", sprinklerName_table[valveKeuze]);
-    snprintf(&data_table[5][0], 8, "%s", janee_table[wisselKeuze]);
-    keuze = inputDropbox(0, widthLocationData, sprinklerSettings_table, 6);
-    keuze = keyboardButtonBar("ESC", "UP", "DOWN","SAVE");
-    switch (keuze)
-    {
-    case buttonNone:
-      return keuze;
-      break;
-    case 0:
-      return keuze;
-      break;
-    case button1:
+    if (clockData.checkSecond) readTime();
+    if ((millis() - previousMillis) > 10000){
+      spr.deleteSprite();
       return buttonNone;
-      break;
-    case button2:
-      break;
-    case button3: 
-      break;
-    case button4:
-      mySprinkler.pumpTime = pumpTimeKeuze;
-      mySprinkler.pauzeTime = pauzeTimeKeuze;
-      mySprinkler.modus = modusKeuze;
-      sprinkler.debugMode = debugKeuze;
-      myServer.sensorToggle = wisselKeuze;
-      writeMySprinklerFile();
-      writeMyServerFile();
-      controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay); //controleerProgramma(now.hour(),now.minute(),now.dayOfTheWeek());
-      checkRelaisOnTime(RTCtime.Hours, RTCtime.Minutes);
-      checkRelaisTempOnTime();
-      return 0;
-      break;
+    } 
+    M5.update();
+    int coordinateY = M5.Touch.point[0].y;  
+    int coordinateX = M5.Touch.point[0].x;
+    int keuze =-1;  
+    for (int i = 0; i < 6 ; i++)
+    {
+      if (checkTouchButtonSprite(&localButton[i], spriteX, spriteY,coordinateX, coordinateY) || checkTouchButtonSprite(&dataButton[i], spriteX, spriteY,coordinateX, coordinateY) ){
+        previousMillis = millis();
+        valueChanged[i]=true;
+      }
     }
+    for (int i = 0; i < 6 ; i++)
+    {
+      if (valueChanged[i]){
+        localButton[i].text.toCharArray(buffer,localButton[i].text.length());
+        switch (i){
+          case 0:
+            keuze =getalTouchBoxSprite (50, 50, pumpTimeKeuze, 0, 20, 1,buffer);
+            if ((keuze !=buttonNone)&&(keuze!=mySprinkler.pumpTime)){
+              pumpTimeKeuze=keuze;
+              dataButton[0].text=String(pumpTimeKeuze);
+              dataButton[0].textColor=WHITE;
+              localButton[0].textColor=WHITE;
+            } else {
+              dataButton[0].textColor=BLACK;
+              localButton[0].textColor=BLACK;
+            }
+            break;
+          case 1:
+            keuze =getalTouchBoxSprite (50, 50, pauzeTimeKeuze, 0, 20, 1,buffer);
+            if ((keuze !=buttonNone)&&(keuze!=mySprinkler.pauzeTime)){
+              pauzeTimeKeuze=keuze;
+              dataButton[1].text=String(pauzeTimeKeuze); 
+              dataButton[1].textColor=WHITE;
+              localButton[1].textColor=WHITE;              
+            } else {
+              dataButton[1].textColor=BLACK;
+              localButton[1].textColor=BLACK;
+            }
+            break;
+          case 2:
+            keuze=localMenuTouchBoxSprite (50, 50, modusKeuze,auto_table,2,buffer);  
+            if ((keuze !=buttonNone)&&(keuze!=mySprinkler.modus)){
+              modusKeuze = keuze;
+              dataButton[2].text=auto_table[modusKeuze];
+              dataButton[2].textColor=WHITE;
+              localButton[2].textColor=WHITE;
+            } else {
+              dataButton[2].textColor=BLACK;
+              localButton[2].textColor=BLACK;
+            }
+            break;
+          case 3:
+            keuze=localMenuTouchBoxSprite (50, 50, debugKeuze,onoff_table,2,buffer);  
+            if ((keuze !=buttonNone)&&(keuze!=sprinkler.debugMode)){
+              debugKeuze=keuze;
+              dataButton[3].text=onoff_table[debugKeuze];
+              dataButton[3].textColor=WHITE;
+              localButton[3].textColor=WHITE;
+            } else {
+              dataButton[3].textColor=BLACK;
+              localButton[3].textColor=BLACK;
+            }
+            break;
+          case 4:
+            break;
+          case 5:
+            keuze=localMenuTouchBoxSprite (50, 50, wisselKeuze,janee_table,2,buffer);
+            if ((keuze !=buttonNone)&&(keuze!=myServer.sensorToggle)){
+              wisselKeuze=keuze;
+              dataButton[5].text=janee_table[wisselKeuze];
+              dataButton[5].textColor=WHITE;
+              localButton[5].textColor=WHITE; 
+            }  else {
+              dataButton[5].textColor=BLACK;
+              localButton[5].textColor=BLACK;
+            }
+            break;
+        }
+        valueChanged[i]=false;
+        refreshSprite = true;
+      }
+    }
+    if (checkTouchButtonSprite(&saveButton, spriteX, spriteY,coordinateX, coordinateY)){
+      for (int i = 0; i < 6 ; i++)
+      {
+        if (dataButton[i].textColor=WHITE){
+          mySprinkler.pumpTime = pumpTimeKeuze;
+          mySprinkler.pauzeTime = pauzeTimeKeuze;
+          mySprinkler.modus = modusKeuze;
+          sprinkler.debugMode = debugKeuze;
+          myServer.sensorToggle = wisselKeuze;
+          writeMySprinklerFile();
+          writeMyServerFile();
+          controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay); 
+          checkRelaisOnTime(RTCtime.Hours, RTCtime.Minutes);
+          checkRelaisTempOnTime();
+          Serial.println("values saved");
+          break;
+        }
+      }
+      spr.deleteSprite();
+      return buttonNone;
+    } 
+    if (checkTouchButtonSprite(&escapeButton, spriteX, spriteY,coordinateX, coordinateY)){
+      spr.deleteSprite();
+      return buttonNone;
+    }
+
+
   }
 }
 
@@ -262,7 +322,7 @@ int sprinklerSelectieTouch(){
   touchButton sprinklerTimeButton =(touchButton) {120,9,80,30,BLACK,BLACK,"x min"};
   touchButton escapeButton =(touchButton) {0,272,118,30,DARKGREY,BLACK,"ESCAPE"};
   touchButton startButton =(touchButton) {120,272,118,30,DARKGREY,DARKGREY,"START"};
-   for (int i = 0; i < 8 ; i++)
+  for (int i = 0; i < 8 ; i++)
   {
     sprinklerButton[i] =(touchButton) {2,9+i*33,116,30,DARKGREY,BLACK,sprinklerName_table[i+1]};
   }
@@ -284,18 +344,18 @@ int sprinklerSelectieTouch(){
       spr.pushSprite(spriteX,spriteY);
       refreshSprite =false;
     }
-    if (clockData.checkSecond)
-      readTime();
-    if ((millis() - previousMillis) > 10000)
+    if (clockData.checkSecond) readTime();
+    if ((millis() - previousMillis) > 10000){
+      spr.deleteSprite();
       return buttonNone;
+    }
     M5.update();  
     if ( M5.Touch.changed ){ 
       int coordinateY = M5.Touch.point[0].y;
       int coordinateX = M5.Touch.point[0].x;
       int keuze =-1;
-      boolean checkButton;
       for (int i = 0; i < 8; i++){
-        if (checkButton = checkTouchButtonSprite(&sprinklerButton[i], spriteX, spriteY, coordinateX, coordinateY)){
+        if (checkTouchButtonSprite(&sprinklerButton[i], spriteX, spriteY, coordinateX, coordinateY)){
           soundsBeep(1000, 100, 1);
           previousMillis = millis();
           if (!sprinklerSelected){
@@ -354,22 +414,21 @@ int sprinklerSelectieTouch(){
         refreshSprite = true;
       }
       if (sprinklerSelected && timeSelected) {
-        if (checkButton = checkTouchButtonSprite(&sprinklerTimeButton, spriteX, spriteY,coordinateX, coordinateY)){
-          soundsBeep(1000, 100, 1);
+        if (checkTouchButtonSprite(&sprinklerTimeButton, spriteX, spriteY,coordinateX, coordinateY)){
           previousMillis = millis();
           showTimeSelect = true;
         }
-        if (checkButton = checkTouchButtonSprite(&startButton, spriteX, spriteY,coordinateX, coordinateY)){
-          soundsBeep(1000, 100, 1);
+        if (checkTouchButtonSprite(&startButton, spriteX, spriteY,coordinateX, coordinateY)){
           SprinklerProgram[0].valve[0]=sprinklerKeuze+1;
           SprinklerProgram[0].valveTime[0]=sprinklerTime;  
           laadProgramma(0);
           keuze = 0;
+          spr.deleteSprite();
           return keuze;
         }
       } 
-      if (checkButton = checkTouchButtonSprite(&escapeButton, spriteX, spriteY,coordinateX, coordinateY)){
-          soundsBeep(1000, 100, 1);
+      if (checkTouchButtonSprite(&escapeButton, spriteX, spriteY,coordinateX, coordinateY)){
+          spr.deleteSprite();
           return buttonNone;
       }
     } 
@@ -602,7 +661,8 @@ int settingsMenu()
     return keuze;
     break;
   case 2:
-    keuze = sprinklerSettingsSelectie();
+    //keuze = sprinklerSettingsSelectie();
+    keuze = sprinklerSettingTouch();
     return keuze;
     break;
   case 3:

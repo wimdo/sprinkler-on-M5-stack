@@ -108,10 +108,9 @@ int localMenuTouchBoxSprite (int x, int y, int startWaarde,char *menuTable[],int
         if ( M5.Touch.changed ){ 
             int coordinateY = M5.Touch.point[0].y;
             int coordinateX = M5.Touch.point[0].x;
-            boolean checkButton;
             for (int i = 0; i < rijen ; i++)
             {
-                if (checkButton = checkTouchButtonSprite(&localButton[i], x,y,coordinateX, coordinateY)){
+                if (checkTouchButtonSprite(&localButton[i], x,y,coordinateX, coordinateY)){
                     previousMillis = millis();
                     waarde=i;
                     if (waarde != waardePrevious){
@@ -124,11 +123,11 @@ int localMenuTouchBoxSprite (int x, int y, int startWaarde,char *menuTable[],int
                     }
                 }
             }  
-            if (checkButton = checkTouchButtonSprite(&escapeButton, x,y,coordinateX, coordinateY)){
+            if (checkTouchButtonSprite(&escapeButton, x,y,coordinateX, coordinateY)){
                 box.deleteSprite();
                 return startWaarde;
             }
-            if (checkButton = checkTouchButtonSprite(&OKButton, x,y,coordinateX, coordinateY)){
+            if (checkTouchButtonSprite(&OKButton, x,y,coordinateX, coordinateY)){
                 box.deleteSprite();
                 return waarde;
             }
@@ -313,8 +312,8 @@ int getalTouchBoxSprite (int x, int y, int startWaarde, int minimum, int maximum
         box.createSprite(110,110);
         box.fillRect(0, 0, 110, 110, BLACK);
         box.drawRect(0, 0, 110, 110, WHITE);
-    }   
-    touchButton getalButton =(touchButton) {4,offsetY+21,50,30,DARKGREY,BLACK,String(startWaarde)};
+    } 
+    touchButton getalButton =(touchButton) {4,offsetY+21,50,30,DARKGREY,BLACK,String(startWaarde)};  
     touchButton upButton =(touchButton) {56,offsetY+5,50,30,DARKGREY,BLACK,"UP"};
     touchButton downButton =(touchButton) {56,offsetY+40,50,30,DARKGREY,BLACK,"DOWN"};
     touchButton escapeButton =(touchButton) {4,offsetY+75,50,30,DARKGREY,BLACK,"ESC"};
@@ -344,14 +343,14 @@ int getalTouchBoxSprite (int x, int y, int startWaarde, int minimum, int maximum
                 previousMillis = millis();
                 if (waarde < maximum) waarde = waarde + stap;
                 getalButton.text=String(waarde);
-                drawTouchButtonSprite(&box,&getalButton,2,1);   
+                                drawTouchButtonSprite(&box,&getalButton,2,1);   
                 box.pushSprite(x,y); 
             }
             if (checkButton = checkTouchButtonSprite(&downButton, x,y,coordinateX, coordinateY)){
                 previousMillis = millis();
                 if (waarde > minimum) waarde = waarde - stap;
                 getalButton.text=String(waarde);
-                drawTouchButtonSprite(&box,&getalButton,2,1);   
+                                drawTouchButtonSprite(&box,&getalButton,2,1);   
                 box.pushSprite(x,y);
             }
             if (checkButton = checkTouchButtonSprite(&escapeButton, x,y,coordinateX, coordinateY)){
