@@ -225,6 +225,7 @@ char *sprinklerManueel_table[] = {"Zone", "Tijd"};
 char *programmaManueel_table[] = {"Programma"};
 char *uurmanueel_table[] = {"Uur", "Min", "Sec"};
 char *datummanueel_table[] = {"Jaar", "Maand", "Dag"};
+char *tijdManueel_table[] = {"Uur", "Min", "Sec","Dag", "Maand", "Jaar"};
 char *dayOfWeek[] = {"Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"};
 int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
