@@ -69,6 +69,175 @@ int valveSettingsSelectie(int localValve)
   }
 }
 
+int timeSettingTouch(){
+  int spriteX = 0;
+  int spriteY = 19;
+  int spriteWidth = 240;
+  int spriteHeight = 320;
+  int localHour = RTCtime.Hours;
+  int localMin = RTCtime.Minutes;
+  int localSec = RTCtime.Seconds;
+  int localYear = RTCDate.Year;
+  int localMonth = RTCDate.Month;
+  int localDay = RTCDate.Date;
+  char buffer[15];
+  boolean refreshSprite = true;
+  boolean valueChanged[6] ={false,false,false,false,false,false};
+
+  touchButton localButton[6];
+  touchButton dataButton[6];
+  for (int i = 0; i < 6 ; i++)
+  {
+    localButton[i] =(touchButton) {2,9+i*33,126,30,DARKGREY,BLACK,tijdManueel_table[i]};
+    dataButton[i]= (touchButton) {130,9+i*33,90,30,DARKGREY,BLACK,""};
+  }
+  dataButton[0].text=String(localHour);
+  dataButton[1].text=String(localMin);
+  dataButton[2].text=String(localSec);
+  dataButton[3].text=String(localYear);
+  dataButton[4].text= String(localMonth);
+  dataButton[5].text=String(localDay);
+  //char *tijdManueel_table[] = {"Uur", "Min", "Sec","Dag", "Maand", "Jaar"};
+  touchButton escapeButton =(touchButton) {0,272,118,30,DARKGREY,BLACK,"ESC"};
+  touchButton saveButton =(touchButton) {120,272,118,30,DARKGREY,BLACK,"SAVE"};
+  spr.setColorDepth(8);
+  spr.createSprite(spriteWidth,spriteHeight);
+  long previousMillis = millis();
+  while (1)
+  {
+    if (refreshSprite) {
+      spr.fillRect(0,0,spriteWidth,spriteHeight, BLACK);
+      drawInfoBoxSprite(&spr,240,271,1,"TIJD EN DATUM");
+      for (int i = 0; i < 6 ; i++)
+      {
+        drawTouchButtonSprite(&spr,&localButton[i],2,1); 
+        drawTouchButtonSprite(&spr,&dataButton[i],2,1); 
+      }
+      drawTouchButtonSprite(&spr,&escapeButton,2,1); 
+      drawTouchButtonSprite(&spr,&saveButton,2,1);
+      spr.pushSprite(spriteX,spriteY);
+      refreshSprite =false;
+    }
+    if (clockData.checkSecond) readTime();
+    if ((millis() - previousMillis) > 10000){
+      spr.deleteSprite();
+      return buttonNone;
+    } 
+    M5.update();
+    int coordinateY = M5.Touch.point[0].y;  
+    int coordinateX = M5.Touch.point[0].x;
+    int keuze =-1;  
+    for (int i = 0; i < 6 ; i++)
+    {
+      if (checkTouchButtonSprite(&localButton[i], spriteX, spriteY,coordinateX, coordinateY) || checkTouchButtonSprite(&dataButton[i], spriteX, spriteY,coordinateX, coordinateY) ){
+        previousMillis = millis();
+        valueChanged[i]=true;
+      }
+    }
+    //char *tijdManueel_table[] = {"Uur", "Min", "Sec","Dag", "Maand", "Jaar"};
+    for (int i = 0; i < 6 ; i++)
+    {
+      if (valueChanged[i]){
+        localButton[i].text.toCharArray(buffer,localButton[i].text.length());
+        switch (i){
+          case 0:
+            keuze =getalTouchBoxSprite (50, 50, localHour, 0, 23, 1,buffer);
+            if ((keuze !=buttonNone)&&(keuze!=mySprinkler.pumpTime)){
+              localHour=keuze;
+              dataButton[0].text=String(localHour);
+              dataButton[0].textColor=WHITE;
+              localButton[0].textColor=WHITE;
+            } else {
+              dataButton[0].textColor=BLACK;
+              localButton[0].textColor=BLACK;
+            }
+            break;
+          case 1:
+            keuze =getalTouchBoxSprite (50, 50, localMin, 0, 59, 1,buffer);
+            if ((keuze !=buttonNone)&&(keuze!=localMin)){
+              localMin=keuze;
+              dataButton[1].text=String(localMin); 
+              dataButton[1].textColor=WHITE;
+              localButton[1].textColor=WHITE;              
+            } else {
+              dataButton[1].textColor=BLACK;
+              localButton[1].textColor=BLACK;
+            }
+            break;
+          case 2:
+            keuze =getalTouchBoxSprite (50, 50, localSec, 0, 59, 1,buffer);
+            if ((keuze !=buttonNone)&&(keuze!=localSec)){
+              localSec = keuze;
+              dataButton[2].text=String(localSec);
+              dataButton[2].textColor=WHITE;
+              localButton[2].textColor=WHITE;
+            } else {
+              dataButton[2].textColor=BLACK;
+              localButton[2].textColor=BLACK;
+            }
+            break;
+          case 3:
+            keuze =getalTouchBoxSprite (50, 50, localYear, 2020, 2040, 1,buffer);  
+            if ((keuze !=buttonNone)&&(keuze!=localYear)){
+              localYear=keuze;
+              dataButton[3].text=String(localYear);
+              dataButton[3].textColor=WHITE;
+              localButton[3].textColor=WHITE;
+            } else {
+              dataButton[3].textColor=BLACK;
+              localButton[3].textColor=BLACK;
+            }
+            break;
+          case 4:
+            keuze =getalTouchBoxSprite (50, 50, localMonth, 1, 12, 1,buffer);  
+            if ((keuze !=buttonNone)&&(keuze!=localMonth)){
+              localMonth=keuze;
+              dataButton[3].text=String(localMonth);
+              dataButton[3].textColor=WHITE;
+              localButton[3].textColor=WHITE;
+            } else {
+              dataButton[3].textColor=BLACK;
+              localButton[3].textColor=BLACK;
+            }          
+            break;
+          case 5:
+            keuze =getalTouchBoxSprite (50, 50, localDay, 0, daysInMonth[localMonth - 1], 1,buffer);
+            if ((keuze !=buttonNone)&&(keuze!=localDay)){
+              localDay=keuze;
+              dataButton[5].text=String(localDay);
+              dataButton[5].textColor=WHITE;
+              localButton[5].textColor=WHITE; 
+            }  else {
+              dataButton[5].textColor=BLACK;
+              localButton[5].textColor=BLACK;
+            }
+            break;
+        }
+        valueChanged[i]=false;
+        refreshSprite = true;
+      }
+    }
+    if (checkTouchButtonSprite(&saveButton, spriteX, spriteY,coordinateX, coordinateY)){
+      for (int i = 0; i < 6 ; i++)
+      {
+        if (dataButton[i].textColor=WHITE){
+
+          Serial.println("values saved");
+          break;
+        }
+      }
+      spr.deleteSprite();
+      return buttonNone;
+    } 
+    if (checkTouchButtonSprite(&escapeButton, spriteX, spriteY,coordinateX, coordinateY)){
+      spr.deleteSprite();
+      return buttonNone;
+    }
+
+
+  }
+}
+
 int sprinklerSettingTouch(){
   int spriteX = 0;
   int spriteY = 19;
@@ -653,11 +822,13 @@ int settingsMenu()
     return buttonNone;
     break;
   case 0:
-    keuze = uurSelectie();
+    //keuze = uurSelectie();
+    keuze = timeSettingTouch();
     return keuze;
     break;
   case 1:
-    keuze = datumSelectie();
+    //keuze = datumSelectie();
+    keuze = timeSettingTouch();
     return keuze;
     break;
   case 2:
@@ -693,7 +864,6 @@ int mainMenu()
     break;
   case 1:
     keuze = sprinklerSelectieTouch();
-    //keuze = sprinklerSelectie();
     return keuze;
     break;
   case 2:
