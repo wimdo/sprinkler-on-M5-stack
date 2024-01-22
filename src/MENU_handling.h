@@ -5,7 +5,8 @@ int valveSettingsSelectie(int localValve)
   int localWithPump = mySprinkler.valve[localValve].withPump;
   char localValveArray[15];
   int widthLocationData = 100;
-  sprintf(&localValveArray[0], "%s", sprinklerName_table[localValve]);
+  //sprintf(&localValveArray[0], "%s", sprinklerName_table[localValve]); 
+  sprintf(&localValveArray[0], "%s", mySprinkler.valve[localValve+1].valveName); 
   while (1)
   {
     drawInfoBox(0,19,272,240,1, "VALVE SETTINGS");
@@ -221,7 +222,14 @@ int timeSettingTouch(){
       for (int i = 0; i < 6 ; i++)
       {
         if (dataButton[i].textColor=WHITE){
-
+          RTCtime.Hours   = localHour;
+          RTCtime.Minutes = localMin;
+          RTCtime.Seconds = localSec;
+          M5.Rtc.SetTime(&RTCtime);
+          RTCDate.Month = localMonth;
+          RTCDate.Date = localDay;
+          RTCDate.Year = localYear;
+          M5.Rtc.SetDate(&RTCDate);
           Serial.println("values saved");
           break;
         }
@@ -251,22 +259,20 @@ int sprinklerSettingTouch(){
   int wisselKeuze = myServer.sensorToggle;
   char buffer[15];
   boolean refreshSprite = true;
-  boolean valueChanged[6] ={false,false,false,false,false,false};
+  boolean valueChanged[8] ={false,false,false,false,false,false};
 
-  touchButton localButton[6];
-  touchButton dataButton[6];
-  for (int i = 0; i < 6 ; i++)
+  touchButton localButton[8];
+  touchButton dataButton[8];
+  for (int i = 0; i < 8 ; i++)
   {
-    localButton[i] =(touchButton) {2,9+i*33,126,30,DARKGREY,BLACK,sprinklerSettings_table[i]};
-    dataButton[i]= (touchButton) {130,9+i*33,90,30,DARKGREY,BLACK,""};
+    localButton[i] =(touchButton) {2,9+i*33,146,30,DARKGREY,BLACK,sprinklerSettings_table[i]};
+    dataButton[i]= (touchButton) {150,9+i*33,90,30,DARKGREY,BLACK,""};
   }
   dataButton[0].text=String(pumpTimeKeuze);
   dataButton[1].text=String(pauzeTimeKeuze);
   dataButton[2].text=auto_table[modusKeuze];
   dataButton[3].text=onoff_table[debugKeuze];
-  dataButton[4].text= "";
-  dataButton[5].text=janee_table[wisselKeuze];
-
+  dataButton[4].text=janee_table[wisselKeuze];
   touchButton escapeButton =(touchButton) {0,272,118,30,DARKGREY,BLACK,"ESC"};
   touchButton saveButton =(touchButton) {120,272,118,30,DARKGREY,BLACK,"SAVE"};
   spr.setColorDepth(8);
@@ -277,10 +283,10 @@ int sprinklerSettingTouch(){
     if (refreshSprite) {
       spr.fillRect(0,0,spriteWidth,spriteHeight, BLACK);
       drawInfoBoxSprite(&spr,240,271,1,"INSTELLINGEN");
-      for (int i = 0; i < 6 ; i++)
+      for (int i = 0; i < 8 ; i++)
       {
         drawTouchButtonSprite(&spr,&localButton[i],2,1); 
-        drawTouchButtonSprite(&spr,&dataButton[i],2,1); 
+        if (i<5) drawTouchButtonSprite(&spr,&dataButton[i],2,1); 
       }
       drawTouchButtonSprite(&spr,&escapeButton,2,1); 
       drawTouchButtonSprite(&spr,&saveButton,2,1);
@@ -296,14 +302,14 @@ int sprinklerSettingTouch(){
     int coordinateY = M5.Touch.point[0].y;  
     int coordinateX = M5.Touch.point[0].x;
     int keuze =-1;  
-    for (int i = 0; i < 6 ; i++)
+    for (int i = 0; i < 8 ; i++)
     {
       if (checkTouchButtonSprite(&localButton[i], spriteX, spriteY,coordinateX, coordinateY) || checkTouchButtonSprite(&dataButton[i], spriteX, spriteY,coordinateX, coordinateY) ){
         previousMillis = millis();
         valueChanged[i]=true;
       }
     }
-    for (int i = 0; i < 6 ; i++)
+    for (int i = 0; i < 8 ; i++)
     {
       if (valueChanged[i]){
         localButton[i].text.toCharArray(buffer,localButton[i].text.length());
@@ -357,18 +363,26 @@ int sprinklerSettingTouch(){
             }
             break;
           case 4:
-            break;
-          case 5:
             keuze=localMenuTouchBoxSprite (50, 50, wisselKeuze,janee_table,2,buffer);
             if ((keuze !=buttonNone)&&(keuze!=myServer.sensorToggle)){
               wisselKeuze=keuze;
-              dataButton[5].text=janee_table[wisselKeuze];
-              dataButton[5].textColor=WHITE;
-              localButton[5].textColor=WHITE; 
+              dataButton[4].text=janee_table[wisselKeuze];
+              dataButton[4].textColor=WHITE;
+              localButton[4].textColor=WHITE; 
             }  else {
-              dataButton[5].textColor=BLACK;
-              localButton[5].textColor=BLACK;
+              dataButton[4].textColor=BLACK;
+              localButton[4].textColor=BLACK;
             }
+            break;
+          case 5: // tijd
+            keuze= timeSettingTouch();
+            return buttonNone;
+            break;
+          case 6: // valve
+            return buttonNone;
+            break;
+          case 7:  // reset
+            return buttonNone;
             break;
         }
         valueChanged[i]=false;
@@ -493,7 +507,9 @@ int sprinklerSelectieTouch(){
   touchButton startButton =(touchButton) {120,272,118,30,DARKGREY,DARKGREY,"START"};
   for (int i = 0; i < 8 ; i++)
   {
-    sprinklerButton[i] =(touchButton) {2,9+i*33,116,30,DARKGREY,BLACK,sprinklerName_table[i+1]};
+    //sprinklerButton[i] =(touchButton) {2,9+i*33,116,30,DARKGREY,BLACK,sprinklerName_table[i+1]};
+    sprinklerButton[i] =(touchButton) {2,9+i*33,116,30,DARKGREY,BLACK,mySprinkler.valve[i+1].valveName};
+    //mySprinkler.valve[].valveName
   }
   spr.setColorDepth(8);
   spr.createSprite(spriteWidth,spriteHeight);
@@ -561,7 +577,9 @@ int sprinklerSelectieTouch(){
         }
       }
       if (showTimeSelect){
-        sprinklerTime =getalTouchBoxSprite (50, 50, sprinklerTime, 0, 60, 5,sprinklerName_table[sprinklerKeuze+1]);
+        //sprinklerTime =getalTouchBoxSprite (50, 50, sprinklerTime, 0, 60, 5,sprinklerName_table[sprinklerKeuze+1]);
+        sprinklerTime =getalTouchBoxSprite (50, 50, sprinklerTime, 0, 60, 5,mySprinkler.valve[sprinklerKeuze+1].valveName);
+
         if (sprinklerTime ==buttonNone){
           return buttonNone;
         } else if (sprinklerTime==0){
@@ -658,135 +676,6 @@ int programmaSelectie()
   }
 }
 
-int uurSelectie()
-{
-  int localHour = RTCtime.Hours;
-  int localMin = RTCtime.Minutes;
-  int localSec = RTCtime.Seconds;
-  int widthLocationData = 120;
-  drawInfoBox(0,19,272,240,1, "UUR WIJZIGEN");
-  while (1)
-  {
-    M5.Lcd.setTextSize(2);
-    snprintf(&data_table[0][0], 17, "%2d", localHour);
-    snprintf(&data_table[1][0], 17, "%2d", localMin);
-    snprintf(&data_table[2][0], 17, "%2d", localSec);
-    int keuze = inputDropbox(1, widthLocationData, uurmanueel_table, 3);
-    switch (keuze)
-    {
-    case -1:
-      return keuze;
-      break;
-    case 0:
-      localHour = getalDropDown(widthLocationData, keuze, localHour, 0, 23, 1);
-      if (localHour == -1)
-        return -1;
-      break;
-    case 1:
-      localMin = getalDropDown(widthLocationData, keuze, localMin, 0, 59, 1);
-      if (localMin == -1)
-        return -1;
-      break;
-    case 2:
-      localSec = getalDropDown(widthLocationData, keuze, localSec, 0, 59, 1);
-      if (localSec == -1)
-        return -1;
-      break;
-    }
-    drawInfoBox(0,19,272,240,1, "UUR WIJZIGEN");
-    snprintf(&data_table[0][0], 17, "%2d", localHour);
-    snprintf(&data_table[1][0], 17, "%2d", localMin);
-    snprintf(&data_table[2][0], 17, "%2d", localSec);
-    keuze = inputDropbox(0, widthLocationData, uurmanueel_table, 3);
-    keuze = keyboardButtonBar("ESC", "SLCT", "","SAVE");
-    switch (keuze)
-      {
-        case buttonNone:
-            return buttonNone;
-            break;
-        case button1:
-            return button1;
-            break;
-        case button2:
-            break;
-        case button3:
-            break;
-        case button4:
-            RTCtime.Hours   = localHour;
-            RTCtime.Minutes = localMin;
-            RTCtime.Seconds = localSec;
-            M5.Rtc.SetTime(&RTCtime);
-            return 0;
-            break;
-      }
-  }
-  return 0;
-}
-int datumSelectie()
-{
-  int localYear = RTCDate.Year;
-  int localMonth = RTCDate.Month;
-  int localDay = RTCDate.Date;
-  int widthLocationData = 120;
-  drawInfoBox(0,19,272,240,1, "DATUM WIJZIGEN");
-  while (1)
-  {
-    M5.Lcd.setTextSize(2);
-    snprintf(&data_table[0][0], 17, "%2d", localYear);
-    snprintf(&data_table[1][0], 17, "%2d", localMonth);
-    snprintf(&data_table[2][0], 17, "%2d", localDay);
-    int keuze = inputDropbox(1, widthLocationData, datummanueel_table, 3);
-    switch (keuze)
-    {
-    case -1:
-      return keuze;
-      break;
-    case 0:
-      localYear = getalDropDown(widthLocationData, keuze, localYear, 2020, 2040, 1);
-      if (localYear == -1)
-        return -1;
-      break;
-    case 1:
-      localMonth = getalDropDown(widthLocationData, keuze, localMonth, 1, 12, 1);
-      if (localMonth == -1)
-        return -1;
-      break;
-    case 2:
-      localDay = getalDropDown(widthLocationData, keuze, localDay, 1, daysInMonth[localMonth - 1], 1);
-      if (localDay == -1)
-        return -1;
-      break;
-    }
-    drawInfoBox(0,19,272,240,1, "DATUM WIJZIGEN");
-    snprintf(&data_table[0][0], 17, "%2d", localYear);
-    snprintf(&data_table[1][0], 17, "%2d", localMonth);
-    snprintf(&data_table[2][0], 17, "%2d", localDay);
-    keuze = inputDropbox(0, widthLocationData, datummanueel_table, 3);
-    keuze = keyboardButtonBar("ESC", "SLCT", "","SAVE");
-    switch (keuze)
-      {
-        case buttonNone:
-            return buttonNone;
-            break;
-        case button1:
-            return button1;
-            break;
-        case button2:
-            break;
-        case button3:
-            break;
-        case button4:
-            RTCDate.Month = localMonth;
-            RTCDate.Date = localDay;
-            RTCDate.Year = localYear;
-            M5.Rtc.SetDate(&RTCDate);
-            return 0;
-            break;
-      }
-  }
-  return 0;
-}
-
 int resetOptions(){
   drawInfoBox(0,19,272,240,1, "RESET OPTIONS");
   while (1)
@@ -809,39 +698,6 @@ int resetOptions(){
       }
   }
   return 0;
-}
-
-
-int settingsMenu()
-{
-  drawInfoBox(0,19,272,240,1, "INSTELLINGEN");
-  int keuze = menuTouchbox(settingsMenu_table, sizeof(settingsMenu_table) / sizeof(*settingsMenu_table));
-  switch (keuze)
-  {
-  case buttonNone:
-    return buttonNone;
-    break;
-  case 0:
-    //keuze = uurSelectie();
-    keuze = timeSettingTouch();
-    return keuze;
-    break;
-  case 1:
-    //keuze = datumSelectie();
-    keuze = timeSettingTouch();
-    return keuze;
-    break;
-  case 2:
-    //keuze = sprinklerSettingsSelectie();
-    keuze = sprinklerSettingTouch();
-    return keuze;
-    break;
-  case 3:
-    keuze = resetOptions();
-    return keuze;
-    break;
-  }
-  return 1;
 }
 
 
@@ -872,10 +728,6 @@ int mainMenu()
     break;
   case 3:
     Serial.println("programma wijzigen");
-    return 1;
-    break;
-  case 4: 
-    keuze = settingsMenu();
     return 1;
     break;
   }

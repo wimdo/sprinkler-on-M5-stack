@@ -151,11 +151,13 @@ void readMySpriklerFile(){
              mySprinkler.valve[i].percentage=doc["percentage"][i];
              mySprinkler.valve[i].withPump=doc["with Pump"][i];
         } 
+        /*
         sprinklerName_table = (char**)malloc(9*sizeof(char*));
         for (int i = 0; i < 9; i++){
-        sprinklerName_table[i] = (char*)malloc(strlen(&mySprinkler.valve[i].valveName[0])+1);
-        strncpy(sprinklerName_table[i], &mySprinkler.valve[i].valveName[0], strlen(&mySprinkler.valve[i].valveName[0])+1);
-        }       
+            sprinklerName_table[i] = (char*)malloc(strlen(&mySprinkler.valve[i].valveName[0])+1);
+            strncpy(sprinklerName_table[i], &mySprinkler.valve[i].valveName[0], strlen(&mySprinkler.valve[i].valveName[0])+1);
+        }
+        */       
     }
 }
 

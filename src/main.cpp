@@ -140,7 +140,7 @@ typedef struct
   int modus;
   int pumpTime;
   int pauzeTime;
-  valveSpec valve[9];
+  valveSpec valve[9];    
 } sprinklerSpec;
 sprinklerSpec mySprinkler;
 
@@ -209,10 +209,8 @@ Button b2(60,290,60,30);
 Button b3(120,290,60,30);
 Button b4(180,290,60,30);
 
-//char *mainMenu_table[] = {"programma kiezen", "sprinkler kiezen", "relais kiezen", "programma wijzigen", "instellingen"};
-char *mainMenu_table[] = {"programma kiezen", "sprinkler kiezen", "relais kiezen", "programma wijzigen","settings"};
-char *settingsMenu_table[] = {"tijd wijzigen", "datum wijzigen", "sprinkler settings", "reset options"};
-char *sprinklerSettings_table[] = {"Pomp tijd ", "Wacht tijd", "Modus     ", "Debug     ", "Valve info", "Wissel T  "};
+char *mainMenu_table[] = {"programma kiezen", "sprinkler kiezen", "relais kiezen", "programma wijzigen"};
+char *sprinklerSettings_table[] = {"Pomp tijd", "Wacht tijd", "Modus", "Debug", "Wissel T","Tijd","Valve info","Reset options"};
 
 char *auto_table[] = {"MANUEEL", "AUTO   "};
 char *onoff_table[] = {"UIT", "AAN"};
@@ -223,14 +221,11 @@ char *test_table[] = {"NEE", "JA","NIKS"};
 char *valveSettings_table[] = {"Naam", "werking", "Met Pomp"};
 char *sprinklerManueel_table[] = {"Zone", "Tijd"};
 char *programmaManueel_table[] = {"Programma"};
-char *uurmanueel_table[] = {"Uur", "Min", "Sec"};
-char *datummanueel_table[] = {"Jaar", "Maand", "Dag"};
 char *tijdManueel_table[] = {"Uur", "Min", "Sec","Dag", "Maand", "Jaar"};
 char *dayOfWeek[] = {"Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"};
 int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 char data_table[9][10] = {"XXXXXXXXZ", "XXXXXXXXZ", "XXXXXXXXZ", "XXXXXXXXZ", "XXXXXXXXZ", "XXXXXXXXZ", "XXXXXXXXZ", "XXXXXXXXX", "XXXXXXXXZ"};
-char **sprinklerName_table;
 char **relaisName_table;
 
 
@@ -302,7 +297,7 @@ void buttonPressedCheck()
         if (sprinkler.staat == Wacht){
         soundsBeep(1000, 100, 1);
         sprinkler.keyboardInput = true;
-        sprinkler.buttonPressed = settingsMenu();
+        sprinkler.buttonPressed = sprinklerSettingTouch();
         outlineMainscreen();
         sprinkler.updateRelaisSlider = true;
         sprinkler.updateSprinklerSlider = true;
