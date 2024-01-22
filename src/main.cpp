@@ -204,31 +204,22 @@ typedef struct
 
 Button sprinklerZone (0,19+68,118,68+68);
 Button relaisZone (120,19+68,120,68+68);
-Button b1(0,290,60,30);
-Button b2(60,290,60,30);
-Button b3(120,290,60,30);
-Button b4(180,290,60,30);
+Button b1(0,290,119,30);
+Button b2(120,290,120,30);
 
-char *mainMenu_table[] = {"programma kiezen", "sprinkler kiezen", "relais kiezen", "programma wijzigen"};
-char *sprinklerSettings_table[] = {"Pomp tijd", "Wacht tijd", "Modus", "Debug", "Wissel T","Tijd","Valve info","Reset options"};
-
-char *auto_table[] = {"MANUEEL", "AUTO   "};
-char *onoff_table[] = {"UIT", "AAN"};
-char *janee_table[] = {"NEE", "JA "};
-char *test_table[] = {"NEE", "JA","NIKS"};
-
+char *mainMenu_table[] = {"programma kiezen", "sprinkler kiezen", "relais kiezen", "programma wijzigen","WIFI opties","Reset options"};
+char *settingsMenu_table[] = {"Pomp tijd", "Wacht tijd", "Modus", "Debug", "Wissel T","Tijd","Valve info","Relais info"};
 
 char *valveSettings_table[] = {"Naam", "werking", "Met Pomp"};
-char *sprinklerManueel_table[] = {"Zone", "Tijd"};
-char *programmaManueel_table[] = {"Programma"};
 char *tijdManueel_table[] = {"Uur", "Min", "Sec","Dag", "Maand", "Jaar"};
+char *programmaManueel_table[] = {"Programma"};
+
+char *auto_table[] = {"MANUEEL", "AUTO"};
+char *onoff_table[] = {"UIT", "AAN"};
+char *janee_table[] = {"NEE", "JA "};
+
 char *dayOfWeek[] = {"Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"};
 int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
-
-char data_table[9][10] = {"XXXXXXXXZ", "XXXXXXXXZ", "XXXXXXXXZ", "XXXXXXXXZ", "XXXXXXXXZ", "XXXXXXXXZ", "XXXXXXXXZ", "XXXXXXXXX", "XXXXXXXXZ"};
-char **relaisName_table;
-
-
 
 #include "display.h"
 #include "keyboardTime.h"
@@ -241,14 +232,15 @@ char **relaisName_table;
 #include "WIFI_handling.h"
 #include "HTTP_handling.h"
 #include "MENU_handling.h"
+
 #include "speaker.h"
+
+hw_timer_t *systemTimer = NULL;
 
 void IRAM_ATTR timeCheck()
 {
   clockData.checkSecond = true;
 }
-
-hw_timer_t *systemTimer = NULL;
 
 void setup()
 {
@@ -281,23 +273,23 @@ void setup()
   controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay);
 }
 
-void buttonPressedCheck()
+void screenTouchCheck()
 {
   if (sprinkler.keyboardHold==0){
     M5.update();
-    if (b1.wasPressed()||b2.wasPressed()) {
+    if (b1.wasPressed()) {
       soundsBeep(1000, 100, 1);
       sprinkler.keyboardInput = true;
-      sprinkler.buttonPressed =mainMenu();
+      mainMenu(0,19,240,320);
       outlineMainscreen();
       sprinkler.updateRelaisSlider = true;
       sprinkler.updateSprinklerSlider = true;
       sprinkler.keyboardInput = false;
-    } else if (b3.wasPressed()||b4.wasPressed()) {
+    } else if (b2.wasPressed()) {
         if (sprinkler.staat == Wacht){
         soundsBeep(1000, 100, 1);
         sprinkler.keyboardInput = true;
-        sprinkler.buttonPressed = sprinklerSettingTouch();
+        settingsMenu(0,19,240,320);
         outlineMainscreen();
         sprinkler.updateRelaisSlider = true;
         sprinkler.updateSprinklerSlider = true;
@@ -308,7 +300,7 @@ void buttonPressedCheck()
     } else if (sprinklerZone.wasPressed()) {
       soundsBeep(1000, 100, 1);
       sprinkler.keyboardInput = true;
-      sprinkler.buttonPressed = sprinklerSelectieTouch();
+      sprinkler.buttonPressed = sprinklerSelectie(0,19,240,320);
       outlineMainscreen();
       sprinkler.updateRelaisSlider = true;
       sprinkler.updateSprinklerSlider = true;
@@ -316,7 +308,7 @@ void buttonPressedCheck()
     } else if (relaisZone.wasPressed()) {
       soundsBeep(1000, 100, 1);
       sprinkler.keyboardInput = true;
-      sprinkler.buttonPressed = relaisSelectie();
+      sprinkler.buttonPressed = relaisSelectie(0,19,240,320);
       outlineMainscreen();
       sprinkler.updateRelaisSlider = true;
       sprinkler.updateSprinklerSlider = true;
@@ -325,11 +317,9 @@ void buttonPressedCheck()
   }
 }
 
-
-
 void loop()
 {
-  buttonPressedCheck();
+  screenTouchCheck();
   if (clockData.checkSecond)
   {
     readTime();

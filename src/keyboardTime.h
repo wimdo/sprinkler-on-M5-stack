@@ -84,33 +84,6 @@ void calculateSolarTime(){
 }
 
 
-int keyboardScan()
-{
-  long previousMillis = millis();
-  while (1)
-  {
-    if (clockData.checkSecond)
-      readTime();
-    if ((millis() - previousMillis) > 10000)
-      return buttonNone;
-    M5.update();  
-    if (b1.wasPressed()) {
-      soundsBeep(1000, 100, 1);
-      return button1;
-    } else if (b2.wasPressed()){
-      soundsBeep(1000, 100, 1);
-      return button2;
-    } else if (b3.wasPressed()){
-      soundsBeep(1000, 100, 1);
-      return button3;
-    }  else if (b4.wasPressed()){
-      soundsBeep(1000, 100, 1);
-      return button4;
-    }
-  }
-  return 0;
-}
-
 int keyboardButtonBar(String buttonString1, String buttonString2, String buttonString3,String buttonString4)
 {
   drawButtonBar4(buttonString1,BLACK,buttonString2,BLACK,buttonString3,BLACK,buttonString4,BLACK);
@@ -132,17 +105,7 @@ int keyboardButtonBar(String buttonString1, String buttonString2, String buttonS
         soundsBeep(1000, 100, 1);
         return button2;
       }
-    } else if (b3.wasPressed()){
-      if (buttonString3.length()>0){
-        soundsBeep(1000, 100, 1);
-        return button3;
-      }
-    }  else if (b4.wasPressed()){
-      if (buttonString4.length()>0){
-        soundsBeep(1000, 100, 1);
-        return button4;
-      }
-    }
+    } 
   }
   return 0;
  }
@@ -166,15 +129,8 @@ int keyboardButtonBar2(String buttonString1, String buttonString2)
       } else if (b2.wasPressed()){
         soundsBeep(1000, 100, 1);
         return button1;
-      } else if (b3.wasPressed()){
-        soundsBeep(1000, 100, 1);
-        return button2;
-      }  else if (b4.wasPressed()){
-        soundsBeep(1000, 100, 1);
-        return button2;
-      }
+      } 
     }
     return 0;
   }
 }
-

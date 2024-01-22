@@ -151,13 +151,7 @@ void readMySpriklerFile(){
              mySprinkler.valve[i].percentage=doc["percentage"][i];
              mySprinkler.valve[i].withPump=doc["with Pump"][i];
         } 
-        /*
-        sprinklerName_table = (char**)malloc(9*sizeof(char*));
-        for (int i = 0; i < 9; i++){
-            sprinklerName_table[i] = (char*)malloc(strlen(&mySprinkler.valve[i].valveName[0])+1);
-            strncpy(sprinklerName_table[i], &mySprinkler.valve[i].valveName[0], strlen(&mySprinkler.valve[i].valveName[0])+1);
-        }
-        */       
+ 
     }
 }
 
@@ -341,18 +335,13 @@ void reWriteRelaisSpecFile(){
     relais[3]= (relaisSpec){"Relais 4",0,0};
     relais[4]= (relaisSpec){"Relais 5",0,0};
     relais[5]= (relaisSpec){"Relais 6",0,0};
-    relais[6]= (relaisSpec){"Relais 7",0,0};
-    relais[7]= (relaisSpec){"Relais 8",0,0};
+    relais[6]= (relaisSpec){"Dakraam ",0,0};
+    relais[7]= (relaisSpec){"Dakraam ",0,0};
     writeRelaisSpecFile();
 }
 
 void readReleaisSpecFile(){
-    reWriteRelaisSpecFile();
-    relaisName_table = (char**)malloc(9*sizeof(char*));
-    for (int i = 0; i < 9; i++){
-        relaisName_table[i] = (char*)malloc(strlen(&relais[i].relaisName[0])+1);
-        strncpy(relaisName_table[i], &relais[i].relaisName[0], strlen(&relais[i].relaisName[0])+1);
-    }     
+    reWriteRelaisSpecFile();  
 }     
 
 

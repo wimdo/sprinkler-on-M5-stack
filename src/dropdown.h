@@ -1,56 +1,5 @@
 
 
-int localDropbox(int positie, int WidthPosition, int DepthPosition, char *menuTable[], int rijen)
-{
-    int lengte = 0;
-    M5.Lcd.setTextSize(2);
-    while (menuTable[0][lengte] != '\0') lengte++;
-    DepthPosition = DepthPosition * 18 + 27;
-    int WidthDropbox = 2 + lengte * 12 + 2;
-    int DepthDropbox = 2 + rijen * 18 + 1;
-    M5.Lcd.fillRect(0 + WidthPosition, DepthPosition, WidthDropbox, DepthDropbox, BLACK);
-    M5.Lcd.drawRect(0 + WidthPosition, DepthPosition, WidthDropbox, DepthDropbox, DARKGREY);
-    for (int i = 0; i < rijen; i++)
-    {
-        M5.Lcd.setCursor(2 + WidthPosition, 2 + DepthPosition + i * 18);
-        M5.Lcd.print(menuTable[i]);
-    }
-    int positiePrevious = positie;
-    while (1)
-    {
-        M5.Lcd.setTextSize(2);
-        M5.Lcd.setCursor(2 + WidthPosition, 2 + DepthPosition + positiePrevious * 18);
-        M5.Lcd.setTextColor(DARKGREY, BLACK);
-        M5.Lcd.print(menuTable[positiePrevious]);
-        M5.Lcd.setCursor(2 + WidthPosition, 2 + DepthPosition + positie * 18);
-        M5.Lcd.setTextColor(WHITE, DARKGREY);
-        M5.Lcd.print(menuTable[positie]);
-        M5.Lcd.setTextColor(WHITE, BLACK);
-        positiePrevious = positie; 
-        int keuze = keyboardButtonBar("ESC", "DOWN", "UP","SLCT");
-        switch (keuze)
-        {
-        case buttonNone:
-            return buttonNone;
-            break;
-        case button1:
-            return buttonNone;
-            break;
-        case button2:
-            (positie < rijen - 1) ? positie++ : positie = 0;
-            break;
-        case button4:
-            return positie;
-            break;
-        case button3:
-            (positie == 0) ? positie = rijen - 1 : positie--;
-            break;
-        }
-    }
-    return 0;
-    
-}
-
 int localMenuTouchBoxSprite (int x, int y, int startWaarde,char *menuTable[],int rijen, char *title){    
     int buttonWidthFull = 140;
     int buttonHeight = 30;
@@ -136,96 +85,6 @@ int localMenuTouchBoxSprite (int x, int y, int startWaarde,char *menuTable[],int
 }
 
 
-int inputDropbox(boolean withSelect, int widthPositionData, char *menuTable[], int rijen)
-{
-    int positie = 0;   
-    while (1)
-    {
-        M5.Lcd.setTextSize(2);
-        for (int i = 0; i < rijen; i++)
-        {
-            M5.Lcd.setCursor(2, 27 + i * 18);
-            if (positie == i)
-            {
-                if (withSelect)
-                {
-                    M5.Lcd.setTextColor(WHITE, DARKGREY);
-                    M5.Lcd.print(menuTable[i]);
-                }
-                else
-                {
-                    M5.Lcd.print(menuTable[i]);
-                }
-            }
-            else
-            {
-                M5.Lcd.setTextColor(DARKGREY, BLACK);
-                M5.Lcd.print(menuTable[i]);
-            }
-            M5.Lcd.setCursor(widthPositionData, 27 + i * 18);
-            M5.Lcd.print(&data_table[i][0]);
-        }
-
-        if (!withSelect)
-        {
-            return positie;
-            break;
-        }
-        int keuze = keyboardButtonBar("ESC", "DOWN", "UP","SLCT");
-        switch (keuze)
-        {
-        case buttonNone:
-            return buttonNone;
-            break;
-        case button1:
-            return buttonNone;
-            break;
-        case button2:
-            (positie < rijen - 1) ? positie++ : positie = 0;
-            break;
-        case button4:
-            return positie;
-            break;
-        case button3:
-            (positie == 0) ? positie = rijen - 1 : positie--;
-            break;
-        }
-    }
-    return 0;
-    
-}
-
-int menuTouchbox(char *menuTable[], int rijen){
-  touchButton menuButton[8];  
-  for (int i = 0; i < rijen ; i++)
-    {    
-        menuButton[i] =(touchButton) {2,28+i*33,236,30,DARKGREY,BLACK,menuTable[i]};
-        drawTouchButton(&menuButton[i],2,1); 
-    }
-  long previousMillis = millis();
-   while (1)
-  {
-    if (clockData.checkSecond)
-      readTime();
-    if ((millis() - previousMillis) > 10000)
-      return buttonNone;
-    M5.update();  
-    if ( M5.Touch.changed ){
-      int keuze =-1;
-      for (int i = 0; i < 8; i++){
-        if (boolean check = checkTouchButton(&menuButton[i], M5.Touch.point[0].x, M5.Touch.point[0].y)){
-          soundsBeep(1000, 100, 1);
-          return i;
-        }
-      }
-    } 
-    if (b1.wasPressed()||b2.wasPressed() || b3.wasPressed() || b4.wasPressed()   ) {
-      soundsBeep(1000, 100, 1);
-      return buttonNone;
-    }
-  }
-}
-
 int stringDropBox(int WidthPosition, int DepthPosition, char changeArray[])
 {
     char keyboard[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ- _0123456789";
@@ -257,10 +116,6 @@ int stringDropBox(int WidthPosition, int DepthPosition, char changeArray[])
         M5.Lcd.setTextColor(BLACK);
         M5.Lcd.fillRect(1 + WidthPosition + 12 * localChangeArrayPosition, 1 + DepthPosition, 14, 18, WHITE);
         M5.Lcd.setCursor(2 + WidthPosition + 12 * localChangeArrayPosition, 2 + DepthPosition);
-        //M5.Lcd.fillRect(1 + WidthPosition + 6 * localChangeArrayPosition, 1 + DepthPosition, 7, 9, WHITE);
-        //M5.Lcd.setCursor(2 + WidthPosition + 6 * localChangeArrayPosition, 2 + DepthPosition);
-    
-
         M5.Lcd.print(localChangeArray[localChangeArrayPosition]);
         M5.Lcd.setTextColor(WHITE);
 
@@ -365,50 +220,3 @@ int getalTouchBoxSprite (int x, int y, int startWaarde, int minimum, int maximum
     }
 }
 
-
-int getalDropDown(int WidthPosition, int DepthPosition, int startWaarde, int minimum, int maximum, int stap)
-
-{
-    int lengte = 2;
-    int waarde = startWaarde;
-    if (waarde > 999)
-    {
-        lengte = 4;
-    }
-    else if (waarde > 99)
-    {
-        lengte = 3;
-    }
-    DepthPosition = 25 + DepthPosition * 18;
-    int WidthDropbox = 2 + 12 + 12 + lengte * 12 + 2;
-    int DepthDropbox = 2 + 16 + 2;    
-    while (1)
-    {
-        M5.Lcd.setTextSize(2);
-        M5.Lcd.setTextColor(WHITE, DARKGREY);
-        M5.Lcd.fillRect(0 + WidthPosition, DepthPosition, WidthDropbox, DepthDropbox, DARKGREY);
-        M5.Lcd.setCursor(2 + WidthPosition, 2 + DepthPosition);
-        M5.Lcd.print(waarde);
-        int keuze = keyboardButtonBar("ESC", "+", "-","OK");
-        switch (keuze)
-        {
-        case buttonNone:
-            return buttonNone;
-            break;
-        case button1:
-            return startWaarde;
-            break;
-        case button2:
-            if (waarde > minimum) waarde = waarde - stap;
-
-            break;
-        case button3:
-            if (waarde < maximum)waarde = waarde + stap;
-            break;
-        case button4:
-            return waarde;
-            break;
-        }
-    }
-   return 0;
-}
