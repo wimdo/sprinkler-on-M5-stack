@@ -100,39 +100,21 @@ M5.Lcd.fillRect(0, 292, 240, 30, BLACK);
 } 
 
 void drawButtonBar4(String buttonString1, int color1,String buttonString2,int color2, String buttonString3,int color3,String buttonString4,int color4){
-  int base =292;
-  M5.Lcd.fillRect(0, base, 240, 30, BLACK);  
-  M5.Lcd.fillRect(0, base, 58, 30, DARKGREY);
-  M5.Lcd.fillRect(60, base, 58, 30, DARKGREY);
-  M5.Lcd.fillRect(120, base, 58, 30, DARKGREY);
-  M5.Lcd.fillRect(180, base, 60, 30, DARKGREY);
-  M5.Lcd.setTextSize(2);
-  M5.Lcd.setTextColor(color1);
-  M5.lcd.setCursor((56-buttonString1.length()*12)/2,base+6);
-  M5.Lcd.print(buttonString1); 
-  M5.Lcd.setTextColor(color2);
-  M5.lcd.setCursor(60+(56-buttonString2.length()*12)/2,base+6);
-  M5.Lcd.print(buttonString2); 
-  M5.Lcd.setTextColor(color3);
-  M5.lcd.setCursor(120+(56-buttonString3.length()*12)/2,base+6);
-  M5.Lcd.print(buttonString3); 
-  M5.Lcd.setTextColor(color4);
-  M5.lcd.setCursor(180+(56-buttonString4.length()*12)/2,base+6);
-  M5.Lcd.print(buttonString4); 
+  touchButton Button1 =(touchButton) {0,292,58,30,DARKGREY,color1,buttonString1};
+  touchButton Button2 =(touchButton) {60,292,58,30,DARKGREY,color2,buttonString2};
+  touchButton Button3 =(touchButton) {120,292,58,30,DARKGREY,color3,buttonString3};
+  touchButton Button4 =(touchButton) {180,292,58,30,DARKGREY,color4,buttonString4};
+  drawTouchButton(&Button1,2,1); 
+  drawTouchButton(&Button2,2,1);
+  drawTouchButton(&Button3,2,1); 
+  drawTouchButton(&Button4,2,1);
 }
 
 void drawButtonBar2(String buttonString1,int color1, String buttonString2,int color2){
-  int base = 292;
-  M5.Lcd.fillRect(0, base, 240, 30, BLACK);  
-  M5.Lcd.fillRect(0, base, 56+4+56+2, 30, DARKGREY);
-  M5.Lcd.fillRect(120, base, 56+4+56+4, 30, DARKGREY);
-  M5.Lcd.setTextSize(2);
-  M5.Lcd.setTextColor(color1);
-  M5.lcd.setCursor((56+4+56-buttonString1.length()*12)/2,base+6);
-  M5.Lcd.print(buttonString1); 
-  M5.Lcd.setTextColor(color2);
-  M5.lcd.setCursor(120+(56+4+56-buttonString2.length()*12)/2,base+6);
-  M5.Lcd.print(buttonString2); 
+  touchButton Button1 =(touchButton) {0,292,118,30,DARKGREY,color1,buttonString1};
+  touchButton Button2 =(touchButton) {120,292,118,30,DARKGREY,color2,buttonString2};
+  drawTouchButton(&Button1,2,1); 
+  drawTouchButton(&Button2,2,1);
 }
 
 void outlineMainscreen()
@@ -218,11 +200,6 @@ void showSprinklerSlider()
   }
   showSprinklerSliderStatus();
   //showSprinkerSliderTime();
-}
-
-void showButtonBar(String buttonString1, String buttonString2, String buttonString3)
-{
-
 }
 
 void showSprinklerStatus()
