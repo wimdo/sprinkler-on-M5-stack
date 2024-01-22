@@ -1,9 +1,97 @@
 
+void valveSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHeight,int localValve){
+
+  int localPercentageTime = mySprinkler.valve[localValve].percentage;
+  int localWithPump = mySprinkler.valve[localValve].withPump;
+  char buffer[15];
+  boolean refreshSprite = true;
+  boolean valueChanged[3] ={false,false,false};
+
+  touchButton localButton[3];
+  touchButton dataButton[3];
+  touchButton escapeButton =(touchButton) {0,272,118,30,DARKGREY,BLACK,"ESC"};
+  touchButton saveButton =(touchButton) {120,272,118,30,DARKGREY,BLACK,"SAVE"};
+  localButton[0] =(touchButton) {2,9+0*33,236,30,DARKGREY,BLACK,"Naam"};
+  //localButton[1] =(touchButton) {2,9+0*33,236,30,DARKGREY,BLACK,mySprinkler.valve[valve+1].valveName};
+  localButton[1] =(touchButton) {2,9+1*33,236,30,DARKGREY,BLACK,"Met pomp"};
+  localButton[2] =(touchButton) {2,9+2*33,236,30,DARKGREY,BLACK,"percent aan"};
+  spr.deleteSprite();
+  spr.setColorDepth(8);
+  spr.createSprite(spriteWidth,spriteHeight);
+  refreshSprite = true;
+  long previousMillis = millis();
+  while (1)
+  {
+    if (refreshSprite) {
+      spr.fillRect(0,0,spriteWidth,spriteHeight, BLACK);
+      drawInfoBoxSprite(&spr,240,271,1,"CHANGE VALVE SETTINGS");
+      for (int i = 0; i < 3 ; i++)
+      {
+        drawTouchButtonSprite(&spr,&localButton[i],2,1); 
+        //drawTouchButtonSprite(&spr,&dataButton[i],2,1); 
+      }
+      drawTouchButtonSprite(&spr,&escapeButton,2,1); 
+      drawTouchButtonSprite(&spr,&saveButton,2,1);
+      spr.pushSprite(spriteX,spriteY);
+      refreshSprite =false;
+    }
+    if (clockData.checkSecond) readTime();
+    if ((millis() - previousMillis) > 10000){
+      //spr.deleteSprite();
+      return;
+    } 
+    M5.update();
+    int coordinateY = M5.Touch.point[0].y;  
+    int coordinateX = M5.Touch.point[0].x;
+    int keuze =-1;  
+    for (int i = 0; i < 3 ; i++)
+    {
+      if (checkTouchButtonSprite(&localButton[i], spriteX, spriteY,coordinateX, coordinateY) || checkTouchButtonSprite(&dataButton[i], spriteX, spriteY,coordinateX, coordinateY) ){
+        previousMillis = millis();
+        valueChanged[i]=true;
+      }
+    }
+    for (int i = 0; i < 3 ; i++)
+    {
+      if (valueChanged[i]){
+        localButton[i].text.toCharArray(buffer,localButton[i].text.length());
+        switch (i){
+          case 0:
+            // naam wijzigen 
+            break;
+          case 1:
+            keuze=localMenuTouchBoxSprite (50, 50, localWithPump,janee_table,2,buffer);
+            break;
+          case 2:
+            keuze =getalTouchBoxSprite (50, 50, localPercentageTime, 0, 100, 10,buffer);
+            break;
+        }
+        valueChanged[i]=false;
+        refreshSprite = true;
+      }
+    }
+    if (checkTouchButtonSprite(&saveButton, spriteX, spriteY,coordinateX, coordinateY)){
+      for (int i = 0; i < 3 ; i++)
+      {
+        if (dataButton[i].textColor=WHITE){
+          Serial.println("values saved");
+          break;
+        }
+      }
+      //spr.deleteSprite();
+      return ;
+    } 
+    if (checkTouchButtonSprite(&escapeButton, spriteX, spriteY,coordinateX, coordinateY)){
+      //spr.deleteSprite();
+      return ;
+    }
+
+
+  }
+}
+
 int valveSettings(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
 {
-  //int localPercentageTime = mySprinkler.valve[localValve].percentage;
-  //int localWithPump = mySprinkler.valve[localValve].withPump;
-  //char localValveArray[15];
   boolean refreshSprite = true;
   int menuItems = 8;
   touchButton localButton[menuItems];
@@ -12,8 +100,8 @@ int valveSettings(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
   {
     localButton[i] =(touchButton) {2,9+i*33,236,30,DARKGREY,BLACK,mySprinkler.valve[i+1].valveName};
   }
-  spr.setColorDepth(8);
-  spr.createSprite(spriteWidth,spriteHeight);
+  //spr.setColorDepth(8);
+  //spr.createSprite(spriteWidth,spriteHeight);
 
   long previousMillis = millis();
   while (1)
@@ -42,7 +130,8 @@ int valveSettings(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
       for (int i = 0; i < 8; i++){
         if (checkTouchButtonSprite(&localButton[i], spriteX, spriteY, coordinateX, coordinateY)){
           previousMillis = millis();
-          // naar valve specifiek programma gaan
+          valveSettingsChange(0,19,240,320,i);
+          refreshSprite= true;
         }
       }
       if (checkTouchButtonSprite(&escapeButton, spriteX, spriteY,coordinateX, coordinateY)){
@@ -733,25 +822,33 @@ void mainMenu(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
           previousMillis = millis();
           switch (i)
           {
-          case buttonNone:
-            spr.deleteSprite();
-            break;
           case 0:
             keuze = programmaSelectie(0,19,240,320);
+            spr.deleteSprite();
+            return;
             break;
           case 1:
             keuze = sprinklerSelectie(0,19,240,320);
+            spr.deleteSprite();
+            return;
             break;
           case 2:
             keuze = relaisSelectie(0,19,240,320);
+            spr.deleteSprite();
+            return;
             break;
           case 3: // programma wijzigine;
+            spr.deleteSprite();
+            return;
             break;
           case 4:
             keuze = wifiOptions(0,19,240,320);
+            spr.deleteSprite();
+            return;
             break;
           case 5:  
             keuze = resetOptions(0,19,240,320);
+            return;
             break;              
           }
         }
