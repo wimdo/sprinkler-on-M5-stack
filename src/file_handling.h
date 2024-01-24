@@ -306,7 +306,7 @@ void writeRelaisProgramFile(){
 void reWriteRelaisProgramFile(){
     relaisProgram[0]= (relaisProg){1,1,"sunset",1,23,55,0,0};
     relaisProgram[1]= (relaisProg){1,2,"sunset",1,23,55,0,0};
-    relaisProgram[2]= (relaisProg){0,3,"time",0,18,0,23,55};
+    relaisProgram[2]= (relaisProg){0,3,"temp",1,25,0,0,0};
     relaisProgram[3]= (relaisProg){0,4,"time",0,14,0,20,0};
     relaisProgram[4]= (relaisProg){0,5,"sunset",0,8,0,0,0};
     relaisProgram[5]= (relaisProg){0,6,"night",0,0,0,0,0};
@@ -325,23 +325,76 @@ void reWriteRelaisProgramFile(){
 
 
 void writeRelaisSpecFile(){
-
+    Serial.println("Relais settings");
+    JsonObject obj = doc.to<JsonObject>();
+    for (int i =0; i<8;i++ ){
+        doc["relaisName"][i] = relais[i].relaisName;
+        doc["actief"][i]=relais[i].actief;
+        doc["stateAtStart"][i]=relais[i].stateAtStart;
+        doc["control"][i]=relais[i].control;
+        doc["data1"][i]=relais[i].data1;
+        doc["data2"][i]=relais[i].data2;
+        doc["data3"][i]=relais[i].data3;
+        doc["data4"][i]=relais[i].data4;
+    }
+    serializeJson(doc, myPayload);
+    Serial.println(myPayload);
+    String fileName = "/relaissettings.json";
+    Serial.print("write ");
+    Serial.println(fileName);
+    File file = SPIFFS.open(fileName, "w");
+    file.print(myPayload);
+    file.close();
+    doc.clear();
 }
+
 
 void reWriteRelaisSpecFile(){
-    relais[0]= (relaisSpec){"Vijgen  ",0,0};
-    relais[1]= (relaisSpec){"Appel   ",0,0};
-    relais[2]= (relaisSpec){"Serre   ",0,0};
-    relais[3]= (relaisSpec){"Relais 4",0,0};
-    relais[4]= (relaisSpec){"Relais 5",0,0};
-    relais[5]= (relaisSpec){"Relais 6",0,0};
-    relais[6]= (relaisSpec){"Dakraam ",0,0};
-    relais[7]= (relaisSpec){"Dakraam ",0,0};
+    relais[0]= (relaisSpec){"Vijgen",0,0,1,3,23,55,0,0};
+    relais[1]= (relaisSpec){"Appel",0,0,1,3,23,55,0,0};
+    relais[2]= (relaisSpec){"Serre",0,0,1,6,23,0,0,0};
+    relais[3]= (relaisSpec){"Relais 4",0,0,0,0,0,0,0,0};
+    relais[4]= (relaisSpec){"Relais 5",0,0,0,0,0,0,0,0};
+    relais[5]= (relaisSpec){"Relais 6",0,0,0,0,0,0,0,0};
+    relais[6]= (relaisSpec){"Dakraam",0,0,1,0,20,0,0,0};
+    relais[7]= (relaisSpec){"Dakraam",0,0,1,0,20,0,0,0};
     writeRelaisSpecFile();
+    // naam, stateAtStart, state, actief, control, data1, data2, data3, data 4
+    //programTable[] = {"none","time", "sunrise", "sunset","day","night", "temp"};
 }
 
-void readReleaisSpecFile(){
-    reWriteRelaisSpecFile();  
+void readRelaisSpecFile(){
+    int lenght = 0;
+    String fileName = "/relaissettings.json";
+    if (SPIFFS.exists(fileName))
+    {
+       File file = SPIFFS.open(fileName, "r");
+      if (file) {
+        while(file.available()){
+            myPayload[lenght] = file.read();
+            lenght++;
+        }
+        myPayload[lenght] ='\0';
+        Serial.print("relaissettings.json : ");
+        Serial.println (myPayload); //use for debug
+      }
+    }
+    DeserializationError error = deserializeJson(doc, myPayload,lenght);
+    if (error) {
+        Serial.print(F("deserializeJson() failed: "));
+        Serial.println(error.f_str());
+    } else {
+        for (int i =0; i<8;i++ ){
+            strcpy(relais[i].relaisName, doc["relaisName"][i]| "default");
+            relais[i].actief=doc["actief"][i];
+            relais[i].stateAtStart=doc["stateAtStart"][i];
+            relais[i].control=doc["control"][i];
+            relais[i].data1=doc["data1"][i];
+            relais[i].data2=doc["data2"][i];
+            relais[i].data3=doc["data3"][i];
+            relais[i].data4=doc["data4"][i];
+        }
+    }          
 }     
 
 
@@ -423,17 +476,16 @@ void checkFileSystem()
 void loadDataFromFile()
 {
     checkFileSystem();
-    reWriteRelaisProgramFile();
-    reWriteMySprinklerFile();
-    reWriteMyServerFile();
-    
-    for (int i = 1; i < 5; i++){
-       reWriteProgramFile(i); 
-    } 
-      
+    //reWriteRelaisProgramFile();
+    //reWriteRelaisSpecFile();
+    //reWriteMySprinklerFile();
+    //reWriteMyServerFile();
+    //for (int i = 1; i < 5; i++){
+    //   reWriteProgramFile(i); 
+    //} 
     readMyServerFile();
     readProgramFile();
     readMySpriklerFile(); 
-    readReleaisSpecFile();
+    readRelaisSpecFile();
     readRelaisProgramFile();
-  }
+}

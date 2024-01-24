@@ -16,7 +16,7 @@
 #include <sunset.h>
 
 
-#define VERSION "Version 01/24/23"  
+#define VERSION "Version 23/01/24"  
 #define nameprefix "HOME"
 #define moduletype "SPRINKLER"
 
@@ -175,6 +175,12 @@ typedef struct
   char relaisName[10]; //?? 09/08 voor 9 bytes gaat het niet
   boolean stateAtStart;
   boolean state;
+  boolean actief;
+  int control;
+  int data1;
+  int data2;
+  int data3;
+  int data4;
 } relaisSpec;
 relaisSpec relais[8];
 
@@ -207,17 +213,10 @@ Button relaisZone (120,19+68,120,68+68);
 Button b1(0,290,119,30);
 Button b2(120,290,120,30);
 
-char *mainMenu_table[] = {"programma kiezen", "sprinkler kiezen", "relais kiezen", "programma wijzigen","WIFI opties","Reset options"};
-char *settingsMenu_table[] = {"Pomp tijd", "Wacht tijd", "Modus", "Debug", "Wissel T","Tijd","Valve info","Relais info"};
-
-char *valveSettings_table[] = {"Naam", "werking", "Met Pomp"};
-char *tijdManueel_table[] = {"Uur", "Min", "Sec","Dag", "Maand", "Jaar"};
-char *programmaManueel_table[] = {"Programma"};
-
 char *auto_table[] = {"MANUEEL", "AUTO"};
 char *onoff_table[] = {"UIT", "AAN"};
-char *janee_table[] = {"NEE", "JA "};
-
+char *janee_table[] = {"NEE", "JA"};
+char *program_Table[] = {"none","time", "sunrise", "sunset","day","night", "temp on"};
 char *dayOfWeek[] = {"Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"};
 int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
@@ -232,7 +231,6 @@ int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 #include "WIFI_handling.h"
 #include "HTTP_handling.h"
 #include "MENU_handling.h"
-
 #include "speaker.h"
 
 hw_timer_t *systemTimer = NULL;
