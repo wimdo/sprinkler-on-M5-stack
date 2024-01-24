@@ -93,7 +93,7 @@ void switchRelais(byte relais, boolean state)
   sprinkler.updateRelaisSlider = true; 
   sprinkler.sendData = true;
 }
-
+/*
 void checkRelaisTemp(){
   for (int i=0; i<16;i++ ){
     if (relaisProgram[i].actief){
@@ -107,7 +107,8 @@ void checkRelaisTemp(){
     }
   }
 }
-
+*/
+/*
 void checkRelaisTempOnTime(){
   for (int i=0; i<16;i++ ){
     if (relaisProgram[i].actief){
@@ -123,8 +124,8 @@ void checkRelaisTempOnTime(){
     }  
   }
 }
-
-
+*/
+/*
 void checkRelaisOnTime(int hour, int min){
   int minuteCount = hour*60+min;
   for (int i=0; i<16;i++ ){
@@ -171,15 +172,102 @@ void checkRelaisOnTime(int hour, int min){
     }  
   }
 }
+*/
+
+void checkRelaisSettingsTemp(){
+  for (int i=0; i<6;i++ ){
+    if (relais[i].actief){
+      if (relais[i].control==6){
+        if (temperature[0].value >=  relais[i].data1){
+          relais[i].data2=6;
+          switchRelais(i, ON); 
+        }         
+      } 
+    }
+  }
+}
+/*
+void checkRelaisSettingsTempOnTime(){
+  for (int i=0; i<6;i++ ){
+    if (relais[i].actief){
+      if (relais[i].control==6){
+        if (relais[i].data2>0){  // om het programma correct te laten starten, waarde
+          relais[i].data2--;
+          if (relais[i].data2==0){
+            switchRelais(i,OFF);  
+          }
+        }    
+        //Serial.printf("program %d  switch relay %d , time %d\n", i, relaisProgram[i].relais,relaisProgram[i].data2);       
+      }         
+    }  
+  }
+}
+*/
+
+void checkRelaisSettingsOnTime(int hour, int min){
+  int minuteCount = hour*60+min;
+  for (int i=0; i<6;i++ ){
+    //// programTable[] = {"none","time", "sunrise", "sunset","day","night", "temp on"};
+    if (relais[i].actief){
+      if (relais[i].control==1){ 
+          if (relais[i].data1==hour && relais[i].data2==min){
+              Serial.printf("RELAY : %d:%d switch relay %d state %s\n",hour, min,i,"on");
+              switchRelais(i, ON);
+          }
+          if (relais[i].data3==hour && relais[i].data4==min){
+              Serial.printf("RELAY : %d:%d switch relay %d state %s\n",hour, min,i,"off");
+              switchRelais(i, OFF);
+          }
+      } else if (relais[i].control==2){
+          if (minuteCount==sprinkler.sunrise){
+              Serial.printf("RELAY : %d:%d switch relay %d state %s\n",hour, min,i,"on");
+              switchRelais(i, ON);
+          }
+          if (relais[i].data1==hour && relais[i].data2==min){
+              Serial.printf("RELAY : %d:%d switch relay %d state %s\n",hour, min,i,"off");
+              switchRelais(i, OFF);
+          }
+      } else if (relais[i].control==3){
+          if (minuteCount==sprinkler.sunset){
+              Serial.printf("RELAY : %d:%d switch relay %d state %s\n",hour, min,i,"on");
+              switchRelais(i, ON);
+          }
+          if (relais[i].data1==hour && relais[i].data2==min){
+              Serial.printf("RELAY : %d:%d switch relay %d state %s\n",hour, min,i,"off");
+              switchRelais(i, OFF);
+          }
+      } else if (relais[i].control==4){
+          if (minuteCount==sprinkler.sunrise){
+              Serial.printf("RELAY : %d:%d switch relay %d state %s\n",hour, min,i,"on");
+              switchRelais(i, ON);
+          }
+          if (minuteCount==sprinkler.sunset){
+              Serial.printf("RELAY : %d:%d switch relay %d state %s\n",hour, min,i,"off");
+              switchRelais(i, OFF);
+          }
+      } else if(relais[i].control==5){
+          Serial.println("night");
+      } else if (relais[i].control==6){
+        if (relais[i].data2>0){  // om het programma correct te laten starten, waarde
+          relais[i].data2--;
+          if (relais[i].data2==0){
+            switchRelais(i,OFF);  
+          }
+        } 
+      } 
+    }  
+  }
+}
+
 
 void startRelaisProgram(){
     for (int hour =0; hour<RTCtime.Hours;hour++ ){
         for (int min =0; min<60;min++ ){
-            checkRelaisOnTime(hour,min);
+            checkRelaisSettingsOnTime(hour,min);
         }    
     } 
     for (int min =0; min<=RTCtime.Minutes;min++ ){
-      checkRelaisOnTime(RTCtime.Hours,min);
+      checkRelaisSettingsOnTime(RTCtime.Hours,min);
     } 
 }
 

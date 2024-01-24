@@ -166,11 +166,11 @@ int valveSettings(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
 
 
 void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHeight,int localRelais){
-  char *localButtonTable[] = {"Naam","Bij start", "Actief", "Programma","data1","data2","data3","data4"};
+  char *localButtonTable[] = {"Naam","Actief", "Programma","data1","data2","data3","data4"};
   // {"none","time", "sunrise", "sunset","day","night", "temp on"};
   // naam, stateAtStart, state, actief, control, data1, data2, data3, data 4
-  int menuItems = 8;
-  int localStateAtStart=relais[localRelais].stateAtStart;
+  int menuItems = 7;
+  //int localStateAtStart=relais[localRelais].stateAtStart;
   int localActief=relais[localRelais].actief;
   int localControl=relais[localRelais].control;
   int localData1=relais[localRelais].data1;
@@ -180,22 +180,21 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
   char buffer[15];
 
   boolean refreshSprite = true;
-  boolean valueChanged[8] ={false,false,false,false, false, false,false,false};
-  touchButton localButton[8];
-  touchButton dataButton[8];
+  boolean valueChanged[7] ={false,false,false,false, false, false,false};
+  touchButton localButton[7];
+  touchButton dataButton[7];
   touchButton escapeButton =(touchButton) {0,272,118,30,DARKGREY,BLACK,"ESC"};
   touchButton saveButton =(touchButton) {120,272,118,30,DARKGREY,BLACK,"SAVE"};
   for (int i = 0; i < menuItems ; i++){
     localButton[i] =(touchButton) {2,9+i*33,116,30,DARKGREY,BLACK,localButtonTable[i]};
   }
   dataButton[0] =(touchButton) {120,9+0*33,116,30,DARKGREY,BLACK,relais[localRelais].relaisName};
-  dataButton[1] =(touchButton) {120,9+1*33,116,30,DARKGREY,BLACK,onoff_table[localStateAtStart]};
-  dataButton[2] =(touchButton) {120,9+2*33,116,30,DARKGREY,BLACK,janee_table[localActief]};
-  dataButton[3] =(touchButton) {120,9+3*33,116,30,DARKGREY,BLACK,program_Table[localControl]};
-  dataButton[4] =(touchButton) {120,9+4*33,116,30,DARKGREY,BLACK,String(localData1)};
-  dataButton[5] =(touchButton) {120,9+5*33,116,30,DARKGREY,BLACK,String(localData2)};
-  dataButton[6] =(touchButton) {120,9+6*33,116,30,DARKGREY,BLACK,String(localData3)};
-  dataButton[7] =(touchButton) {120,9+7*33,116,30,DARKGREY,BLACK,String(localData4)};
+  dataButton[1] =(touchButton) {120,9+1*33,116,30,DARKGREY,BLACK,janee_table[localActief]};
+  dataButton[2] =(touchButton) {120,9+2*33,116,30,DARKGREY,BLACK,program_Table[localControl]};
+  dataButton[3] =(touchButton) {120,9+3*33,116,30,DARKGREY,BLACK,String(localData1)};
+  dataButton[4] =(touchButton) {120,9+4*33,116,30,DARKGREY,BLACK,String(localData2)};
+  dataButton[5] =(touchButton) {120,9+5*33,116,30,DARKGREY,BLACK,String(localData3)};
+  dataButton[6] =(touchButton) {120,9+6*33,116,30,DARKGREY,BLACK,String(localData4)};
   spr.deleteSprite();
   spr.setColorDepth(8);
   spr.createSprite(spriteWidth,spriteHeight);
@@ -209,34 +208,34 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
       switch (localControl){
         // programTable[] = {"none","time", "sunrise", "sunset","day","night", "temp on"};
         case 0:
-          menuItems = 4;
+          menuItems = 3;
           break; 
         case 1:
-          menuItems = 8;
-          localButton[4].text ="Uur start";
-          localButton[5].text ="Min start";
-          localButton[6].text ="Uur stop";
-          localButton[7].text ="Min stop";
+          menuItems = 7;
+          localButton[3].text ="Uur start";
+          localButton[4].text ="Min start";
+          localButton[5].text ="Uur stop";
+          localButton[6].text ="Min stop";
           break;
         case 2:
-          menuItems = 6;
-          localButton[4].text ="Uur stop";
-          localButton[5].text ="Min stop";
+          menuItems = 5;
+          localButton[3].text ="Uur stop";
+          localButton[4].text ="Min stop";
           break;
         case 3:
-          menuItems = 6;
-          localButton[4].text ="Uur stop";
-          localButton[5].text ="Min stop";
+          menuItems = 5;
+          localButton[3].text ="Uur stop";
+          localButton[4].text ="Min stop";
           break;          
         case 4:
-          menuItems = 4;
+          menuItems = 3;
           break;
         case 5:
-          menuItems = 4;
+          menuItems = 3;
           break;  
         case 6:
-          menuItems = 5;
-          localButton[4].text ="temp";
+          menuItems = 4;
+          localButton[3].text ="temp";
           break; 
       }
       for (int i = 0; i < menuItems ; i++)
@@ -273,19 +272,7 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
           case 0:
             // naam wijzigen 
             break;
-          case 1: //state at start1
-            keuze=localMenuTouchBoxSprite (50, 50, localStateAtStart,onoff_table,2,buffer);  
-            if ((keuze !=buttonNone)&&(keuze!=localStateAtStart)){
-              localStateAtStart=keuze;
-              dataButton[1].text=onoff_table[localStateAtStart];
-              dataButton[1].textColor=WHITE;
-              localButton[1].textColor=WHITE;
-            } else {
-              dataButton[1].textColor=BLACK;
-              localButton[1].textColor=BLACK;
-            }
-            break;
-          case 2: // actief localActief
+          case 1: // actief localActief
             keuze=localMenuTouchBoxSprite (50, 50, localActief,onoff_table,2,buffer);  
             if ((keuze !=buttonNone)&&(keuze!=localActief)){
               localActief=keuze;
@@ -297,7 +284,7 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
               localButton[2].textColor=BLACK;
             }
             break;
-          case 3: // control
+          case 2: // control
             keuze=localMenuTouchBoxSprite (0, 0, localControl,program_Table,7,buffer);  
             if ((keuze !=buttonNone)&&(keuze!=localControl)){
               localControl=keuze;
@@ -309,7 +296,7 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
               localButton[3].textColor=BLACK;
             }
             break;
-          case 4: {// bij temperatuur is er een verschil in de min max waarden
+          case 3: {// bij temperatuur is er een verschil in de min max waarden
             int minVal = 0;
             int maxVal = 23;
             if (localControl ==6){
@@ -328,7 +315,7 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
             }
             break;
           }  
-          case 5:
+          case 4:
             keuze =getalTouchBoxSprite (50, 50, localData2, 0, 59, 1,buffer);
             if ((keuze !=buttonNone)&&(keuze!=localData2)){
               localData2 = keuze;
@@ -340,7 +327,7 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
               localButton[5].textColor=BLACK;
             }
             break;
-          case 6:
+          case 5:
             keuze =getalTouchBoxSprite (50, 50, localData3, 0, 23, 1,buffer);
             if ((keuze !=buttonNone)&&(keuze!=localData3)){
               localData3 = keuze;
@@ -352,7 +339,7 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
               localButton[6].textColor=BLACK;
             }
             break;
-          case 7:
+          case 6:
             keuze =getalTouchBoxSprite (50, 50, localData4, 0, 59, 1,buffer);
             if ((keuze !=buttonNone)&&(keuze!=localData4)){
               localData4 = keuze;
@@ -373,14 +360,12 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
       for (int i = 0; i < menuItems ; i++)
       {
         if (dataButton[i].textColor=WHITE){
-            relais[localRelais].stateAtStart=localStateAtStart;
             relais[localRelais].actief=localActief;
             relais[localRelais].control=localControl;
             relais[localRelais].data1=localData1;
             relais[localRelais].data2=localData2;
             relais[localRelais].data3=localData3;
             relais[localRelais].data4=localData4;
-            //relais waarden wegschrijven
             writeRelaisSpecFile();
             // alle relais opnieuw controleren
             Serial.println("values saved");
@@ -1020,8 +1005,8 @@ void settingsMenu(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
           writeMySprinklerFile();
           writeMyServerFile();
           controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay); 
-          checkRelaisOnTime(RTCtime.Hours, RTCtime.Minutes);
-          checkRelaisTempOnTime();
+          checkRelaisSettingsOnTime(RTCtime.Hours, RTCtime.Minutes);
+          //checkRelaisSettingsTempOnTime();
           Serial.println("values saved");
           break;
         }

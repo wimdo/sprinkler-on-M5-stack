@@ -242,7 +242,7 @@ void reWriteProgramFile(int programma)
     writeProgramFile(programma);
 }
 
-
+/*
 void readRelaisProgramFile(){
     int lenght = 0;
     String fileName = "/relaisprogram.json";
@@ -276,8 +276,8 @@ void readRelaisProgramFile(){
         } 
     }         
 }
-
-
+*/
+/*
 void writeRelaisProgramFile(){
     Serial.println("programs");
     JsonObject obj = doc.to<JsonObject>();
@@ -301,8 +301,8 @@ void writeRelaisProgramFile(){
     file.close();
     doc.clear();
 }
-
-
+*/
+/*
 void reWriteRelaisProgramFile(){
     relaisProgram[0]= (relaisProg){1,1,"sunset",1,23,55,0,0};
     relaisProgram[1]= (relaisProg){1,2,"sunset",1,23,55,0,0};
@@ -322,7 +322,7 @@ void reWriteRelaisProgramFile(){
     relaisProgram[15]= (relaisProg){0,1,"default",1,0,0,0,0};
     writeRelaisProgramFile(); 
 }
-
+*/
 
 void writeRelaisSpecFile(){
     Serial.println("Relais settings");
@@ -330,7 +330,6 @@ void writeRelaisSpecFile(){
     for (int i =0; i<8;i++ ){
         doc["relaisName"][i] = relais[i].relaisName;
         doc["actief"][i]=relais[i].actief;
-        doc["stateAtStart"][i]=relais[i].stateAtStart;
         doc["control"][i]=relais[i].control;
         doc["data1"][i]=relais[i].data1;
         doc["data2"][i]=relais[i].data2;
@@ -350,14 +349,14 @@ void writeRelaisSpecFile(){
 
 
 void reWriteRelaisSpecFile(){
-    relais[0]= (relaisSpec){"Vijgen",0,0,1,3,23,55,0,0};
-    relais[1]= (relaisSpec){"Appel",0,0,1,3,23,55,0,0};
-    relais[2]= (relaisSpec){"Serre",0,0,1,6,23,0,0,0};
-    relais[3]= (relaisSpec){"Relais 4",0,0,0,0,0,0,0,0};
-    relais[4]= (relaisSpec){"Relais 5",0,0,0,0,0,0,0,0};
-    relais[5]= (relaisSpec){"Relais 6",0,0,0,0,0,0,0,0};
-    relais[6]= (relaisSpec){"Dakraam",0,0,1,0,20,0,0,0};
-    relais[7]= (relaisSpec){"Dakraam",0,0,1,0,20,0,0,0};
+    relais[0]= (relaisSpec){"Vijgen",0,1,3,23,55,0,0};
+    relais[1]= (relaisSpec){"Appel",0,1,3,23,55,0,0};
+    relais[2]= (relaisSpec){"Serre",0,1,6,23,0,0,0};
+    relais[3]= (relaisSpec){"Relais 4",0,0,0,0,0,0,0};
+    relais[4]= (relaisSpec){"Relais 5",0,0,0,0,0,0,0};
+    relais[5]= (relaisSpec){"Relais 6",0,0,0,0,0,0,0};
+    relais[6]= (relaisSpec){"Dakraam",0,1,0,20,0,0,0};
+    relais[7]= (relaisSpec){"Dakraam",0,1,0,20,0,0,0};
     writeRelaisSpecFile();
     // naam, stateAtStart, state, actief, control, data1, data2, data3, data 4
     //programTable[] = {"none","time", "sunrise", "sunset","day","night", "temp"};
@@ -387,7 +386,6 @@ void readRelaisSpecFile(){
         for (int i =0; i<8;i++ ){
             strcpy(relais[i].relaisName, doc["relaisName"][i]| "default");
             relais[i].actief=doc["actief"][i];
-            relais[i].stateAtStart=doc["stateAtStart"][i];
             relais[i].control=doc["control"][i];
             relais[i].data1=doc["data1"][i];
             relais[i].data2=doc["data2"][i];
@@ -477,7 +475,7 @@ void loadDataFromFile()
 {
     checkFileSystem();
     //reWriteRelaisProgramFile();
-    //reWriteRelaisSpecFile();
+    reWriteRelaisSpecFile();
     //reWriteMySprinklerFile();
     //reWriteMyServerFile();
     //for (int i = 1; i < 5; i++){
@@ -487,5 +485,5 @@ void loadDataFromFile()
     readProgramFile();
     readMySpriklerFile(); 
     readRelaisSpecFile();
-    readRelaisProgramFile();
+    //readRelaisProgramFile();
 }

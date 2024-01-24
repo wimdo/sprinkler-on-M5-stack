@@ -81,6 +81,9 @@ DallasTemperature temperatuur(&oneWire);
 #define button2 1
 #define button3 3
 #define button4 2
+
+#define ON 1
+#define OFF 0
 typedef struct
 {
   int lastSecond;
@@ -155,7 +158,7 @@ typedef struct
 } sprinklerProgram;
 sprinklerProgram SprinklerProgram[5];
 sprinklerProgram SprinklerProgramRun;
-
+/*
 typedef struct
 {
   boolean actief;
@@ -168,12 +171,12 @@ typedef struct
   int data4;
 } relaisProg;
 relaisProg relaisProgram[16];
-
+*/
 
 typedef struct
 {
   char relaisName[10]; //?? 09/08 voor 9 bytes gaat het niet
-  boolean stateAtStart;
+  //boolean stateAtStart;
   boolean state;
   boolean actief;
   int control;
@@ -324,8 +327,8 @@ void loop()
     if ( RTCtime.Minutes != clockData.previousMinute )
     {
       controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay); //controleerProgramma(now.hour(),now.minute(),now.dayOfTheWeek());
-      checkRelaisOnTime(RTCtime.Hours, RTCtime.Minutes);
-      checkRelaisTempOnTime();
+      checkRelaisSettingsOnTime(RTCtime.Hours, RTCtime.Minutes);
+      //checkRelaisSettingsTempOnTime();
       if (RTCtime.Minutes == 0 && RTCtime.Hours == 0)
       { 
         disableRelais();
@@ -355,7 +358,7 @@ void loop()
         sprinkler.sendData= false;
       } 
       readTemperature();
-      checkRelaisTemp();  
+      checkRelaisSettingsTemp();  
   }
   if (myServer.connectToWIFI){
     if (WiFi.status() == WL_CONNECTED){

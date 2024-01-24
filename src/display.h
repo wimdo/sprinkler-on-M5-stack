@@ -140,6 +140,7 @@ void showRelaisSliderStatus(){
     M5.Lcd.fillRoundRect(columnPos+3,94+i*15+1, 10, 12, 4, bitRead(sprinkler.sliderStateRelais, bitCompare)? GREEN : BLACK);
     M5.Lcd.fillRoundRect(columnPos+3+10,94+i*15+1, 10, 12, 4, bitRead(sprinkler.sliderStateRelais, bitCompare)? BLACK : RED);      
     bitCompare--; 
+    /// hier nog omkeren??
   }
 }
 

@@ -121,8 +121,8 @@ void checkHTTPSettingsSprinkler(String dataString) {
   }
   writeMySprinklerFile();
   controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay); //controleerProgramma(now.hour(),now.minute(),now.dayOfTheWeek());
-  checkRelaisOnTime(RTCtime.Hours, RTCtime.Minutes);
-  checkRelaisTempOnTime();
+  checkRelaisSettingsOnTime(RTCtime.Hours, RTCtime.Minutes);
+  //checkRelaisSettingsTempOnTime();
 }
 
 
