@@ -82,97 +82,21 @@ void disableRelais()
 
 void switchRelais(byte relais, boolean state)
 {
-  bitWrite(sprinkler.sliderStateRelais,relais-1,state);
+  bitWrite(sprinkler.sliderStateRelais,relais,state);
   Wire.requestFrom(RelayI2C, 1);
   if (Wire.available()) //If the request is available
   {
     Wire.beginTransmission(RelayI2C);
-    Wire.write(~sprinkler.sliderStateRelais);
+    Wire.write((byte)~sprinkler.sliderStateRelais);
     Wire.endTransmission();
   }
   sprinkler.updateRelaisSlider = true; 
   sprinkler.sendData = true;
+  Serial.println(sprinkler.sliderStateRelais,BIN);
 }
-/*
-void checkRelaisTemp(){
-  for (int i=0; i<16;i++ ){
-    if (relaisProgram[i].actief){
-      if (strcmp(relaisProgram[i].control,"temp")==0){
-          if (temperature[0].value >=  relaisProgram[i].data1){
-            relaisProgram[i].data2=6;
-            switchRelais(relaisProgram[i].relais, relaisProgram[i].state); 
-          }         
-      } else if (strcmp(relaisProgram[i].control,"free")==0){
-      }  
-    }
-  }
-}
-*/
-/*
-void checkRelaisTempOnTime(){
-  for (int i=0; i<16;i++ ){
-    if (relaisProgram[i].actief){
-      if (strcmp(relaisProgram[i].control,"temp")==0){
-        if (relaisProgram[i].data2>0){  // om het programma correct te laten starten, waarde
-          relaisProgram[i].data2--;
-          if (relaisProgram[i].data2==0){
-            switchRelais(relaisProgram[i].relais, !relaisProgram[i].state);  
-          }
-        }    
-        //Serial.printf("program %d  switch relay %d , time %d\n", i, relaisProgram[i].relais,relaisProgram[i].data2);       
-      }         
-    }  
-  }
-}
-*/
-/*
-void checkRelaisOnTime(int hour, int min){
-  int minuteCount = hour*60+min;
-  for (int i=0; i<16;i++ ){
-    if (relaisProgram[i].actief){
-      if (strcmp(relaisProgram[i].control,"time")==0){ 
-          if (relaisProgram[i].data1==hour && relaisProgram[i].data2==min){
-              Serial.printf("program %d  %d:%d switch relay %d state %s\n", i, hour, min,relaisProgram[i].relais,relaisProgram[i].state? "on":"off");
-              switchRelais(relaisProgram[i].relais, relaisProgram[i].state);
-          }
-          if (relaisProgram[i].data3==hour && relaisProgram[i].data4==min){
-              Serial.printf("program %d  %d:%d switch relay %d state %s\n", i, hour, min,relaisProgram[i].relais,relaisProgram[i].state? "off":"on");
-              switchRelais(relaisProgram[i].relais, !relaisProgram[i].state);
-          }
-      } else if (strcmp(relaisProgram[i].control,"sunrise")==0){
-          if (minuteCount==sprinkler.sunrise){
-              Serial.printf("program %d  %d:%d switch relay %d state %s\n", i, hour, min,relaisProgram[i].relais,relaisProgram[i].state? "on":"off");
-              switchRelais(relaisProgram[i].relais, relaisProgram[i].state);
-          }
-          if (relaisProgram[i].data1==hour && relaisProgram[i].data2==min){
-              Serial.printf("program %d  %d:%d switch relay %d state %s\n", i, hour, min,relaisProgram[i].relais,relaisProgram[i].state? "off":"on");
-              switchRelais(relaisProgram[i].relais, !relaisProgram[i].state);
-          }
-      } else if (strcmp(relaisProgram[i].control,"sunset")==0){
-          if (minuteCount==sprinkler.sunset){
-              Serial.printf("program %d  %d:%d switch relay %d state %s\n", i, hour, min,relaisProgram[i].relais,relaisProgram[i].state? "on":"off");
-              switchRelais(relaisProgram[i].relais, relaisProgram[i].state);
-          }
-          if (relaisProgram[i].data1==hour && relaisProgram[i].data2==min){
-              Serial.printf("program %d  %d:%d switch relay %d state %s\n", i, hour, min,relaisProgram[i].relais,relaisProgram[i].state? "off":"on");
-              switchRelais(relaisProgram[i].relais, !relaisProgram[i].state);
-          }
-      } else if (strcmp(relaisProgram[i].control,"day")==0){
-          if (minuteCount==sprinkler.sunrise){
-              Serial.printf("program %d  %d:%d switch relay %d state %s\n", i, hour, min,relaisProgram[i].relais,relaisProgram[i].state? "on":"off");
-              switchRelais(relaisProgram[i].relais, relaisProgram[i].state);
-          }
-          if (minuteCount==sprinkler.sunset){
-              Serial.printf("program %d  %d:%d switch relay %d state %s\n", i, hour, min,relaisProgram[i].relais,relaisProgram[i].state? "off":"on");
-              switchRelais(relaisProgram[i].relais, !relaisProgram[i].state);
-          }
-      } else if(strcmp(relaisProgram[i].control,"night")==0){
-          //Serial.println("night");
-      }
-    }  
-  }
-}
-*/
+
+
+
 
 void checkRelaisSettingsTemp(){
   for (int i=0; i<6;i++ ){
@@ -181,6 +105,7 @@ void checkRelaisSettingsTemp(){
         if (temperature[0].value >=  relais[i].data1){
           relais[i].data2=6;
           switchRelais(i, ON); 
+          Serial.println("temp geschakeld");
         }         
       } 
     }

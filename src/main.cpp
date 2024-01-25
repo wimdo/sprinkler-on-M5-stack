@@ -24,10 +24,11 @@
 #define LONGITUDE        2.29546
 #define DST_OFFSET      1
 
-const uint8_t wifi_OK[] PROGMEM = {
-    0xF0, 0x00, 0x08, 0x00, 0xE4, 0x00, 0x12, 0x00, 0xCA, 0x00, 0x2A, 0x00};
-const uint8_t wifi_NOK[] PROGMEM = {
-    0xF0, 0x40, 0x08, 0x40, 0xE4, 0x40, 0x12, 0x40, 0xCA, 0x00, 0x2A, 0x40};
+
+const uint8_t wifiBMP[] PROGMEM = {
+0b00000000,0b10000000,0b00000000,0b10000000,0b00000000,0b10000000,0b00000000,0b10010000,0b00000000,0b10010000,0b00000000,0b10010000,0b00000000,0b10010010,0b00000000,0b10010010,0b00000000,0b10010010,0b00000000,0b10010010,0b01000000,0b10010010,0b01000000,0b10010010,0b01000000,0b10010010,0b01001000,0b10010010,0b01001000,0b10010010,0b01001001,0b10010010,
+};
+
 
 TFT_eSprite spr = TFT_eSprite(&M5.Lcd);
 TFT_eSprite box = TFT_eSprite(&M5.Lcd);
@@ -158,21 +159,6 @@ typedef struct
 } sprinklerProgram;
 sprinklerProgram SprinklerProgram[5];
 sprinklerProgram SprinklerProgramRun;
-/*
-typedef struct
-{
-  boolean actief;
-  int relais;
-  char control[14]; // enum maken
-  boolean state;
-  int data1;
-  int data2;
-  int data3;
-  int data4;
-} relaisProg;
-relaisProg relaisProgram[16];
-*/
-
 typedef struct
 {
   char relaisName[10]; //?? 09/08 voor 9 bytes gaat het niet
@@ -246,6 +232,7 @@ void IRAM_ATTR timeCheck()
 void setup()
 {
   M5.begin(true, false, true, true); 
+  M5.Lcd.setRotation(2);
   //I2Cscan();
   //sprinkler.debugMode = true;
   sprinkler.staat = Wacht;
@@ -256,7 +243,6 @@ void setup()
   timerAttachInterrupt(systemTimer, &timeCheck, true);
   SpeakerInit();
   loadDataFromFile();
-  setupDisplay();
   outlineMainscreen();  
   setupValves();
   showSprinklerSlider();

@@ -121,7 +121,8 @@ void outlineMainscreen()
 {
   drawInfoBox(0,19,68,240,1, "INFO");
   drawInfoBox(0,19+68,68+68,118,1, "SPRINKLER"); // 87
-  drawInfoBox(120,19+68,68+68,120,1, "RELAIS"); // 155
+  drawInfoBox(120,19+68,68+68-38,120,1, "RELAIS"); // 155
+  drawInfoBox(120,19+68+68+68-38,38,120,1, "DAKRAAM");
   drawInfoBox(0,19+68+68+68,68,118,1, "SERRE"); // 223
   drawInfoBox(120,19+68+68+68,68,120,1, "BUITEN");  
   if (sprinkler.staat == Wacht){
@@ -134,28 +135,23 @@ void outlineMainscreen()
 
 
 void showRelaisSliderStatus(){
-  int bitCompare = 7;
   int columnPos =120;
-  for (int i = 0; i < 8; i++)  {
-    M5.Lcd.fillRoundRect(columnPos+3,94+i*15+1, 10, 12, 4, bitRead(sprinkler.sliderStateRelais, bitCompare)? GREEN : BLACK);
-    M5.Lcd.fillRoundRect(columnPos+3+10,94+i*15+1, 10, 12, 4, bitRead(sprinkler.sliderStateRelais, bitCompare)? BLACK : RED);      
-    bitCompare--; 
-    /// hier nog omkeren??
+  for (int i = 0; i < 6; i++)  {
+    M5.Lcd.fillRoundRect(columnPos+3,94+i*15+1, 10, 12, 4, bitRead(sprinkler.sliderStateRelais, i)? BLACK : RED);
+    M5.Lcd.fillRoundRect(columnPos+3+10,94+i*15+1, 10, 12, 4, bitRead(sprinkler.sliderStateRelais, i)? GREEN : BLACK);      
   }
 }
 
 
 void showRelaySlider()
 {
-  int bitCompare = 7;
   M5.Lcd.setTextColor(DARKGREY);
   M5.Lcd.setTextSize(1); 
   int columnPos =120;
-  for (int i = 0; i < 8; i++)  {
+  for (int i = 0; i < 6; i++)  {
     M5.Lcd.drawRoundRect(columnPos+2, 94+i*15, 22, 14, 4, DARKGREY); 
     M5.Lcd.setCursor(columnPos+25, 94+i*15+4);
-    M5.Lcd.print(relais[7-i].relaisName);
-    bitCompare--; 
+    M5.Lcd.print(relais[i].relaisName);
   }
   showRelaisSliderStatus();
 }
@@ -177,30 +173,23 @@ void showSprinkerSliderTime(){
 
 void showSprinklerSliderStatus(){
   int columnPos =0;
-  int bitCompare = 7;
   for (int i = 0; i < 8; i++)  {
-    M5.Lcd.fillRoundRect(columnPos+3,94+i*15+1, 10, 12, 4, bitRead(sprinkler.sliderStateValve, bitCompare)? GREEN : BLACK);
-    M5.Lcd.fillRoundRect(columnPos+3+10,94+i*15+1, 10, 12, 4, bitRead(sprinkler.sliderStateValve, bitCompare)? BLACK : RED);      
-    bitCompare--; 
+    M5.Lcd.fillRoundRect(columnPos+3,98+i*15+1, 10, 12, 4, bitRead(sprinkler.sliderStateValve, i)? BLACK : RED);
+    M5.Lcd.fillRoundRect(columnPos+3+10,98+i*15+1, 10, 12, 4, bitRead(sprinkler.sliderStateValve, i)? GREEN : BLACK);      
   }
-    //showSprinkerSliderTime();
 }
 
-// pomp zit op 8 !
 void showSprinklerSlider()
 {
   M5.Lcd.setTextColor(DARKGREY,BLACK);
   M5.Lcd.setTextSize(1);
   int columnPos =0;
-  int bitCompare = 7;
   for (int i = 0; i < 8; i++)  {
-    M5.Lcd.drawRoundRect(columnPos+2, 94+i*15, 22, 14, 4, DARKGREY);  
-    M5.Lcd.setCursor(columnPos+25, 94+i*15+4);
-    M5.Lcd.print(mySprinkler.valve[7-i+1].valveName);
-    bitCompare--; 
+    M5.Lcd.drawRoundRect(columnPos+2, 98+i*15, 22, 14, 4, DARKGREY);  
+    M5.Lcd.setCursor(columnPos+25, 98+i*15+4);
+    M5.Lcd.print(mySprinkler.valve[i+1].valveName); // pomptext zit op 8 in array!
   }
   showSprinklerSliderStatus();
-  //showSprinkerSliderTime();
 }
 
 void showSprinklerStatus()
@@ -274,19 +263,12 @@ void showTimeBar()
   M5.lcd.setCursor(2,1); 
   M5.Lcd.printf("%02d:%02d:%02d %s %02d/%02d",RTCtime.Hours,RTCtime.Minutes,RTCtime.Seconds,dayOfWeek[RTCDate.WeekDay], RTCDate.Date, RTCDate.Month);
   M5.Lcd.setTextSize(1);
-  M5.Lcd.drawXBitmap(230, 4, wifi_OK, 10, 7, (WiFi.status()==WL_CONNECTED)? DARKGREEN : RED); 
+  M5.Lcd.drawXBitmap(225, 2, wifiBMP, 16, 16, (WiFi.status()==WL_CONNECTED)? DARKGREEN : RED); 
   if (!sprinkler.keyboardInput)
   {
     showSprinklerStatus();
   }
 }
 
-
-
-void setupDisplay()
-{
-  M5.Lcd.setRotation(2);
-  drawButtonBar2("MENU",BLACK,"SETTINGS",BLACK);
-}
 
 
