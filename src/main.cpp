@@ -232,7 +232,10 @@ void IRAM_ATTR timeCheck()
 void setup()
 {
   M5.begin(true, false, true, true); 
+  M5.Lcd.begin();
   M5.Lcd.setRotation(2);
+  //Serial.begin(115200);
+  //Wire.begin(21, 22, (uint32_t)400000U);
   //I2Cscan();
   //sprinkler.debugMode = true;
   sprinkler.staat = Wacht;

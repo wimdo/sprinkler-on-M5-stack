@@ -40,7 +40,7 @@ void valveSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHei
     }
     if (clockData.checkSecond) readTime();
     if ((millis() - previousMillis) > 10000){
-      //spr.deleteSprite();
+      spr.deleteSprite();
       return;
     } 
     M5.update();
@@ -99,11 +99,11 @@ void valveSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHei
           break;
         }
       }
-      //spr.deleteSprite();
+      spr.deleteSprite();
       return ;
     } 
     if (checkTouchButtonSprite(&escapeButton, spriteX, spriteY,coordinateX, coordinateY)){
-      //spr.deleteSprite();
+      spr.deleteSprite();
       return ;
     }
 
@@ -121,8 +121,9 @@ int valveSettings(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
   {
     localButton[i] =(touchButton) {2,9+i*33,236,30,DARKGREY,BLACK,mySprinkler.valve[i+1].valveName};
   }
-  //spr.setColorDepth(8);
-  //spr.createSprite(spriteWidth,spriteHeight);
+  spr.deleteSprite();
+  spr.setColorDepth(8);
+  spr.createSprite(spriteWidth,spriteHeight);
 
   long previousMillis = millis();
   while (1)
@@ -170,7 +171,6 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
   // {"none","time", "sunrise", "sunset","day","night", "temp on"};
   // naam, stateAtStart, state, actief, control, data1, data2, data3, data 4
   int menuItems = 7;
-  //int localStateAtStart=relais[localRelais].stateAtStart;
   int localActief=relais[localRelais].actief;
   int localControl=relais[localRelais].control;
   int localData1=relais[localRelais].data1;
@@ -276,24 +276,24 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
             keuze=localMenuTouchBoxSprite (50, 50, localActief,onoff_table,2,buffer);  
             if ((keuze !=buttonNone)&&(keuze!=localActief)){
               localActief=keuze;
-              dataButton[2].text=onoff_table[localActief];
-              dataButton[2].textColor=WHITE;
-              localButton[2].textColor=WHITE;
+              dataButton[i].text=onoff_table[localActief];
+              dataButton[i].textColor=WHITE;
+              localButton[i].textColor=WHITE;
             } else {
-              dataButton[2].textColor=BLACK;
-              localButton[2].textColor=BLACK;
+              dataButton[i].textColor=BLACK;
+              localButton[i].textColor=BLACK;
             }
             break;
           case 2: // control
             keuze=localMenuTouchBoxSprite (0, 0, localControl,program_Table,7,buffer);  
             if ((keuze !=buttonNone)&&(keuze!=localControl)){
               localControl=keuze;
-              dataButton[3].text=program_Table[localControl];
-              dataButton[3].textColor=WHITE;
-              localButton[3].textColor=WHITE;
+              dataButton[i].text=program_Table[localControl];
+              dataButton[i].textColor=WHITE;
+              localButton[i].textColor=WHITE;
             } else {
-              dataButton[3].textColor=BLACK;
-              localButton[3].textColor=BLACK;
+              dataButton[i].textColor=BLACK;
+              localButton[i].textColor=BLACK;
             }
             break;
           case 3: {// bij temperatuur is er een verschil in de min max waarden
@@ -306,12 +306,12 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
             keuze =getalTouchBoxSprite (50, 50, localData1, minVal, maxVal, 1,buffer);
             if ((keuze !=buttonNone)&&(keuze!=localData1)){
               localData1 = keuze;
-              dataButton[4].text=String(localData1);
-              dataButton[4].textColor=WHITE;
-              localButton[4].textColor=WHITE;
+              dataButton[i].text=String(localData1);
+              dataButton[i].textColor=WHITE;
+              localButton[i].textColor=WHITE;
             } else {
-              dataButton[4].textColor=BLACK;
-              localButton[4].textColor=BLACK;
+              dataButton[i].textColor=BLACK;
+              localButton[i].textColor=BLACK;
             }
             break;
           }  
@@ -319,36 +319,36 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
             keuze =getalTouchBoxSprite (50, 50, localData2, 0, 59, 1,buffer);
             if ((keuze !=buttonNone)&&(keuze!=localData2)){
               localData2 = keuze;
-              dataButton[5].text=String(localData2);
-              dataButton[5].textColor=WHITE;
-              localButton[5].textColor=WHITE;
+              dataButton[i].text=String(localData2);
+              dataButton[i].textColor=WHITE;
+              localButton[i].textColor=WHITE;
             } else {
-              dataButton[5].textColor=BLACK;
-              localButton[5].textColor=BLACK;
+              dataButton[i].textColor=BLACK;
+              localButton[i].textColor=BLACK;
             }
             break;
           case 5:
             keuze =getalTouchBoxSprite (50, 50, localData3, 0, 23, 1,buffer);
             if ((keuze !=buttonNone)&&(keuze!=localData3)){
               localData3 = keuze;
-              dataButton[6].text=String(localData3);
-              dataButton[6].textColor=WHITE;
-              localButton[6].textColor=WHITE;
+              dataButton[i].text=String(localData3);
+              dataButton[i].textColor=WHITE;
+              localButton[i].textColor=WHITE;
             } else {
-              dataButton[6].textColor=BLACK;
-              localButton[6].textColor=BLACK;
+              dataButton[i].textColor=BLACK;
+              localButton[i].textColor=BLACK;
             }
             break;
           case 6:
             keuze =getalTouchBoxSprite (50, 50, localData4, 0, 59, 1,buffer);
             if ((keuze !=buttonNone)&&(keuze!=localData4)){
               localData4 = keuze;
-              dataButton[7].text=String(localData4);
-              dataButton[7].textColor=WHITE;
-              localButton[7].textColor=WHITE;
+              dataButton[i].text=String(localData4);
+              dataButton[i].textColor=WHITE;
+              localButton[i].textColor=WHITE;
             } else {
-              dataButton[7].textColor=BLACK;
-              localButton[7].textColor=BLACK;
+              dataButton[i].textColor=BLACK;
+              localButton[i].textColor=BLACK;
             }
             break;
         }
@@ -367,16 +367,15 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
             relais[localRelais].data3=localData3;
             relais[localRelais].data4=localData4;
             writeRelaisSpecFile();
-            // alle relais opnieuw controleren
-            Serial.println("values saved");
+            startRelaisProgram();
             break;
         }
       }
-      //spr.deleteSprite();
+      spr.deleteSprite();
       return ;
     } 
     if (checkTouchButtonSprite(&escapeButton, spriteX, spriteY,coordinateX, coordinateY)){
-      //spr.deleteSprite();
+      spr.deleteSprite();
       return ;
     }
   }
@@ -591,7 +590,8 @@ int timeSetting(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
           RTCDate.Date = localDay;
           RTCDate.Year = localYear;
           M5.Rtc.SetDate(&RTCDate);
-          Serial.println("values saved");
+          startRelaisProgram();
+          controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay);
           break;
         }
       }
@@ -737,6 +737,7 @@ int sprinklerSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight
 
 int programmaSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
 {
+  /*
   int localProgramma = 1;
   int widthLocationData = 120;
   drawInfoBox(0,19,272,240,1, "PROGRAMMA");
@@ -787,6 +788,7 @@ int programmaSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight
             break;
       }
   }
+  */
 }
 
 int wifiOptions(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
@@ -796,7 +798,7 @@ int wifiOptions(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
 
 
 int resetOptions(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
-  Serial.println("programma wijzigen nog uitwerken");
+  Serial.println("reeset opties nog uitwerken");
   return 0;
 }
 
@@ -1004,10 +1006,7 @@ void settingsMenu(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
           myServer.sensorToggle = wisselKeuze;
           writeMySprinklerFile();
           writeMyServerFile();
-          controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay); 
-          checkRelaisSettingsOnTime(RTCtime.Hours, RTCtime.Minutes);
-          //checkRelaisSettingsTempOnTime();
-          Serial.println("values saved");
+          controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay);
           break;
         }
       }
@@ -1018,8 +1017,6 @@ void settingsMenu(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
       spr.deleteSprite();
       return ;
     }
-
-
   }
 }
 
@@ -1082,6 +1079,7 @@ void mainMenu(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
             return;
             break;
           case 3: // programma wijzigine;
+            keuze = programmaSelectie(0,19,240,320);
             spr.deleteSprite();
             return;
             break;
@@ -1092,6 +1090,7 @@ void mainMenu(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
             break;
           case 5:  
             keuze = resetOptions(0,19,240,320);
+            spr.deleteSprite();
             return;
             break;              
           }

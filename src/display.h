@@ -119,6 +119,7 @@ void drawButtonBar2(String buttonString1,int color1, String buttonString2,int co
 
 void outlineMainscreen()
 {
+  M5.Lcd.clear();
   drawInfoBox(0,19,68,240,1, "INFO");
   drawInfoBox(0,19+68,68+68,118,1, "SPRINKLER"); // 87
   drawInfoBox(120,19+68,68+68-38,120,1, "RELAIS"); // 155
@@ -263,7 +264,7 @@ void showTimeBar()
   M5.lcd.setCursor(2,1); 
   M5.Lcd.printf("%02d:%02d:%02d %s %02d/%02d",RTCtime.Hours,RTCtime.Minutes,RTCtime.Seconds,dayOfWeek[RTCDate.WeekDay], RTCDate.Date, RTCDate.Month);
   M5.Lcd.setTextSize(1);
-  M5.Lcd.drawXBitmap(225, 2, wifiBMP, 16, 16, (WiFi.status()==WL_CONNECTED)? DARKGREEN : RED); 
+  M5.Lcd.drawXBitmap(225, 0, wifiBMP, 16, 16, (WiFi.status()==WL_CONNECTED)? DARKGREEN : RED); 
   if (!sprinkler.keyboardInput)
   {
     showSprinklerStatus();
