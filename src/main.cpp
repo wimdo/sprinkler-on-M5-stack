@@ -99,8 +99,8 @@ typedef struct
 } clockInfo;
 static clockInfo clockData;
 typedef struct{
-  boolean keyboardInput;
   int keyboardHold = 0;
+  boolean keyboardInput;
   boolean updateSprinklerSlider;
   boolean updateRelaisSlider;
 } screenData ;
@@ -118,10 +118,7 @@ typedef struct
   int sliderStateRelais = 0;
   boolean pumpOn;
   boolean valveOn;
-  //boolean keyboardInput;
-  //int keyboardHold = 0;
   boolean debugMode;
-
 } sprinklerData;
 sprinklerData sprinkler; // Spec
 
