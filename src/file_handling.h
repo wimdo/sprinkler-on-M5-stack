@@ -352,13 +352,13 @@ void reWriteRelaisSpecFile(){
     relais[0]= (relaisSpec){"Vijgen",0,1,3,23,55,0,0};
     relais[1]= (relaisSpec){"Appel",0,1,3,23,55,0,0};
     relais[2]= (relaisSpec){"Serre",0,1,6,23,0,0,0};
-    relais[3]= (relaisSpec){"Relais 4",0,0,0,0,0,0,0};
-    relais[4]= (relaisSpec){"Relais 5",0,0,0,0,0,0,0};
-    relais[5]= (relaisSpec){"Relais 6",0,0,0,0,0,0,0};
+    relais[3]= (relaisSpec){"Relais 4",0,1,1,9,55,14,32};
+    relais[4]= (relaisSpec){"Relais 5",0,1,2,11,35,0,0};
+    relais[5]= (relaisSpec){"Relais 6",0,1,2,19,22,0};
     relais[6]= (relaisSpec){"Dakraam",0,1,0,20,0,0,0};
     relais[7]= (relaisSpec){"Dakraam",0,1,0,20,0,0,0};
     writeRelaisSpecFile();
-    // naam, stateAtStart, state, actief, control, data1, data2, data3, data 4
+    // naam, state, actief, control, data1, data2, data3, data 4
     //programTable[] = {"none","time", "sunrise", "sunset","day","night", "temp"};
 }
 

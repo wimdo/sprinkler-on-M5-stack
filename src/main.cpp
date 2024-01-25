@@ -270,6 +270,7 @@ void setup()
   setupTemperature();
   sprinkler.keyboardInput = false;
   Serial.printf("SYSTEM : /s\n",VERSION);
+  M5.Rtc.GetTime(&RTCtime); 
   startRelaisProgram();
   controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay);
 }
