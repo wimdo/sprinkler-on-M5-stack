@@ -4,9 +4,9 @@ void readTime()
   M5.Rtc.GetTime(&RTCtime); //Gets the time in the real-time clock.  获取实时时钟内的时间
   M5.Rtc.GetDate(&RTCDate);
   clockData.checkSecond = false;
-  if (sprinkler.keyboardHold > 0)
+  if (screen.keyboardHold > 0)
   {
-    sprinkler.keyboardHold--;
+    screen.keyboardHold--;
   }
   ArduinoOTA.handle();
   showTimeBar();
@@ -30,9 +30,9 @@ void setupTime() {
       RTCDate.Date = timeInfo.tm_mday;
       RTCDate.Year = timeInfo.tm_year + 1900;
       M5.Rtc.SetDate(&RTCDate);
-      sprinkler.timeSetByNTP= true;
+      clockData.timeSetByNTP= true;
     } else {
-      sprinkler.timeSetByNTP= false;
+      clockData.timeSetByNTP= false;
     } 
   }
   readTime(); 
@@ -41,8 +41,8 @@ void setupTime() {
 void calculateSolarTime(){
   sun.setPosition(LATITUDE, LONGITUDE, DST_OFFSET);
   sun.setCurrentDate(RTCDate.Year, RTCDate.Month, RTCDate.Date);
-  sprinkler.sunrise = static_cast<int>(sun.calcSunrise());
-  sprinkler.sunset = static_cast<int>(sun.calcSunset());
+  clockData.sunrise = static_cast<int>(sun.calcSunrise());
+  clockData.sunset = static_cast<int>(sun.calcSunset());
   clockData.previousMinute = RTCtime.Minutes;
   boolean summertime = false;
   if ((RTCDate.Month>3) || (RTCDate.Month<11)){
@@ -77,10 +77,10 @@ void calculateSolarTime(){
     }
   }
   if (summertime){
-    sprinkler.sunrise=sprinkler.sunrise+60;
-    sprinkler.sunset=sprinkler.sunset+60;
+    clockData.sunrise=clockData.sunrise+60;
+    clockData.sunset=clockData.sunset+60;
   }
-  Serial.printf("SYSTEM : Time: %d:%d, Sunrise: %d:%d, Sunset %d:%d\n", RTCtime.Hours,RTCtime.Minutes,(sprinkler.sunrise/60), (sprinkler.sunrise%60), (sprinkler.sunset/60), (sprinkler.sunset%60));
+  Serial.printf("SYSTEM : Time: %d:%d, Sunrise: %d:%d, Sunset %d:%d\n", RTCtime.Hours,RTCtime.Minutes,(clockData.sunrise/60), (clockData.sunrise%60), (clockData.sunset/60), (clockData.sunset%60));
 }
 
 

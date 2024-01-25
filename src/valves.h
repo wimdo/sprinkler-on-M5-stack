@@ -76,8 +76,8 @@ void disableRelais()
     Wire.write(~sprinkler.sliderStateRelais);
     Wire.endTransmission();
   }
-  sprinkler.updateRelaisSlider = true;
-  sprinkler.sendData = true;
+  screen.updateRelaisSlider = true;
+  clockData.sendData = true;
 }
 
 void switchRelais(byte relais, boolean state)
@@ -90,8 +90,8 @@ void switchRelais(byte relais, boolean state)
     Wire.write((byte)~sprinkler.sliderStateRelais);
     Wire.endTransmission();
   }
-  sprinkler.updateRelaisSlider = true; 
-  sprinkler.sendData = true;
+  screen.updateRelaisSlider = true; 
+  clockData.sendData = true;
   Serial.println(sprinkler.sliderStateRelais,BIN);
 }
 
@@ -144,7 +144,7 @@ void checkRelaisSettingsOnTime(int hour, int min){
               switchRelais(i, OFF);
           }
       } else if (relais[i].control==2){
-          if (minuteCount==sprinkler.sunrise){
+          if (minuteCount==clockData.sunrise){
               Serial.printf("RELAY : %d:%d switch relay %d state %s\n",hour, min,i,"on");
               switchRelais(i, ON);
           }
@@ -153,7 +153,7 @@ void checkRelaisSettingsOnTime(int hour, int min){
               switchRelais(i, OFF);
           }
       } else if (relais[i].control==3){
-          if (minuteCount==sprinkler.sunset){
+          if (minuteCount==clockData.sunset){
               Serial.printf("RELAY : %d:%d switch relay %d state %s\n",hour, min,i,"on");
               switchRelais(i, ON);
           }
@@ -162,11 +162,11 @@ void checkRelaisSettingsOnTime(int hour, int min){
               switchRelais(i, OFF);
           }
       } else if (relais[i].control==4){
-          if (minuteCount==sprinkler.sunrise){
+          if (minuteCount==clockData.sunrise){
               Serial.printf("RELAY : %d:%d switch relay %d state %s\n",hour, min,i,"on");
               switchRelais(i, ON);
           }
-          if (minuteCount==sprinkler.sunset){
+          if (minuteCount==clockData.sunset){
               Serial.printf("RELAY : %d:%d switch relay %d state %s\n",hour, min,i,"off");
               switchRelais(i, OFF);
           }
@@ -207,14 +207,14 @@ void switchValveRelay(byte relay, boolean state)
     Wire.write(~sprinkler.sliderStateValve);
     Wire.endTransmission();
   }
-  sprinkler.updateSprinklerSlider = true;
-  sprinkler.sendData = true;
+  screen.updateSprinklerSlider = true;
+  clockData.sendData = true;
 }
 
 void switchPump(boolean state)
 {
   if (state ==1){
-    sprinkler.keyboardHold=2;
+    screen.keyboardHold=2;
     sprinkler.pumpOn = true;
   } else {
     sprinkler.pumpOn = false;
@@ -226,7 +226,7 @@ void switchPump(boolean state)
 void switchValve(byte valve, boolean state)
 {
   if (state ==1){
-    sprinkler.keyboardHold=1;
+    screen.keyboardHold=1;
     sprinkler.valveOn = true;
   } else {
     sprinkler.valveOn = false;
@@ -245,8 +245,8 @@ void disableValves()
     Wire.endTransmission();
     Wire.requestFrom(SprinklerI2C, 1);
   }
-  sprinkler.updateSprinklerSlider = true;
-  sprinkler.sendData = true;
+  screen.updateSprinklerSlider = true;
+  clockData.sendData = true;
   sprinkler.valveOn =false;
 }
 
@@ -279,7 +279,7 @@ void ControleValves()
     sprinkler.staat = End;
     sprinkler.valveTimeCounter = 0;
     sprinkler.valveSelected = 0;
-    if (sprinkler.keyboardInput ==false){
+    if (screen.keyboardInput ==false){
       drawButtonBar2("MENU",BLACK,"SETTINGS",BLACK);
     }
   }
@@ -290,7 +290,7 @@ void sprinklerStop(){
   sprinkler.staat = End;
   sprinkler.valveTimeCounter = 0;
   sprinkler.valveSelected = 0;
-  if (sprinkler.keyboardInput ==false){
+  if (screen.keyboardInput ==false){
     drawButtonBar2("MENU",BLACK,"SETTINGS",BLACK);
   }
 }
@@ -391,8 +391,8 @@ void controleerProgramma(byte uur, byte minuten, byte weekday)
         }
       }
     }
-    sprinkler.hourNext = (timeInMin - timeInMin%60) / 60;
-    sprinkler.minuteNext = timeInMin%60;
+    clockData.hourNext = (timeInMin - timeInMin%60) / 60;
+    clockData.minuteNext = timeInMin%60;
   }
 
 }

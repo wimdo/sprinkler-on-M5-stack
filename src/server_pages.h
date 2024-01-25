@@ -37,13 +37,13 @@ void webServerMainPage(WiFiClient client) {
       }
       else
       {
-        if (sprinkler.hourNext == 24)
+        if (clockData.hourNext == 24)
         {
           sprintf(infoLine0,"Start : morgen        ");
         }
         else
         {
-          sprintf(infoLine0,"Start om %02d:%02d          ", sprinkler.hourNext, sprinkler.minuteNext);
+          sprintf(infoLine0,"Start om %02d:%02d          ", clockData.hourNext, clockData.minuteNext);
         }
       }
     }
@@ -319,7 +319,7 @@ void mySprinklerSettingsPage() {
   client.println("<div id=\"formbox2\">");
   client.println("<h1>Tijd</h1>");
   client.println("</div>");
-  if (!sprinkler.timeSetByNTP) {
+  if (!clockData.timeSetByNTP) {
     client.println("<div id=\"formbox\">");
     valueString = String(RTCtime.Hours) + ":" + String(RTCtime.Minutes); //+":"+String(timeNow.second()); //value="09:00"
     client.println("<p><label for=\"TIME\">Tijd: </label>");

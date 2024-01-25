@@ -90,9 +90,21 @@ typedef struct
   int lastSecond;
   int previousMinute;
   boolean checkSecond;
+  int sunrise;
+  int sunset;
+  int hourNext;
+  int minuteNext;
+  boolean timeSetByNTP;
+  boolean sendData;
 } clockInfo;
 static clockInfo clockData;
-
+typedef struct{
+  boolean keyboardInput;
+  int keyboardHold = 0;
+  boolean updateSprinklerSlider;
+  boolean updateRelaisSlider;
+} screenData ;
+screenData screen;
 typedef struct
 {
   int staat;
@@ -104,20 +116,12 @@ typedef struct
   int valveSelected = 0;
   int sliderStateValve = 0;
   int sliderStateRelais = 0;
-  int hourNext;
-  int minuteNext;
-  int sunrise;
-  int sunset;
   boolean pumpOn;
   boolean valveOn;
-  boolean timeSetByNTP;
-  boolean keyboardInput;
-  int keyboardHold = 0;
-  int buttonPressed;
+  //boolean keyboardInput;
+  //int keyboardHold = 0;
   boolean debugMode;
-  boolean updateSprinklerSlider;
-  boolean updateRelaisSlider;
-  boolean sendData;
+
 } sprinklerData;
 sprinklerData sprinkler; // Spec
 
@@ -162,7 +166,6 @@ sprinklerProgram SprinklerProgramRun;
 typedef struct
 {
   char relaisName[10]; //?? 09/08 voor 9 bytes gaat het niet
-  //boolean stateAtStart;
   boolean state;
   boolean actief;
   int control;
@@ -239,7 +242,7 @@ void setup()
   //I2Cscan();
   //sprinkler.debugMode = true;
   sprinkler.staat = Wacht;
-  sprinkler.keyboardInput = true;
+  screen.keyboardInput = true;
   systemTimer = timerBegin(0, 80, true); // true = count up
   timerAlarmWrite(systemTimer, 1000000, true);
   timerAlarmEnable(systemTimer);
@@ -257,7 +260,7 @@ void setup()
   connectWithWiFi();
   calculateSolarTime();
   setupTemperature();
-  sprinkler.keyboardInput = false;
+  screen.keyboardInput = false;
   Serial.printf("SYSTEM : /s\n",VERSION);
   M5.Rtc.GetTime(&RTCtime); 
   startRelaisProgram();
@@ -266,44 +269,44 @@ void setup()
 
 void screenTouchCheck()
 {
-  if (sprinkler.keyboardHold==0){
+  if (screen.keyboardHold==0){
     M5.update();
     if (b1.wasPressed()) {
       soundsBeep(1000, 100, 1);
-      sprinkler.keyboardInput = true;
+      screen.keyboardInput = true;
       mainMenu(0,19,240,320);
       outlineMainscreen();
-      sprinkler.updateRelaisSlider = true;
-      sprinkler.updateSprinklerSlider = true;
-      sprinkler.keyboardInput = false;
+      screen.updateRelaisSlider = true;
+      screen.updateSprinklerSlider = true;
+      screen.keyboardInput = false;
     } else if (b2.wasPressed()) {
         if (sprinkler.staat == Wacht){
         soundsBeep(1000, 100, 1);
-        sprinkler.keyboardInput = true;
+        screen.keyboardInput = true;
         settingsMenu(0,19,240,320);
         outlineMainscreen();
-        sprinkler.updateRelaisSlider = true;
-        sprinkler.updateSprinklerSlider = true;
-        sprinkler.keyboardInput = false;
+        screen.updateRelaisSlider = true;
+        screen.updateSprinklerSlider = true;
+        screen.keyboardInput = false;
         } else {
           sprinklerStop();
         }
     } else if (sprinklerZone.wasPressed()) {
       soundsBeep(1000, 100, 1);
-      sprinkler.keyboardInput = true;
-      sprinkler.buttonPressed = sprinklerSelectie(0,19,240,320);
+      screen.keyboardInput = true;
+      sprinklerSelectie(0,19,240,320);
       outlineMainscreen();
-      sprinkler.updateRelaisSlider = true;
-      sprinkler.updateSprinklerSlider = true;
-      sprinkler.keyboardInput = false;
+      screen.updateRelaisSlider = true;
+      screen.updateSprinklerSlider = true;
+      screen.keyboardInput = false;
     } else if (relaisZone.wasPressed()) {
       soundsBeep(1000, 100, 1);
-      sprinkler.keyboardInput = true;
-      sprinkler.buttonPressed = relaisSelectie(0,19,240,320);
+      screen.keyboardInput = true;
+      relaisSelectie(0,19,240,320);
       outlineMainscreen();
-      sprinkler.updateRelaisSlider = true;
-      sprinkler.updateSprinklerSlider = true;
-      sprinkler.keyboardInput = false;
+      screen.updateRelaisSlider = true;
+      screen.updateSprinklerSlider = true;
+      screen.keyboardInput = false;
     }  
   }
 }
@@ -316,7 +319,7 @@ void loop()
     readTime();
     if ( RTCtime.Minutes != clockData.previousMinute )
     {
-      controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay); //controleerProgramma(now.hour(),now.minute(),now.dayOfTheWeek());
+      controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay); 
       checkRelaisSettingsOnTime(RTCtime.Hours, RTCtime.Minutes);
       //checkRelaisSettingsTempOnTime();
       if (RTCtime.Minutes == 0 && RTCtime.Hours == 0)
@@ -336,16 +339,16 @@ void loop()
               connectWithWiFi();
             }
           } else {
-            sprinkler.sendData= true;
+            clockData.sendData= true;
           }
         } else {
-          sprinkler.sendData= true;
+          clockData.sendData= true;
         }   
       } 
       checkSprinklerStatus();
-      if (sprinkler.sendData) {
+      if (clockData.sendData) {
         sendData();
-        sprinkler.sendData= false;
+        clockData.sendData= false;
       } 
       readTemperature();
       checkRelaisSettingsTemp();  

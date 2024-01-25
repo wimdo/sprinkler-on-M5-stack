@@ -198,18 +198,18 @@ void showSprinklerStatus()
   int basePos = 0;
   int columnPos =0;
   M5.Lcd.setTextColor(DARKGREY,BLACK); 
-  if (sprinkler.updateSprinklerSlider)
+  if (screen.updateSprinklerSlider)
   {
     showSprinklerSlider();
-    sprinkler.updateSprinklerSlider = false;
+    screen.updateSprinklerSlider = false;
   }
-  if (sprinkler.updateRelaisSlider)
+  if (screen.updateRelaisSlider)
   {
     showRelaySlider();
-    sprinkler.updateRelaisSlider = false;
+    screen.updateRelaisSlider = false;
   }
   M5.Lcd.setCursor(2, 54);
-  M5.Lcd.printf("Op %d:%d, Onder %d:%d", (sprinkler.sunrise/60), (sprinkler.sunrise%60), (sprinkler.sunset/60), (sprinkler.sunset%60));
+  M5.Lcd.printf("Op %d:%d, Onder %d:%d", (clockData.sunrise/60), (clockData.sunrise%60), (clockData.sunset/60), (clockData.sunset%60));
   M5.Lcd.setCursor(2, 62);
   M5.Lcd.printf("IP   : %u.%u.%u.%u", myIP[0],myIP[1],myIP[2],myIP[3] );
   M5.Lcd.setCursor(2, 70);
@@ -229,8 +229,8 @@ void showSprinklerStatus()
         if (sprinkler.debugMode) {M5.Lcd.print("Auto Debugmode        ");}
         else
         {
-          if (sprinkler.hourNext == 24) {M5.Lcd.print("Start : morgen        ");}
-          else {M5.Lcd.printf("Start om %02d:%02d          ", sprinkler.hourNext, sprinkler.minuteNext);} 
+          if (clockData.hourNext == 24) {M5.Lcd.print("Start : morgen        ");}
+          else {M5.Lcd.printf("Start om %02d:%02d          ", clockData.hourNext, clockData.minuteNext);} 
         }
       }
       else {(sprinkler.debugMode) ? M5.Lcd.print("Manueel Debugmode    ") : M5.Lcd.print("Manueel              ");}
@@ -265,7 +265,7 @@ void showTimeBar()
   M5.Lcd.printf("%02d:%02d:%02d %s %02d/%02d",RTCtime.Hours,RTCtime.Minutes,RTCtime.Seconds,dayOfWeek[RTCDate.WeekDay], RTCDate.Date, RTCDate.Month);
   M5.Lcd.setTextSize(1);
   M5.Lcd.drawXBitmap(225, 0, wifiBMP, 16, 16, (WiFi.status()==WL_CONNECTED)? DARKGREEN : RED); 
-  if (!sprinkler.keyboardInput)
+  if (!screen.keyboardInput)
   {
     showSprinklerStatus();
   }

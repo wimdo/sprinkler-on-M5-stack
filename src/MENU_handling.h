@@ -610,7 +610,7 @@ int timeSetting(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
 
 
 
-int sprinklerSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
+void sprinklerSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
   
   boolean sprinklerSelected = false;
   boolean timeSelected = false;  // de 8 knoppen laten zien
@@ -648,7 +648,7 @@ int sprinklerSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight
     if (clockData.checkSecond) readTime();
     if ((millis() - previousMillis) > 10000){
       spr.deleteSprite();
-      return buttonNone;
+      return;
     }
     M5.update();  
     if ( M5.Touch.changed ){ 
@@ -694,7 +694,7 @@ int sprinklerSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight
       if (showTimeSelect){
         sprinklerTime =getalTouchBoxSprite (50, 50, sprinklerTime, 0, 60, 5,mySprinkler.valve[sprinklerKeuze+1].valveName);
         if (sprinklerTime ==buttonNone){
-          return buttonNone;
+          return;
         } else if (sprinklerTime==0){
           previousMillis = millis();
           timeSelected = false;
@@ -724,12 +724,12 @@ int sprinklerSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight
           laadProgramma(0);
           keuze = 0;
           spr.deleteSprite();
-          return keuze;
+          return;
         }
       } 
       if (checkTouchButtonSprite(&escapeButton, spriteX, spriteY,coordinateX, coordinateY)){
           spr.deleteSprite();
-          return buttonNone;
+          return;
       }
     } 
   }
@@ -802,7 +802,7 @@ int resetOptions(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
   return 0;
 }
 
-int relaisSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
+void relaisSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
 {
   boolean refreshSprite = true;
   int menuItems = 7;
@@ -832,7 +832,7 @@ int relaisSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
     if (clockData.checkSecond) readTime();
     if ((millis() - previousMillis) > 10000){
       spr.deleteSprite();
-      return buttonNone;
+      return;
     }
     M5.update();  
     if ( M5.Touch.changed ){ 
@@ -847,7 +847,7 @@ int relaisSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
       }
       if (checkTouchButtonSprite(&escapeButton, spriteX, spriteY,coordinateX, coordinateY)){
         spr.deleteSprite();
-        return buttonNone;
+        return;
       }
     } 
   }
@@ -1069,12 +1069,12 @@ void mainMenu(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
             return;
             break;
           case 1:
-            keuze = sprinklerSelectie(0,19,240,320);
+            sprinklerSelectie(0,19,240,320);
             spr.deleteSprite();
             return;
             break;
           case 2:
-            keuze = relaisSelectie(0,19,240,320);
+            relaisSelectie(0,19,240,320);
             spr.deleteSprite();
             return;
             break;
