@@ -95,39 +95,89 @@ void switchRelais(byte relais, boolean state)
   Serial.println(sprinkler.sliderStateRelais,BIN);
 }
 
+void switchDakraam(boolean state){
+  if (state==OPEN){
+    bitWrite(sprinkler.sliderStateRelais,6,1);
+    bitWrite(sprinkler.sliderStateRelais,7,1);
+    sprinkler.sliderStateDakraam=OPEN;   
+    Serial.println("dakraam open");
+  } else{
+    bitWrite(sprinkler.sliderStateRelais,6,1);
+    bitWrite(sprinkler.sliderStateRelais,7,0);
+    sprinkler.sliderStateDakraam=CLOSE;   
+    Serial.println("dakraam dicht");
+  }
+  Wire.requestFrom(RelayI2C, 1);
+  if (Wire.available()) //If the request is available
+  {
+    Wire.beginTransmission(RelayI2C);
+    Wire.write((byte)~sprinkler.sliderStateRelais);
+    Wire.endTransmission();
+  }
+  screen.updateRelaisSlider = true; 
+  clockData.sendData = true;
+}
+
+void disableDakraamRelais(){
+    bitWrite(sprinkler.sliderStateRelais,6,0);
+    bitWrite(sprinkler.sliderStateRelais,7,0);
+    Wire.requestFrom(RelayI2C, 1);
+    if (Wire.available()) //If the request is available
+    {
+      Wire.beginTransmission(RelayI2C);
+      Wire.write((byte)~sprinkler.sliderStateRelais);
+      Wire.endTransmission();
+    }
+    screen.updateRelaisSlider = true; 
+    clockData.sendData = true;
+    Serial.println("disable dakraam relais");
+}
+
+void dakraamManueel(boolean state){
+    if (state == OPEN){
+      relais[6].data5=relais[6].data2;
+      switchDakraam(OPEN); 
+      // automatisch verloop stoppen
+    } else {
+      relais[6].data5=2;
+      switchDakraam(CLOSE); 
+    }
+}
 
 
+void checkDakraam(){
+  if (relais[6].actief){
+    if (temperature[0].value >=  relais[6].data1){
+      if (relais[6].data5 > 0){
+        relais[6].data5=relais[6].data2;
+      } else {
+        relais[6].data5=relais[6].data2;
+        switchDakraam(OPEN);        
+      }
+    }         
+  }
+}
 
 void checkRelaisSettingsTemp(){
   for (int i=0; i<6;i++ ){
     if (relais[i].actief){
       if (relais[i].control==6){
         if (temperature[0].value >=  relais[i].data1){
-          relais[i].data2=6;
-          switchRelais(i, ON); 
-          Serial.println("temp geschakeld");
+          if (relais[i].data5 > 0){
+            // als waarde >0 is loopt het programma, enkel de waarde opnieuw op max zetten. 
+            relais[i].data5=relais[i].data2;
+          } else {
+            // als waarde 0 is, loopt het programma nog niet, waarde op max zetten en relais aan zetten
+            relais[i].data5=relais[i].data2;
+            switchRelais(i, ON); 
+          }
         }         
       } 
     }
   }
+  checkDakraam();
 }
-/*
-void checkRelaisSettingsTempOnTime(){
-  for (int i=0; i<6;i++ ){
-    if (relais[i].actief){
-      if (relais[i].control==6){
-        if (relais[i].data2>0){  // om het programma correct te laten starten, waarde
-          relais[i].data2--;
-          if (relais[i].data2==0){
-            switchRelais(i,OFF);  
-          }
-        }    
-        //Serial.printf("program %d  switch relay %d , time %d\n", i, relaisProgram[i].relais,relaisProgram[i].data2);       
-      }         
-    }  
-  }
-}
-*/
+
 
 void checkRelaisSettingsOnTime(int hour, int min){
   int minuteCount = hour*60+min;
@@ -173,15 +223,34 @@ void checkRelaisSettingsOnTime(int hour, int min){
       } else if(relais[i].control==5){
           Serial.println("night");
       } else if (relais[i].control==6){
-        if (relais[i].data2>0){  // om het programma correct te laten starten, waarde
-          relais[i].data2--;
-          if (relais[i].data2==0){
+        if (relais[i].data5>0){  // om het programma correct te laten starten, waarde
+          relais[i].data5--;
+          if (relais[i].data5==0){
             switchRelais(i,OFF);  
           }
         } 
       } 
     }  
   }
+  if (relais[6].actief){
+    if (relais[6].data5>0){  // om het programma correct te laten starten, waarde
+        relais[6].data5--;
+        Serial.print("dakraam teller ");
+        Serial.println(relais[6].data5);
+        if (relais[6].data5==relais[6].data2-2){
+          disableDakraamRelais();
+        }
+        if (relais[6].data5==2){
+          switchDakraam(CLOSE);
+           
+        }
+        if (relais[6].data5==0){
+          disableDakraamRelais();
+        }
+    }         
+  }
+
+
 }
 
 

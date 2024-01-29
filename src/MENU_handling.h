@@ -1,6 +1,6 @@
 
 void valveSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHeight,int localValve){
-  char *valveSettings_table[] = {"Naam", "werking", "Met Pomp"};
+  char *menuTable[] = {"Naam", "werking", "Met Pomp"};
   int localPercentageTime = mySprinkler.valve[localValve].percentage;
   int localWithPump = mySprinkler.valve[localValve].withPump;
   char buffer[15];
@@ -167,7 +167,7 @@ int valveSettings(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
 
 
 void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHeight,int localRelais){
-  char *localButtonTable[] = {"Naam","Actief", "Programma","data1","data2","data3","data4"};
+  char *menuTable[] = {"Naam","Actief", "Programma","data1","data2","data3","data4"};
   // {"none","time", "sunrise", "sunset","day","night", "temp on"};
   // naam, stateAtStart, state, actief, control, data1, data2, data3, data 4
   int menuItems = 7;
@@ -186,7 +186,7 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
   touchButton escapeButton =(touchButton) {0,272,118,30,DARKGREY,BLACK,"ESC"};
   touchButton saveButton =(touchButton) {120,272,118,30,DARKGREY,BLACK,"SAVE"};
   for (int i = 0; i < menuItems ; i++){
-    localButton[i] =(touchButton) {2,9+i*33,116,30,DARKGREY,BLACK,localButtonTable[i]};
+    localButton[i] =(touchButton) {2,9+i*33,116,30,DARKGREY,BLACK,menuTable[i]};
   }
   dataButton[0] =(touchButton) {120,9+0*33,116,30,DARKGREY,BLACK,relais[localRelais].relaisName};
   dataButton[1] =(touchButton) {120,9+1*33,116,30,DARKGREY,BLACK,janee_table[localActief]};
@@ -234,8 +234,9 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
           menuItems = 3;
           break;  
         case 6:
-          menuItems = 4;
+          menuItems = 5;
           localButton[3].text ="temp";
+          localButton[4].text ="Min stop";
           break; 
       }
       for (int i = 0; i < menuItems ; i++)
@@ -296,7 +297,8 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
               localButton[i].textColor=BLACK;
             }
             break;
-          case 3: {// bij temperatuur is er een verschil in de min max waarden
+          case 3:
+          {// bij temperatuur is er een verschil in de min max waarden
             int minVal = 0;
             int maxVal = 23;
             if (localControl ==6){
@@ -316,7 +318,14 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
             break;
           }  
           case 4:
-            keuze =getalTouchBoxSprite (50, 50, localData2, 0, 59, 1,buffer);
+          {
+            int minVal = 0;
+            int maxVal = 23;
+            if (localControl ==6){
+              minVal = 2;
+              maxVal =60;
+            }
+            keuze =getalTouchBoxSprite (50, 50, localData2, minVal, maxVal, 1,buffer);
             if ((keuze !=buttonNone)&&(keuze!=localData2)){
               localData2 = keuze;
               dataButton[i].text=String(localData2);
@@ -327,6 +336,7 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
               localButton[i].textColor=BLACK;
             }
             break;
+          }
           case 5:
             keuze =getalTouchBoxSprite (50, 50, localData3, 0, 23, 1,buffer);
             if ((keuze !=buttonNone)&&(keuze!=localData3)){
@@ -436,7 +446,7 @@ int relaisSettings(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
 
 
 int timeSetting(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
-  char *tijdManueel_table[] = {"Uur", "Min", "Sec","Dag", "Maand", "Jaar"};
+  char *menuTable[] = {"Uur", "Min", "Sec","Dag", "Maand", "Jaar"};
   int localHour = RTCtime.Hours;
   int localMin = RTCtime.Minutes;
   int localSec = RTCtime.Seconds;
@@ -451,7 +461,7 @@ int timeSetting(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
   touchButton dataButton[6];
   for (int i = 0; i < 6 ; i++)
   {
-    localButton[i] =(touchButton) {2,9+i*33,126,30,DARKGREY,BLACK,tijdManueel_table[i]};
+    localButton[i] =(touchButton) {2,9+i*33,126,30,DARKGREY,BLACK,menuTable[i]};
     dataButton[i]= (touchButton) {130,9+i*33,90,30,DARKGREY,BLACK,""};
   }
   dataButton[0].text=String(localHour);
@@ -802,10 +812,72 @@ int resetOptions(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
   return 0;
 }
 
+void dakraamSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
+{
+  char *menuTable[] = {"OPEN RAAM", "SLUIT RAAM", "temp open", "tijd open"};
+  boolean refreshSprite = true;
+  int menuItems = 4;
+  touchButton localButton[menuItems];
+  touchButton escapeButton =(touchButton) {0,272,240,30,DARKGREY,BLACK,"ESCAPE"};
+  for (int i = 0; i < menuItems ; i++)
+  {
+    localButton[i] =(touchButton) {2,9+i*33,236,30,DARKGREY,BLACK,menuTable[i]};
+  }
+  spr.setColorDepth(8);
+  spr.createSprite(spriteWidth,spriteHeight);
+
+  long previousMillis = millis();
+  while (1)
+  {
+    if (refreshSprite) {
+      spr.fillRect(0,0,spriteWidth,spriteHeight, BLACK);
+      drawInfoBoxSprite(&spr,240,271,1,"DAKRAAM SELECTIE");
+      for (int i = 0; i < menuItems ; i++)
+      {
+        drawTouchButtonSprite(&spr,&localButton[i],2,1); 
+      }
+      drawTouchButtonSprite(&spr,&escapeButton,2,1); 
+      spr.pushSprite(spriteX,spriteY);
+      refreshSprite =false;
+    }
+    if (clockData.checkSecond) readTime();
+    if ((millis() - previousMillis) > 10000){
+      spr.deleteSprite();
+      return;
+    }
+    M5.update();  
+    if ( M5.Touch.changed ){ 
+      int coordinateY = M5.Touch.point[0].y;
+      int coordinateX = M5.Touch.point[0].x;
+      int keuze =-1;
+      for (int i = 0; i < menuItems; i++){
+        if (checkTouchButtonSprite(&localButton[i], spriteX, spriteY, coordinateX, coordinateY)){
+          switch (i){
+            case 0:
+                dakraamManueel(OPEN);
+                spr.deleteSprite();
+                return;
+              break;
+            case 1:
+                dakraamManueel(CLOSE);
+                spr.deleteSprite();
+                return;
+              break;  
+          }
+        }
+        if (checkTouchButtonSprite(&escapeButton, spriteX, spriteY,coordinateX, coordinateY)){
+          spr.deleteSprite();
+          return;
+        }
+      }
+    } 
+  }
+}
+
 void relaisSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
 {
   boolean refreshSprite = true;
-  int menuItems = 7;
+  int menuItems = 6;
   touchButton localButton[menuItems];
   touchButton escapeButton =(touchButton) {0,272,240,30,DARKGREY,BLACK,"ESCAPE"};
   for (int i = 0; i < menuItems ; i++)
@@ -839,10 +911,10 @@ void relaisSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
       int coordinateY = M5.Touch.point[0].y;
       int coordinateX = M5.Touch.point[0].x;
       int keuze =-1;
-      for (int i = 0; i < 8; i++){
+      for (int i = 0; i < menuItems; i++){
         if (checkTouchButtonSprite(&localButton[i], spriteX, spriteY, coordinateX, coordinateY)){
           previousMillis = millis();
-          // naar relais specifiek programma gaan
+          relaisSettingsChange(0,19,240,320,i);
         }
       }
       if (checkTouchButtonSprite(&escapeButton, spriteX, spriteY,coordinateX, coordinateY)){
@@ -854,7 +926,7 @@ void relaisSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
 }
 
 void settingsMenu(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
-  char *settingsMenu_table[] = {"Pomp tijd", "Wacht tijd", "Modus", "Debug", "Wissel T","Tijd","Valve info","Relais info"};
+  char *menuTable[] = {"Pomp tijd", "Wacht tijd", "Modus", "Debug", "Wissel T","Tijd","Valve info","Relais info"};
   int pumpTimeKeuze = mySprinkler.pumpTime;
   int pauzeTimeKeuze = mySprinkler.pauzeTime;
   int modusKeuze = mySprinkler.modus;
@@ -869,7 +941,7 @@ void settingsMenu(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
   touchButton dataButton[8];
   for (int i = 0; i < 8 ; i++)
   {
-    localButton[i] =(touchButton) {2,9+i*33,146,30,DARKGREY,BLACK,settingsMenu_table[i]};
+    localButton[i] =(touchButton) {2,9+i*33,146,30,DARKGREY,BLACK,menuTable[i]};
     dataButton[i]= (touchButton) {150,9+i*33,90,30,DARKGREY,BLACK,""};
   }
   dataButton[0].text=String(pumpTimeKeuze);
@@ -1022,14 +1094,14 @@ void settingsMenu(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
 
 
 void mainMenu(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
-  char *mainMenu_table[] = {"programma kiezen", "sprinkler kiezen", "relais kiezen", "programma wijzigen","WIFI opties","Reset options"};
-  int menuItems = 6;
+  char *menuTable[] = {"programma kiezen", "sprinkler kiezen", "relais kiezen", "dakraam kiezen","programma wijzigen","WIFI opties","Reset options"};
+  int menuItems = 7;
   boolean refreshSprite = true;
   touchButton localButton[menuItems];
   touchButton escapeButton =(touchButton) {0,272,240,30,DARKGREY,BLACK,"ESCAPE"};
   for (int i = 0; i < menuItems ; i++)
   {
-    localButton[i] =(touchButton) {2,9+i*33,236,30,DARKGREY,BLACK,mainMenu_table[i]};
+    localButton[i] =(touchButton) {2,9+i*33,236,30,DARKGREY,BLACK,menuTable[i]};
   }
   spr.setColorDepth(8);
   spr.createSprite(spriteWidth,spriteHeight);
@@ -1078,17 +1150,22 @@ void mainMenu(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
             spr.deleteSprite();
             return;
             break;
-          case 3: // programma wijzigine;
+          case 3:
+            dakraamSelectie(0,19,240,320);
+            spr.deleteSprite();
+            return;
+            break;            
+          case 4: // programma wijzigine;
             keuze = programmaSelectie(0,19,240,320);
             spr.deleteSprite();
             return;
             break;
-          case 4:
+          case 5:
             keuze = wifiOptions(0,19,240,320);
             spr.deleteSprite();
             return;
             break;
-          case 5:  
+          case 6:  
             keuze = resetOptions(0,19,240,320);
             spr.deleteSprite();
             return;

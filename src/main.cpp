@@ -85,6 +85,9 @@ DallasTemperature temperatuur(&oneWire);
 
 #define ON 1
 #define OFF 0
+
+#define OPEN 1
+#define CLOSE 0
 typedef struct
 {
   int lastSecond;
@@ -96,6 +99,7 @@ typedef struct
   int minuteNext;
   boolean timeSetByNTP;
   boolean sendData;
+  boolean debug;
 } clockInfo;
 static clockInfo clockData;
 typedef struct{
@@ -116,6 +120,7 @@ typedef struct
   int valveSelected = 0;
   int sliderStateValve = 0;
   int sliderStateRelais = 0;
+  boolean sliderStateDakraam = CLOSE;
   boolean pumpOn;
   boolean valveOn;
   boolean debugMode;
@@ -170,6 +175,7 @@ typedef struct
   int data2;
   int data3;
   int data4;
+  int data5;
 } relaisSpec;
 relaisSpec relais[8];
 
@@ -198,7 +204,8 @@ typedef struct
 } touchButton;
 
 Button sprinklerZone (0,19+68,118,68+68);
-Button relaisZone (120,19+68,120,68+68);
+Button relaisZone (120,19+68,120,68+68-38);
+Button dakraamZone (120,19+68+68+68-38,120,38);
 Button b1(0,290,119,30);
 Button b2(120,290,120,30);
 
@@ -238,6 +245,7 @@ void setup()
   //Wire.begin(21, 22, (uint32_t)400000U);
   //I2Cscan();
   //sprinkler.debugMode = true;
+  clockData.debug =true;
   sprinkler.staat = Wacht;
   screen.keyboardInput = true;
   systemTimer = timerBegin(0, 80, true); // true = count up
@@ -304,6 +312,14 @@ void screenTouchCheck()
       screen.updateRelaisSlider = true;
       screen.updateSprinklerSlider = true;
       screen.keyboardInput = false;
+    } else if (dakraamZone.wasPressed()) {
+      soundsBeep(1000, 100, 1);
+      screen.keyboardInput = true;
+      dakraamSelectie(0,19,240,320);
+      outlineMainscreen();
+      screen.updateRelaisSlider = true;
+      screen.updateSprinklerSlider = true;
+      screen.keyboardInput = false;
     }  
   }
 }
@@ -328,27 +344,31 @@ void loop()
           setupTemperature(); // reset min en max waarde van de
         }
       }
-        clockData.previousMinute = RTCtime.Minutes;
-        if (sprinkler.staat == Wacht)
-        {
-          if (WiFi.status() != WL_CONNECTED){
-            if (clockData.previousMinute%5 == 0){
-              connectWithWiFi();
-            }
-          } else {
-            clockData.sendData= true;
+      clockData.previousMinute = RTCtime.Minutes;
+      if (sprinkler.staat == Wacht)
+      {
+        if (WiFi.status() != WL_CONNECTED){
+          if (clockData.previousMinute%5 == 0){
+            connectWithWiFi();
           }
         } else {
           clockData.sendData= true;
-        }   
+        }
+      } else {
+        clockData.sendData= true;
       } 
-      checkSprinklerStatus();
-      if (clockData.sendData) {
-        sendData();
-        clockData.sendData= false;
-      } 
-      readTemperature();
-      checkRelaisSettingsTemp();  
+      if (clockData.debug){
+        RTCtime.Seconds = 55;
+        M5.Rtc.SetTime(&RTCtime);
+      }  
+    } 
+    checkSprinklerStatus();
+    if (clockData.sendData) {
+      sendData();
+      clockData.sendData= false;
+    } 
+    readTemperature();
+    checkRelaisSettingsTemp();  
   }
   if (myServer.connectToWIFI){
     if (WiFi.status() == WL_CONNECTED){
