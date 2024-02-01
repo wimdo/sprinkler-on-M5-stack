@@ -814,18 +814,28 @@ int resetOptions(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
 
 void dakraamSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
 {
-  char *menuTable[] = {"OPEN RAAM", "SLUIT RAAM", "temp open", "tijd open"};
+  char *menuTable[] = {"OPEN RAAM", "SLUIT RAAM", "sturing", "temp open", "tijd open"};
   boolean refreshSprite = true;
-  int menuItems = 4;
+  int menuItems = 5;
   touchButton localButton[menuItems];
-  touchButton escapeButton =(touchButton) {0,272,240,30,DARKGREY,BLACK,"ESCAPE"};
-  for (int i = 0; i < menuItems ; i++)
-  {
-    localButton[i] =(touchButton) {2,9+i*33,236,30,DARKGREY,BLACK,menuTable[i]};
-  }
+  localButton[0] =(touchButton) {2,9,236,40,DARKGREY,BLACK,menuTable[0]};
+  localButton[1] =(touchButton) {2,9+43,236,40,DARKGREY,BLACK,menuTable[1]};
+  localButton[2] =(touchButton) {2,9+43+43,116,40,DARKGREY,BLACK,menuTable[2]};
+  localButton[3] =(touchButton) {2,9+43+43+43,116,40,DARKGREY,BLACK,menuTable[3]};
+  localButton[4] =(touchButton) {2,9+43+43+43+43,116,40,DARKGREY,BLACK,menuTable[4]};
+  touchButton dataButton[menuItems];
+  dataButton[2] =(touchButton) {120,9+43+43,118,40,DARKGREY,BLACK,auto_table[relais[6].actief]};
+  dataButton[3] =(touchButton) {120,9+43+43+43,118,40,DARKGREY,BLACK,String(relais[6].data1)};
+  dataButton[4] =(touchButton) {120,9+43+43+43+43,118,40,DARKGREY,BLACK,String(relais[6].data2)};
+  touchButton escapeButton =(touchButton) {0,272,118,30,DARKGREY,BLACK,"ESCAPE"};
+  touchButton saveButton =(touchButton) {120,272,118,30,DARKGREY,BLACK,"SAVE"};
   spr.setColorDepth(8);
   spr.createSprite(spriteWidth,spriteHeight);
-
+  char buffer[15];
+  boolean valueChanged[menuItems] ={false,false,false,false, false};
+  boolean localActief=relais[6].actief;
+  int localData1 = relais[6].data1;
+  int localData2 = relais[6].data2;
   long previousMillis = millis();
   while (1)
   {
@@ -836,7 +846,11 @@ void dakraamSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
       {
         drawTouchButtonSprite(&spr,&localButton[i],2,1); 
       }
+      drawTouchButtonSprite(&spr,&dataButton[2],2,1);
+      drawTouchButtonSprite(&spr,&dataButton[3],2,1);
+      drawTouchButtonSprite(&spr,&dataButton[4],2,1);
       drawTouchButtonSprite(&spr,&escapeButton,2,1); 
+      drawTouchButtonSprite(&spr,&saveButton,2,1); 
       spr.pushSprite(spriteX,spriteY);
       refreshSprite =false;
     }
@@ -850,8 +864,15 @@ void dakraamSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
       int coordinateY = M5.Touch.point[0].y;
       int coordinateX = M5.Touch.point[0].x;
       int keuze =-1;
+      for (int i = 0; i < menuItems ; i++) {
+        if (checkTouchButtonSprite(&localButton[i], spriteX, spriteY,coordinateX, coordinateY) || checkTouchButtonSprite(&dataButton[i], spriteX, spriteY,coordinateX, coordinateY) ){
+          previousMillis = millis();
+          valueChanged[i]=true;
+        }
+      }
       for (int i = 0; i < menuItems; i++){
-        if (checkTouchButtonSprite(&localButton[i], spriteX, spriteY, coordinateX, coordinateY)){
+        if (valueChanged[i]){
+          localButton[i].text.toCharArray(buffer,localButton[i].text.length()+1);
           switch (i){
             case 0:
                 dakraamManueel(OPEN);
@@ -863,13 +884,68 @@ void dakraamSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
                 spr.deleteSprite();
                 return;
               break;  
+            case 2: // auto manueel
+                keuze=localMenuTouchBoxSprite (50, 50, localActief,auto_table,2,buffer);  
+                if ((keuze !=buttonNone)&&(keuze!=localActief)){
+                  localActief=keuze;
+                  dataButton[i].text=auto_table[localActief];
+                  dataButton[i].textColor=WHITE;
+                  localButton[i].textColor=WHITE;
+                } else {
+                  dataButton[i].textColor=BLACK;
+                  localButton[i].textColor=BLACK;
+                }
+              break; 
+            case 3: // temp open
+                keuze =getalTouchBoxSprite (50, 50, localData1, 10, 30, 1,buffer);
+                if ((keuze !=buttonNone)&&(keuze!=localData1)){
+                  localData1 = keuze;
+                  dataButton[i].text=String(localData1);
+                  dataButton[i].textColor=WHITE;
+                  localButton[i].textColor=WHITE;
+                } else {
+                  dataButton[i].textColor=BLACK;
+                  localButton[i].textColor=BLACK;
+                }
+              break; 
+            case 4:// tijd open
+                keuze =getalTouchBoxSprite (50, 50, localData2, 4, 60, 1,buffer);
+                if ((keuze !=buttonNone)&&(keuze!=localData2)){
+                  localData2 = keuze;
+                  dataButton[i].text=String(localData2);
+                  dataButton[i].textColor=WHITE;
+                  localButton[i].textColor=WHITE;
+                } else {
+                  dataButton[i].textColor=BLACK;
+                  localButton[i].textColor=BLACK;
+                } 
+              break;   
           }
-        }
-        if (checkTouchButtonSprite(&escapeButton, spriteX, spriteY,coordinateX, coordinateY)){
-          spr.deleteSprite();
-          return;
+          valueChanged[i]=false;
+          refreshSprite = true;
         }
       }
+      if (checkTouchButtonSprite(&saveButton, spriteX, spriteY,coordinateX, coordinateY)){
+        for (int i = 0; i < menuItems ; i++)
+        {
+          if (dataButton[i].textColor=WHITE){
+              relais[6].actief=localActief;
+              relais[6].data1=localData1;
+              relais[6].data2=localData2;
+              writeRelaisSpecFile();
+              break;
+          }
+        }
+        spr.deleteSprite();
+        return ;
+      } 
+      if (checkTouchButtonSprite(&escapeButton, spriteX, spriteY,coordinateX, coordinateY)){
+        spr.deleteSprite();
+        return;
+      }
+
+
+
     } 
   }
 }
