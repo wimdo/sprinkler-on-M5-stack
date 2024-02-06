@@ -12,15 +12,26 @@ void readTime()
   showTimeBar();
 }
 
+void setTimezone(String timezone){
+  Serial.printf("SYSTEM : Setting Timezone to %s\n",timezone.c_str());
+  setenv("TZ",timezone.c_str(),1);  //  Now adjust the TZ.  Clock settings are adjusted to show the new local time
+  tzset();
+}
+
+
 void setupTime() {
   if (WiFi.status() == WL_CONNECTED) {
-    const char *ntpServer = myServer.timeRequestURL;
-    Serial.printf("WIFI : ntp time request @ %s\n",ntpServer);
-    int timeZone = 3600;
-    int daylightOffset=3600;
-    configTime(timeZone, daylightOffset, ntpServer);
+    //const char *ntpServer = myServer.timeRequestURL;
+    //Serial.printf("WIFI : ntp time request @ %s\n",ntpServer);
+    //int timeZone = 3600;
+    //int daylightOffset=3600;
+    //configTime(timeZone, daylightOffset, ntpServer);
     struct tm timeInfo;
+    configTime(0, 0, myServer.timeRequestURL);
+    setTimezone("CET-1CEST,M3.5.0,M10.5.0/3");
+    Serial.printf("WIFI : Ntp time request @ %s\n",myServer.timeRequestURL);
     if (getLocalTime(&timeInfo)) {
+      Serial.println(&timeInfo, "SYSTEM : %A, %B %d %Y %H:%M:%S zone %Z %z ");
       RTCtime.Hours   = timeInfo.tm_hour;
       RTCtime.Minutes = timeInfo.tm_min;
       RTCtime.Seconds = timeInfo.tm_sec;
@@ -80,7 +91,7 @@ void calculateSolarTime(){
     clockData.sunrise=clockData.sunrise+60;
     clockData.sunset=clockData.sunset+60;
   }
-  Serial.printf("SYSTEM : Time: %d:%d, Sunrise: %d:%d, Sunset %d:%d\n", RTCtime.Hours,RTCtime.Minutes,(clockData.sunrise/60), (clockData.sunrise%60), (clockData.sunset/60), (clockData.sunset%60));
+  Serial.printf("SYSTEM : Sunrise: %d:%d, Sunset %d:%d\n", (clockData.sunrise/60), (clockData.sunrise%60), (clockData.sunset/60), (clockData.sunset%60));
 }
 
 

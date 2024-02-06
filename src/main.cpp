@@ -9,7 +9,6 @@
 #include <PubSubClient.h>
 #include <WiFiManager.h>
 #include "OTA.h"
-#include "time.h"
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <ArduinoJson.h>
@@ -261,7 +260,7 @@ void setup()
   showRelaySlider();
   //WiFi.begin("57_home", "wonderfulcurtain962");
   setupHostName();
-  myServer.connectToWIFI = false;
+  //myServer.connectToWIFI = false;
   connectWithWiFi();
   calculateSolarTime();
   setupTemperature();
