@@ -55,8 +55,6 @@ StaticJsonDocument<2048> doc;
 RTC_TimeTypeDef RTCtime;
 RTC_DateTypeDef RTCDate;
 
-SunSet sun;
-
 #define ONE_WIRE_BUS 26
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature temperatuur(&oneWire);
@@ -337,11 +335,12 @@ void loop()
       if (RTCtime.Minutes == 0 && RTCtime.Hours == 0)
       { 
         disableRelais();
+        setupTemperature(); // reset min en max waarde van de
+      }
+      if (RTCtime.Minutes == 0 && RTCtime.Hours == 4)
+      { 
         setupTime();
         calculateSolarTime();
-        if (RTCtime.Hours == 0){
-          setupTemperature(); // reset min en max waarde van de
-        }
       }
       clockData.previousMinute = RTCtime.Minutes;
       if (sprinkler.staat == Wacht)

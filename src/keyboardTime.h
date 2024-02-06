@@ -50,46 +50,49 @@ void setupTime() {
 }
 
 void calculateSolarTime(){
+  SunSet sun;
   sun.setPosition(LATITUDE, LONGITUDE, DST_OFFSET);
   sun.setCurrentDate(RTCDate.Year, RTCDate.Month, RTCDate.Date);
   clockData.sunrise = static_cast<int>(sun.calcSunrise());
   clockData.sunset = static_cast<int>(sun.calcSunset());
-  clockData.previousMinute = RTCtime.Minutes;
-  boolean summertime = false;
-  if ((RTCDate.Month>3) || (RTCDate.Month<11)){
-    if (RTCDate.Month==3){
-      if(RTCDate.Date < 8 ){
-        summertime = false;
-      } else if (RTCDate.Date > 14 ){
-        summertime = true;  
-      } else {
-        int secondSunday=RTCDate.Date-RTCDate.WeekDay;
-        if( secondSunday < 8 ){
-          secondSunday += 7;
-        } 
-        if( RTCDate.Date > secondSunday ) {
-          summertime = true;
-        }  
-      }
-    } else if (RTCDate.Month==11){
-      if(RTCDate.Date > 7 ){
-        summertime = false;
-      } else {
-        int firstSunday =RTCDate.Date-RTCDate.WeekDay;
-        if( firstSunday < 1 ){
-          firstSunday += 7;
+  //clockData.previousMinute = RTCtime.Minutes;
+  if (!clockData.timeSetByNTP){
+    boolean summertime = false;
+    if ((RTCDate.Month>3) || (RTCDate.Month<11)){
+      if (RTCDate.Month==3){
+        if(RTCDate.Date < 8 ){
+          summertime = false;
+        } else if (RTCDate.Date > 14 ){
+          summertime = true;  
+        } else {
+          int secondSunday=RTCDate.Date-RTCDate.WeekDay;
+          if( secondSunday < 8 ){
+            secondSunday += 7;
+          } 
+          if( RTCDate.Date > secondSunday ) {
+            summertime = true;
+          }  
         }
-        if( RTCDate.Date < firstSunday) {
-          summertime = true;
-        } 
+      } else if (RTCDate.Month==11){
+        if(RTCDate.Date > 7 ){
+          summertime = false;
+        } else {
+          int firstSunday =RTCDate.Date-RTCDate.WeekDay;
+          if( firstSunday < 1 ){
+            firstSunday += 7;
+          }
+          if( RTCDate.Date < firstSunday) {
+            summertime = true;
+          } 
+        }
+      } else {
+        summertime = true;
       }
-    } else {
-      summertime = true;
     }
-  }
-  if (summertime){
-    clockData.sunrise=clockData.sunrise+60;
-    clockData.sunset=clockData.sunset+60;
+    if (summertime){
+      clockData.sunrise=clockData.sunrise+60;
+      clockData.sunset=clockData.sunset+60;
+    }
   }
   Serial.printf("SYSTEM : Sunrise: %d:%d, Sunset %d:%d\n", (clockData.sunrise/60), (clockData.sunrise%60), (clockData.sunset/60), (clockData.sunset%60));
 }
