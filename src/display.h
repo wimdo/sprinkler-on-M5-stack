@@ -265,7 +265,11 @@ void showSprinklerStatus()
 void showTimeBar()
 {
   M5.Lcd.setTextSize(2);
-  M5.Lcd.setTextColor(DARKGREY,BLACK); 
+  if (clockData.debug){
+    M5.Lcd.setTextColor(RED,BLACK); 
+  } else {
+    M5.Lcd.setTextColor(DARKGREY,BLACK); 
+  }
   M5.lcd.setCursor(2,1); 
   M5.Lcd.printf("%02d:%02d:%02d %s %02d/%02d",RTCtime.Hours,RTCtime.Minutes,RTCtime.Seconds,dayOfWeek[RTCDate.WeekDay], RTCDate.Date, RTCDate.Month);
   M5.Lcd.setTextSize(1);
