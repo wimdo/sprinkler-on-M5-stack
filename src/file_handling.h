@@ -225,87 +225,6 @@ void reWriteProgramFile(int programma)
     writeProgramFile(programma);
 }
 
-/*
-void readRelaisProgramFile(){
-    int lenght = 0;
-    String fileName = "/relaisprogram.json";
-    if (SPIFFS.exists(fileName))
-    {
-       File file = SPIFFS.open(fileName, "r");
-      if (file) {
-        while(file.available()){
-            myPayload[lenght] = file.read();
-            lenght++;
-        }
-        myPayload[lenght] ='\0';
-        Serial.print("relaisprogram.json : ");
-        Serial.println (myPayload); //use for debug
-      }
-    }
-    DeserializationError error = deserializeJson(doc, myPayload,lenght);
-    if (error) {
-        Serial.print(F("deserializeJson() failed: "));
-        Serial.println(error.f_str());
-    } else {
-        for (int i =0; i<16;i++ ){
-            relaisProgram[i].actief=doc["actief"][i];
-            relaisProgram[i].relais=doc["relais"][i];
-            strcpy(relaisProgram[i].control,doc["control"][i]| "default");
-            relaisProgram[i].state=doc["state"][i];
-            relaisProgram[i].data1=doc["data1"][i];
-            relaisProgram[i].data2=doc["data2"][i];
-            relaisProgram[i].data3=doc["data3"][i];
-            relaisProgram[i].data4=doc["data4"][i];
-        } 
-    }         
-}
-*/
-/*
-void writeRelaisProgramFile(){
-    Serial.println("programs");
-    JsonObject obj = doc.to<JsonObject>();
-    for (int i =0; i<16;i++ ){
-        doc["actief"][i]=relaisProgram[i].actief;
-        doc["relais"][i]=relaisProgram[i].relais;
-        doc["control"][i]=relaisProgram[i].control;
-        doc["state"][i]=relaisProgram[i].state;
-        doc["data1"][i]=relaisProgram[i].data1;
-        doc["data2"][i]=relaisProgram[i].data2;
-        doc["data3"][i]=relaisProgram[i].data3;
-        doc["data4"][i]=relaisProgram[i].data4;
-    }
-    serializeJson(doc, myPayload);
-    Serial.println(myPayload);
-    String fileName = "/relaisprogram.json";
-    Serial.print("write ");
-    Serial.println(fileName);
-    File file = SPIFFS.open(fileName, "w");
-    file.print(myPayload);
-    file.close();
-    doc.clear();
-}
-*/
-/*
-void reWriteRelaisProgramFile(){
-    relaisProgram[0]= (relaisProg){1,1,"sunset",1,23,55,0,0};
-    relaisProgram[1]= (relaisProg){1,2,"sunset",1,23,55,0,0};
-    relaisProgram[2]= (relaisProg){0,3,"temp",1,25,0,0,0};
-    relaisProgram[3]= (relaisProg){0,4,"time",0,14,0,20,0};
-    relaisProgram[4]= (relaisProg){0,5,"sunset",0,8,0,0,0};
-    relaisProgram[5]= (relaisProg){0,6,"night",0,0,0,0,0};
-    relaisProgram[6]= (relaisProg){0,7,"day",0,0,0,0,0};
-    relaisProgram[7]= (relaisProg){1,3,"temp",1,25,0,0,0};
-    relaisProgram[8]= (relaisProg){0,1,"default",1,0,0,0,0};
-    relaisProgram[9]= (relaisProg){0,1,"default",1,0,0,0,0};
-    relaisProgram[10]= (relaisProg){0,1,"default",1,0,0,0,0};
-    relaisProgram[11]= (relaisProg){0,1,"default",1,0,0,0,0};
-    relaisProgram[12]= (relaisProg){0,1,"default",1,0,0,0,0};
-    relaisProgram[13]= (relaisProg){0,1,"default",1,0,0,0,0};
-    relaisProgram[14]= (relaisProg){0,1,"default",1,0,0,0,0};
-    relaisProgram[15]= (relaisProg){0,1,"default",1,0,0,0,0};
-    writeRelaisProgramFile(); 
-}
-*/
 
 void writeRelaisSpecFile(){
     Serial.println("Relais settings");
@@ -458,15 +377,14 @@ void loadDataFromFile()
 {
     checkFileSystem();
     //reWriteRelaisProgramFile();
-    reWriteRelaisSpecFile();
-    reWriteMySprinklerFile();
-    reWriteMyServerFile();
-    for (int i = 1; i < 5; i++){
-       reWriteProgramFile(i); 
-    } 
+    //reWriteRelaisSpecFile();
+    //reWriteMySprinklerFile();
+    //reWriteMyServerFile();
+    //for (int i = 1; i < 5; i++){
+    //   reWriteProgramFile(i); 
+    //} 
     readMyServerFile();
     readProgramFile();
     readMySpriklerFile(); 
     readRelaisSpecFile();
-    //readRelaisProgramFile();
 }
