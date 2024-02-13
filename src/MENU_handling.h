@@ -815,8 +815,11 @@ int resetOptions(int spriteX,int spriteY, int spriteWidth, int spriteHeight){
 void dakraamSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
 {
   char *menuTable[] = {"OPEN RAAM", "SLUIT RAAM", "sturing", "temp open", "tijd open"};
-  boolean refreshSprite = true;
   int menuItems = 5;
+  boolean refreshSprite = true;
+  boolean localActief=relais[6].actief;
+  int localData1 = relais[6].data1; // temperatuur open
+  int localData2 = relais[6].data2; // tijd open
   touchButton localButton[menuItems];
   localButton[0] =(touchButton) {2,9,236,40,DARKGREY,BLACK,menuTable[0]};
   localButton[1] =(touchButton) {2,9+43,236,40,DARKGREY,BLACK,menuTable[1]};
@@ -824,18 +827,16 @@ void dakraamSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
   localButton[3] =(touchButton) {2,9+43+43+43,116,40,DARKGREY,BLACK,menuTable[3]};
   localButton[4] =(touchButton) {2,9+43+43+43+43,116,40,DARKGREY,BLACK,menuTable[4]};
   touchButton dataButton[menuItems];
-  dataButton[2] =(touchButton) {120,9+43+43,118,40,DARKGREY,BLACK,auto_table[relais[6].actief]};
-  dataButton[3] =(touchButton) {120,9+43+43+43,118,40,DARKGREY,BLACK,String(relais[6].data1)};
-  dataButton[4] =(touchButton) {120,9+43+43+43+43,118,40,DARKGREY,BLACK,String(relais[6].data2)};
+  dataButton[2] =(touchButton) {120,9+43+43,118,40,DARKGREY,BLACK,auto_table[localActief]};
+  dataButton[3] =(touchButton) {120,9+43+43+43,118,40,DARKGREY,BLACK,String(localData1)};
+  dataButton[4] =(touchButton) {120,9+43+43+43+43,118,40,DARKGREY,BLACK,String(localData2)};
   touchButton escapeButton =(touchButton) {0,272,118,30,DARKGREY,BLACK,"ESCAPE"};
   touchButton saveButton =(touchButton) {120,272,118,30,DARKGREY,BLACK,"SAVE"};
   spr.setColorDepth(8);
   spr.createSprite(spriteWidth,spriteHeight);
   char buffer[15];
   boolean valueChanged[menuItems] ={false,false,false,false, false};
-  boolean localActief=relais[6].actief;
-  int localData1 = relais[6].data1;
-  int localData2 = relais[6].data2;
+
   long previousMillis = millis();
   while (1)
   {

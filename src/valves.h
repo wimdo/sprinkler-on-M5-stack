@@ -134,14 +134,9 @@ void disableDakraamRelais(){
 }
 
 void dakraamManueel(boolean state){
-    if (state == OPEN){
-      relais[6].data5=relais[6].data2;
-      switchDakraam(OPEN); 
-      // automatisch verloop stoppen
-    } else {
-      relais[6].data5=2;
-      switchDakraam(CLOSE); 
-    }
+    relais[6].actief=false; //als het manueel geopend wordt vervalt het programma voor de rest van de dag. 
+    relais[6].data5=2; // 2 minuten geven om relais uit te schakelen.
+    switchDakraam(state);
 }
 
 
@@ -241,13 +236,19 @@ void checkRelaisSettingsOnTime(int hour, int min){
           disableDakraamRelais();
         }
         if (relais[6].data5==2){
-          switchDakraam(CLOSE);
-           
+          switchDakraam(CLOSE);   
         }
         if (relais[6].data5==0){
           disableDakraamRelais();
         }
     }         
+  } else { // als relais niet actief is en teller toch niet nul is nog wachten om relais uit te schakelen
+    if (relais[6].data5>0){ 
+      relais[6].data5--;
+      if (relais[6].data5==0){
+          disableDakraamRelais();
+      }
+    }
   }
 
 

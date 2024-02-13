@@ -336,6 +336,7 @@ void loop()
       { 
         disableRelais();
         setupTemperature(); // reset min en max waarde van de
+        readRelaisSpecFile(); // opnieuw lezen. Serre raam kan manueel opengezet zijn de dag er voor
       }
       if (RTCtime.Minutes == 0 && RTCtime.Hours == 4)
       { 
