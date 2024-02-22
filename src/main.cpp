@@ -97,6 +97,7 @@ typedef struct
   boolean timeSetByNTP;
   boolean sendData;
   boolean debug;
+  boolean isDST;
 } clockInfo;
 static clockInfo clockData;
 typedef struct{
@@ -242,7 +243,7 @@ void setup()
   //Wire.begin(21, 22, (uint32_t)400000U);
   //I2Cscan();
   //sprinkler.debugMode = true;
-  clockData.debug =true;
+  //clockData.debug =true;
   sprinkler.staat = Wacht;
   screen.keyboardInput = true;
   systemTimer = timerBegin(0, 80, true); // true = count up
