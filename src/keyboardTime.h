@@ -18,20 +18,40 @@ void setTimezone(String timezone){
   tzset();
 }
 
+boolean checkDST(){
+  M5.Rtc.GetDate(&RTCDate);
+  if (RTCDate.Month < 3 || RTCDate.Month > 10)  return false; 
+  if ((RTCDate.Month>3) && (RTCDate.Month<11))  return true;
+  if (RTCDate.Month==3){
+    if (RTCDate.WeekDay==7 && RTCDate.Date>=25){
+      return true;
+    } else {
+      return false;
+    }
+  }
+  if (RTCDate.Month==11){
+    if (RTCDate.WeekDay==7 && RTCDate.Date>=25){
+      return false;
+    } else {
+      return true;
+    }
+  }
+  return false;
+}
 
 void setupTime() {
   if (WiFi.status() == WL_CONNECTED) {
-    //const char *ntpServer = myServer.timeRequestURL;
-    //Serial.printf("WIFI : ntp time request @ %s\n",ntpServer);
-    //int timeZone = 3600;
-    //int daylightOffset=3600;
-    //configTime(timeZone, daylightOffset, ntpServer);
     struct tm timeInfo;
     configTime(0, 0, myServer.timeRequestURL);
     setTimezone("CET-1CEST,M3.5.0,M10.5.0/3");
     Serial.printf("WIFI : Ntp time request @ %s\n",myServer.timeRequestURL);
     if (getLocalTime(&timeInfo)) {
       Serial.println(&timeInfo, "SYSTEM : %A, %B %d %Y %H:%M:%S zone %Z %z ");
+      Serial.print("zomertijd / wintertijd Ntp: ");
+      Serial.println(clockData.isDST);
+      clockData.isDST=checkDST();
+      Serial.print("zomertijd / wintertijd berekend: ");
+      Serial.println(clockData.isDST);
       RTCtime.Hours   = timeInfo.tm_hour;
       RTCtime.Minutes = timeInfo.tm_min;
       RTCtime.Seconds = timeInfo.tm_sec;
@@ -44,6 +64,9 @@ void setupTime() {
       clockData.timeSetByNTP= true;
     } else {
       clockData.timeSetByNTP= false;
+      clockData.isDST=checkDST();
+      Serial.print("zomertijd / wintertijd berekend: ");
+      Serial.println(clockData.isDST);
     } 
   }
   readTime(); 
@@ -52,44 +75,12 @@ void setupTime() {
 void calculateSolarTime(){
   SunSet sun;
   sun.setPosition(LATITUDE, LONGITUDE, DST_OFFSET);
+  M5.Rtc.GetDate(&RTCDate);
   sun.setCurrentDate(RTCDate.Year, RTCDate.Month, RTCDate.Date);
   clockData.sunrise = static_cast<int>(sun.calcSunrise());
   clockData.sunset = static_cast<int>(sun.calcSunset());
-  //clockData.previousMinute = RTCtime.Minutes;
   if (!clockData.timeSetByNTP){
-    boolean summertime = false;
-    if ((RTCDate.Month>3) || (RTCDate.Month<11)){
-      if (RTCDate.Month==3){
-        if(RTCDate.Date < 8 ){
-          summertime = false;
-        } else if (RTCDate.Date > 14 ){
-          summertime = true;  
-        } else {
-          int secondSunday=RTCDate.Date-RTCDate.WeekDay;
-          if( secondSunday < 8 ){
-            secondSunday += 7;
-          } 
-          if( RTCDate.Date > secondSunday ) {
-            summertime = true;
-          }  
-        }
-      } else if (RTCDate.Month==11){
-        if(RTCDate.Date > 7 ){
-          summertime = false;
-        } else {
-          int firstSunday =RTCDate.Date-RTCDate.WeekDay;
-          if( firstSunday < 1 ){
-            firstSunday += 7;
-          }
-          if( RTCDate.Date < firstSunday) {
-            summertime = true;
-          } 
-        }
-      } else {
-        summertime = true;
-      }
-    }
-    if (summertime){
+    if (clockData.isDST){
       clockData.sunrise=clockData.sunrise+60;
       clockData.sunset=clockData.sunset+60;
     }
