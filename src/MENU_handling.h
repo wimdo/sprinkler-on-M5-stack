@@ -189,7 +189,7 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
     localButton[i] =(touchButton) {2,9+i*33,116,30,DARKGREY,BLACK,menuTable[i]};
   }
   dataButton[0] =(touchButton) {120,9+0*33,116,30,DARKGREY,BLACK,relais[localRelais].relaisName};
-  dataButton[1] =(touchButton) {120,9+1*33,116,30,DARKGREY,BLACK,janee_table[localActief]};
+  dataButton[1] =(touchButton) {120,9+1*33,116,30,DARKGREY,BLACK,onoff_table[localActief]};
   dataButton[2] =(touchButton) {120,9+2*33,116,30,DARKGREY,BLACK,program_Table[localControl]};
   dataButton[3] =(touchButton) {120,9+3*33,116,30,DARKGREY,BLACK,String(localData1)};
   dataButton[4] =(touchButton) {120,9+4*33,116,30,DARKGREY,BLACK,String(localData2)};
@@ -268,7 +268,7 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
     for (int i = 0; i < menuItems ; i++)
     {
       if (valueChanged[i]){
-        localButton[i].text.toCharArray(buffer,localButton[i].text.length());
+        localButton[i].text.toCharArray(buffer,localButton[i].text.length()+1);
         switch (i){
           case 0:
             // naam wijzigen 
@@ -378,6 +378,8 @@ void relaisSettingsChange(int spriteX,int spriteY, int spriteWidth, int spriteHe
             relais[localRelais].data4=localData4;
             writeRelaisSpecFile();
             startRelaisProgram();
+            spr.deleteSprite();
+            return ;
             break;
         }
       }

@@ -256,14 +256,15 @@ void checkRelaisSettingsOnTime(int hour, int min){
 
 
 void startRelaisProgram(){
-    for (int hour =0; hour<RTCtime.Hours;hour++ ){
-        for (int min =0; min<60;min++ ){
-            checkRelaisSettingsOnTime(hour,min);
-        }    
-    } 
-    for (int min =0; min<=RTCtime.Minutes;min++ ){
-      checkRelaisSettingsOnTime(RTCtime.Hours,min);
-    } 
+  disableRelais();
+  for (int hour =0; hour<RTCtime.Hours;hour++ ){
+      for (int min =0; min<60;min++ ){
+          checkRelaisSettingsOnTime(hour,min);
+      }    
+  } 
+  for (int min =0; min<=RTCtime.Minutes;min++ ){
+    checkRelaisSettingsOnTime(RTCtime.Hours,min);
+  } 
 }
 
 void switchValveRelay(byte relay, boolean state)

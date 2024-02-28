@@ -259,7 +259,7 @@ void setup()
   showRelaySlider();
   //WiFi.begin("57_home", "wonderfulcurtain962");
   setupHostName();
-  //myServer.connectToWIFI = false;
+  myServer.connectToWIFI = false;
   connectWithWiFi();
   calculateSolarTime();
   setupTemperature();
