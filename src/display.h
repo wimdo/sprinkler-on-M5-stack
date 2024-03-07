@@ -138,11 +138,11 @@ void outlineMainscreen()
 void showRelaisSliderStatus(){
   int columnPos =120;
   for (int i = 0; i < 6; i++)  {
-    M5.Lcd.fillRoundRect(columnPos+3,94+i*15+1, 10, 12, 4, bitRead(sprinkler.sliderStateRelais, i)? BLACK : RED);
-    M5.Lcd.fillRoundRect(columnPos+3+10,94+i*15+1, 10, 12, 4, bitRead(sprinkler.sliderStateRelais, i)? GREEN : BLACK);      
+    M5.Lcd.fillRoundRect(columnPos+3,94+i*15+1, 10, 12, 4, bitRead(relaisBoard.sliderStateRelais, i)? BLACK : RED);
+    M5.Lcd.fillRoundRect(columnPos+3+10,94+i*15+1, 10, 12, 4, bitRead(relaisBoard.sliderStateRelais, i)? GREEN : BLACK);      
   }
-  M5.Lcd.fillRoundRect(columnPos+3,19+68+68+68-38+(38/2)-8+1, 10, 12, 4, sprinkler.sliderStateDakraam ? BLACK : RED); 
-  M5.Lcd.fillRoundRect(columnPos+3+10,19+68+68+68-38+(38/2)-8+1, 10, 12, 4, sprinkler.sliderStateDakraam? GREEN : BLACK);  
+  M5.Lcd.fillRoundRect(columnPos+3,19+68+68+68-38+(38/2)-8+1, 10, 12, 4, relaisBoard.sliderStateDakraam ? BLACK : RED); 
+  M5.Lcd.fillRoundRect(columnPos+3+10,19+68+68+68-38+(38/2)-8+1, 10, 12, 4, relaisBoard.sliderStateDakraam? GREEN : BLACK);  
 }
 
 

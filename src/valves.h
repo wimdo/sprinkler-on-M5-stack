@@ -68,12 +68,12 @@ Serial.println("Scanning Wire1");
 
 void disableRelais()
 {
-  sprinkler.sliderStateRelais = 0;
+  relaisBoard.sliderStateRelais = 0;
   Wire.requestFrom(RelayI2C, 1);
   if (Wire.available()) //If the request is available
   {
     Wire.beginTransmission(RelayI2C);
-    Wire.write(~sprinkler.sliderStateRelais);
+    Wire.write(~relaisBoard.sliderStateRelais);
     Wire.endTransmission();
   }
   screen.updateRelaisSlider = true;
@@ -82,36 +82,36 @@ void disableRelais()
 
 void switchRelais(byte relais, boolean state)
 {
-  bitWrite(sprinkler.sliderStateRelais,relais,state);
+  bitWrite(relaisBoard.sliderStateRelais,relais,state);
   Wire.requestFrom(RelayI2C, 1);
   if (Wire.available()) //If the request is available
   {
     Wire.beginTransmission(RelayI2C);
-    Wire.write((byte)~sprinkler.sliderStateRelais);
+    Wire.write((byte)~relaisBoard.sliderStateRelais);
     Wire.endTransmission();
   }
   screen.updateRelaisSlider = true; 
   clockData.sendData = true;
-  Serial.println(sprinkler.sliderStateRelais,BIN);
+  Serial.println(relaisBoard.sliderStateRelais,BIN);
 }
 
 void switchDakraam(boolean state){
   if (state==OPEN){
-    bitWrite(sprinkler.sliderStateRelais,6,1);
-    bitWrite(sprinkler.sliderStateRelais,7,1);
-    sprinkler.sliderStateDakraam=OPEN;   
+    bitWrite(relaisBoard.sliderStateRelais,6,1);
+    bitWrite(relaisBoard.sliderStateRelais,7,1);
+    relaisBoard.sliderStateDakraam=OPEN;   
     Serial.println("dakraam open");
   } else{
-    bitWrite(sprinkler.sliderStateRelais,6,1);
-    bitWrite(sprinkler.sliderStateRelais,7,0);
-    sprinkler.sliderStateDakraam=CLOSE;   
+    bitWrite(relaisBoard.sliderStateRelais,6,1);
+    bitWrite(relaisBoard.sliderStateRelais,7,0);
+    relaisBoard.sliderStateDakraam=CLOSE;   
     Serial.println("dakraam dicht");
   }
   Wire.requestFrom(RelayI2C, 1);
   if (Wire.available()) //If the request is available
   {
     Wire.beginTransmission(RelayI2C);
-    Wire.write((byte)~sprinkler.sliderStateRelais);
+    Wire.write((byte)~relaisBoard.sliderStateRelais);
     Wire.endTransmission();
   }
   screen.updateRelaisSlider = true; 
@@ -119,13 +119,13 @@ void switchDakraam(boolean state){
 }
 
 void disableDakraamRelais(){
-    bitWrite(sprinkler.sliderStateRelais,6,0);
-    bitWrite(sprinkler.sliderStateRelais,7,0);
+    bitWrite(relaisBoard.sliderStateRelais,6,0);
+    bitWrite(relaisBoard.sliderStateRelais,7,0);
     Wire.requestFrom(RelayI2C, 1);
     if (Wire.available()) //If the request is available
     {
       Wire.beginTransmission(RelayI2C);
-      Wire.write((byte)~sprinkler.sliderStateRelais);
+      Wire.write((byte)~relaisBoard.sliderStateRelais);
       Wire.endTransmission();
     }
     screen.updateRelaisSlider = true; 

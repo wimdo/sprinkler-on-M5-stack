@@ -73,6 +73,11 @@ DallasTemperature temperatuur(&oneWire);
 #define Pauze 4
 #define End 5
 
+// dakraam states
+# define idle 0
+# define chooseDirection 1
+# define motorRunning 2
+
 // program defined buttons
 #define buttonNone -1
 #define button1 4
@@ -117,13 +122,22 @@ typedef struct
   int programCounter;
   int valveSelected = 0;
   int sliderStateValve = 0;
-  int sliderStateRelais = 0;
-  boolean sliderStateDakraam = CLOSE;
+  //int sliderStateRelais = 0;
+  //boolean sliderStateDakraam = CLOSE;
   boolean pumpOn;
   boolean valveOn;
   boolean debugMode;
 } sprinklerData;
 sprinklerData sprinkler; // Spec
+
+typedef struct main
+{
+  int sliderStateRelais = 0;
+  int dakraamTime =0;
+  int dakraamState = 0;
+  boolean sliderStateDakraam = CLOSE;
+} relaisData;
+relaisData relaisBoard;
 
 typedef struct
 {

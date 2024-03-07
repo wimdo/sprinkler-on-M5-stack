@@ -10,7 +10,7 @@ void mqttSendIPAdress()
     doc["Hostname"]= fullhostname;
     doc["Time"]= millis();
     for (int i = 0; i < 8; i++) {
-      doc["Relais"][i]= bitRead(sprinkler.sliderStateRelais,i);
+      doc["Relais"][i]= bitRead(relaisBoard.sliderStateRelais,i);
     }
     for (int i = 0; i < 8; i++) {
       doc["Valve"][i]= bitRead(sprinkler.sliderStateValve,i);
@@ -64,7 +64,7 @@ void sendData()
       if (myServer.connectToMQTT){ 
         if (connectMQTT()) {  
             for (int i = 0; i < 8; i++) {
-              doc["Relais"][i]= bitRead(sprinkler.sliderStateRelais,i);
+              doc["Relais"][i]= bitRead(relaisBoard.sliderStateRelais,i);
             }
             for (int i = 0; i < 8; i++) {
               doc["Valve"][i]= bitRead(sprinkler.sliderStateValve,i);
