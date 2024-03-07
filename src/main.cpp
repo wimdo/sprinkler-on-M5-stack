@@ -73,11 +73,6 @@ DallasTemperature temperatuur(&oneWire);
 #define Pauze 4
 #define End 5
 
-// dakraam states
-# define idle 0
-# define chooseDirection 1
-# define motorRunning 2
-
 // program defined buttons
 #define buttonNone -1
 #define button1 4
@@ -122,19 +117,20 @@ typedef struct
   int programCounter;
   int valveSelected = 0;
   int sliderStateValve = 0;
-  //int sliderStateRelais = 0;
-  //boolean sliderStateDakraam = CLOSE;
   boolean pumpOn;
   boolean valveOn;
   boolean debugMode;
 } sprinklerData;
 sprinklerData sprinkler; // Spec
 
-typedef struct main
+enum dakraamStates {idle,waitForDirection,chooseDirection,waitForRunning,motorRunning};
+
+#define dakraamTimePreset  6 // de voorafbepaalde cyclus tijd voor het openen van het dakraam. 
+typedef struct 
 {
   int sliderStateRelais = 0;
   int dakraamTime =0;
-  int dakraamState = 0;
+  enum dakraamStates dakraamState;
   boolean sliderStateDakraam = CLOSE;
 } relaisData;
 relaisData relaisBoard;
@@ -229,9 +225,10 @@ char *dayOfWeek[] = {"Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za"};
 int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 #include "display.h"
+#include "relais.h"
+#include "valves.h"
 #include "keyboardTime.h"
 #include "dropdown.h"
-#include "valves.h"
 #include "temperature.h"
 #include "server_pages.h"
 #include "file_handling.h"

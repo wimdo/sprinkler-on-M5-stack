@@ -4,12 +4,47 @@ void readTime()
   M5.Rtc.GetTime(&RTCtime); //Gets the time in the real-time clock.  获取实时时钟内的时间
   M5.Rtc.GetDate(&RTCDate);
   clockData.checkSecond = false;
+  showTimeBar();
   if (screen.keyboardHold > 0)
   {
     screen.keyboardHold--;
   }
+  if (relaisBoard.dakraamState != idle){
+    switch (relaisBoard.dakraamState){
+      case waitForDirection : // wachtloop 1seconde
+        relaisBoard.dakraamState=chooseDirection;
+        relaisBoard.dakraamTime--;
+        break;
+      case chooseDirection : // richting bepalen
+        if (relaisBoard.sliderStateDakraam==OPEN){
+          bitWrite(relaisBoard.sliderStateRelais,7,1); // direction relais aan
+        } else {
+          bitWrite(relaisBoard.sliderStateRelais,7,0); // direction relais uit
+        };   
+        switchRelaisToSliderState();
+        relaisBoard.dakraamState=waitForRunning;
+        relaisBoard.dakraamTime--;
+        break;
+      case waitForRunning : // wachtloop 1 seconde
+        bitWrite(relaisBoard.sliderStateRelais,6,1); // power relais aan
+        switchRelaisToSliderState();
+        relaisBoard.dakraamState=motorRunning;
+        relaisBoard.dakraamTime--;
+        break;
+      case motorRunning : // aftellen tot einde
+        if (relaisBoard.dakraamTime ==0){
+          bitWrite(relaisBoard.sliderStateRelais,6,0); // power relais uit
+          bitWrite(relaisBoard.sliderStateRelais,7,0); // direction relais uit
+          switchRelaisToSliderState();
+          relaisBoard.dakraamState = idle;
+        } else{
+          relaisBoard.dakraamTime--;
+        }
+        break;
+    }
+    Serial.printf("dakraam tijd %d dakraam %d status %d\n",relaisBoard.dakraamTime,relaisBoard.sliderStateDakraam,relaisBoard.dakraamState);
+  }
   ArduinoOTA.handle();
-  showTimeBar();
 }
 
 void setTimezone(String timezone){
