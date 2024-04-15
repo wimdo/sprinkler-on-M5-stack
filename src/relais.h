@@ -85,13 +85,16 @@ void dakraamManueel(boolean state){
 
 
 void initDakraam(){
+
   if (relais[6].actief){
     if (temperature[0].value >=  relais[6].data1){
       relais[6].data5=relais[6].data2;
       switchDakraam(OPEN); 
+      Serial.println("dakraam open");
+    } else {
+      switchDakraam(CLOSE);
+    Serial.println("dakraam dicht");
     }
-  } else {
-    switchDakraam(CLOSE);
   }       
 }
 
