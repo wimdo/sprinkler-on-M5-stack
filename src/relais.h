@@ -83,6 +83,18 @@ void dakraamManueel(boolean state){
   switchDakraam(state);
 }
 
+
+void initDakraam(){
+  if (relais[6].actief){
+    if (temperature[0].value >=  relais[6].data1){
+      relais[6].data5=relais[6].data2;
+      switchDakraam(OPEN); 
+    }
+  } else {
+    switchDakraam(CLOSE);
+  }       
+}
+
 void checkDakraam(){
   if (relais[6].actief){
     if (temperature[0].value >=  relais[6].data1){
@@ -186,11 +198,12 @@ void checkRelaisSettingsOnTime(int hour, int min){
 void startRelaisProgram(){
   disableRelais();
   for (int hour =0; hour<RTCtime.Hours;hour++ ){
-      for (int min =0; min<60;min++ ){
-          checkRelaisSettingsOnTime(hour,min);
-      }    
+    for (int min =0; min<60;min++ ){
+      checkRelaisSettingsOnTime(hour,min);
+    }    
   } 
   for (int min =0; min<=RTCtime.Minutes;min++ ){
     checkRelaisSettingsOnTime(RTCtime.Hours,min);
   } 
+  initDakraam(); // controle op temperatuur als het te laag is dan ook opdracht om te sluiten. 
 }

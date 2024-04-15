@@ -22,7 +22,7 @@
 #define LATITUDE        51.17554
 #define LONGITUDE        2.29546
 #define DST_OFFSET      1
-
+#define dakraamTimePreset  30 // de voorafbepaalde cyclus tijd voor het openen van het dakraam. 
 
 const uint8_t wifiBMP[] PROGMEM = {
 0b00000000,0b10000000,0b00000000,0b10000000,0b00000000,0b10000000,0b00000000,0b10010000,0b00000000,0b10010000,0b00000000,0b10010000,0b00000000,0b10010010,0b00000000,0b10010010,0b00000000,0b10010010,0b00000000,0b10010010,0b01000000,0b10010010,0b01000000,0b10010010,0b01000000,0b10010010,0b01001000,0b10010010,0b01001000,0b10010010,0b01001001,0b10010010,
@@ -123,9 +123,7 @@ typedef struct
 } sprinklerData;
 sprinklerData sprinkler; // Spec
 
-enum dakraamStates {idle,waitForDirection,chooseDirection,waitForRunning,motorRunning};
-
-#define dakraamTimePreset  6 // de voorafbepaalde cyclus tijd voor het openen van het dakraam. 
+enum dakraamStates {idle,waitForDirection,chooseDirection,activatePower,motorRunning};
 typedef struct 
 {
   int sliderStateRelais = 0;
@@ -349,6 +347,7 @@ void loop()
         disableRelais();
         setupTemperature(); // reset min en max waarde van de
         readRelaisSpecFile(); // opnieuw lezen. Serre raam kan manueel opengezet zijn de dag er voor
+        initDakraam(); // dakraam laten open gaan of sluiten bij nieuwe start. 
       }
       if (RTCtime.Minutes == 0 && RTCtime.Hours == 4)
       { 

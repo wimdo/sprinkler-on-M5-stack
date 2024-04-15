@@ -22,10 +22,10 @@ void readTime()
           bitWrite(relaisBoard.sliderStateRelais,7,0); // direction relais uit
         };   
         switchRelaisToSliderState();
-        relaisBoard.dakraamState=waitForRunning;
+        relaisBoard.dakraamState=activatePower;
         relaisBoard.dakraamTime--;
         break;
-      case waitForRunning : // wachtloop 1 seconde
+      case activatePower : // wachtloop 1 seconde
         bitWrite(relaisBoard.sliderStateRelais,6,1); // power relais aan
         switchRelaisToSliderState();
         relaisBoard.dakraamState=motorRunning;
