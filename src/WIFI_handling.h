@@ -23,6 +23,8 @@ void connectWithWiFi(){
         WiFi.mode(WIFI_AP);
         WiFi.softAP(fullhostname);
         Serial.printf("WIFI : Start webserver @ %s %s\n",fullhostname, "192.186.4.1");
+        setupTime();
+        setupOTA();
         server.begin();
         return;
       }
@@ -39,6 +41,14 @@ void connectWithWiFi(){
       server.begin();
       Serial.printf("WIFI : Start webserver @ %d.%d.%d.%d\n",myIP[0],myIP[1],myIP[2],myIP[3]);
     } 
+  } else{
+    WiFi.begin();// verbinding maken
+    WiFi.mode(WIFI_AP);
+    WiFi.softAP(fullhostname);
+    Serial.printf("WIFI : Start webserver @ %s %s\n",fullhostname, "192.186.4.1");
+    setupTime();
+    setupOTA();
+    server.begin();
   }
 
 }

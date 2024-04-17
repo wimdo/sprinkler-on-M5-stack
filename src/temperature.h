@@ -43,8 +43,8 @@ void setupTemperature()
   }
   sprintf(temperature[0].deviceAddressName,"%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX",temperature[0].deviceAddress[0],temperature[0].deviceAddress[1],temperature[0].deviceAddress[2],temperature[0].deviceAddress[3],temperature[0].deviceAddress[4],temperature[0].deviceAddress[5],temperature[0].deviceAddress[6],temperature[0].deviceAddress[7]);
   sprintf(temperature[1].deviceAddressName,"%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX%02hhX",temperature[1].deviceAddress[0],temperature[1].deviceAddress[1],temperature[1].deviceAddress[2],temperature[1].deviceAddress[3],temperature[1].deviceAddress[4],temperature[1].deviceAddress[5],temperature[1].deviceAddress[6],temperature[1].deviceAddress[7]);
-  Serial.println(temperature[0].deviceAddressName);
-  Serial.println(temperature[1].deviceAddressName);
+  Serial.printf("SYSTEM : temperature sensor 1 :%s\n",temperature[0].deviceAddressName);
+  Serial.printf("SYSTEM : temperature sensor 1 :%s\n",temperature[1].deviceAddressName);
   temperature[0].valueMin = 100;
   temperature[0].valueMax = -100;
   temperature[1].valueMin = 100;

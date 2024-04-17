@@ -42,7 +42,7 @@ void readTime()
         }
         break;
     }
-    Serial.printf("dakraam tijd %d dakraam %d status %d\n",relaisBoard.dakraamTime,relaisBoard.sliderStateDakraam,relaisBoard.dakraamState);
+    //Serial.printf("dakraam tijd %d dakraam %d status %d\n",relaisBoard.dakraamTime,relaisBoard.sliderStateDakraam,relaisBoard.dakraamState);
   }
   ArduinoOTA.handle();
 }
@@ -98,13 +98,21 @@ void setupTime() {
       M5.Rtc.SetDate(&RTCDate);
       clockData.timeSetByNTP= true;
     } else {
+      M5.Rtc.GetTime(&RTCtime); 
+      M5.Rtc.GetDate(&RTCDate);
       clockData.timeSetByNTP= false;
       clockData.isDST=checkDST();
-      Serial.print("zomertijd / wintertijd berekend: ");
-      Serial.println(clockData.isDST);
+      Serial.printf("SYSTEM : zomertijd / wintertijd berekend: %d\n",clockData.isDST);
     } 
+    
+  } else {  
+      M5.Rtc.GetTime(&RTCtime); 
+      M5.Rtc.GetDate(&RTCDate);
+      clockData.timeSetByNTP= false;
+      clockData.isDST=checkDST();
+      Serial.printf("SYSTEM : zomertijd / wintertijd berekend: %d\n",clockData.isDST);
   }
-  readTime(); 
+  readTime();
 }
 
 void calculateSolarTime(){

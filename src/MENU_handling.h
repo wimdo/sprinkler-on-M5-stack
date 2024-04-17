@@ -912,7 +912,9 @@ void dakraamSelectie(int spriteX,int spriteY, int spriteWidth, int spriteHeight)
                 }
               break; 
             case 4:// tijd open
+
                 keuze =getalTouchBoxSprite (50, 50, localData2, 4, 60, 1,buffer);
+
                 if ((keuze !=buttonNone)&&(keuze!=localData2)){
                   localData2 = keuze;
                   dataButton[i].text=String(localData2);

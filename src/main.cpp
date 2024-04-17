@@ -248,6 +248,7 @@ void setup()
   M5.begin(true, false, true, true); 
   M5.Lcd.begin();
   M5.Lcd.setRotation(2);
+  Serial.printf("SYSTEM : %s\n",VERSION);
   //Serial.begin(115200);
   //Wire.begin(21, 22, (uint32_t)400000U);
   //I2Cscan();
@@ -261,7 +262,8 @@ void setup()
   timerAttachInterrupt(systemTimer, &timeCheck, true);
   SpeakerInit();
   loadDataFromFile();
-  outlineMainscreen();  
+  outlineMainscreen(); 
+
   setupValves();
   showSprinklerSlider();
   disableRelais();
@@ -273,7 +275,6 @@ void setup()
   calculateSolarTime();
   setupTemperature();
   screen.keyboardInput = false;
-  Serial.printf("SYSTEM : /s\n",VERSION);
   M5.Rtc.GetTime(&RTCtime); 
   startRelaisProgram();
   controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay);

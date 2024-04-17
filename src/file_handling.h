@@ -54,7 +54,6 @@ void readMyServerFile()
         strcpy(myServer.topicPublish,doc["mqtt_topic"]| "garden/publish2");
         strcpy(myServer.timeRequestURL,doc["timeRequestURL"] |"default");
     }
-    setupTemperature();
 }
 
 

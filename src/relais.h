@@ -57,11 +57,12 @@ void switchRelaisToSliderState(){
   }
   screen.updateRelaisSlider = true; 
   clockData.sendData = true;
-  Serial.println(relaisBoard.sliderStateRelais,BIN);  
+  //Serial.println(relaisBoard.sliderStateRelais,BIN);  
 }
 
 void disableRelais()
 {
+  Serial.println("RELAY : disable relais");
   relaisBoard.sliderStateRelais = 0;
   switchRelaisToSliderState();
 }
@@ -90,10 +91,10 @@ void initDakraam(){
     if (temperature[0].value >=  relais[6].data1){
       relais[6].data5=relais[6].data2;
       switchDakraam(OPEN); 
-      Serial.println("dakraam open");
+      Serial.println("RELAY : dakraam open");
     } else {
       switchDakraam(CLOSE);
-    Serial.println("dakraam dicht");
+    Serial.println("RELAY : dakraam dicht");
     }
   }       
 }
