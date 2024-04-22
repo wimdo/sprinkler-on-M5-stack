@@ -15,14 +15,14 @@
 #include <sunset.h>
 
 
-#define VERSION "Version 23/01/24"  
+#define VERSION "Version 22/04/24"  
 #define nameprefix "HOME"
 #define moduletype "SPRINKLER"
 
 #define LATITUDE        51.17554
 #define LONGITUDE        2.29546
 #define DST_OFFSET      1
-#define dakraamTimePreset  30 // de voorafbepaalde cyclus tijd voor het openen van het dakraam. 
+#define dakraamTimePreset  15 // de voorafbepaalde cyclus tijd voor het openen van het dakraam. 
 
 const uint8_t wifiBMP[] PROGMEM = {
 0b00000000,0b10000000,0b00000000,0b10000000,0b00000000,0b10000000,0b00000000,0b10010000,0b00000000,0b10010000,0b00000000,0b10010000,0b00000000,0b10010010,0b00000000,0b10010010,0b00000000,0b10010010,0b00000000,0b10010010,0b01000000,0b10010010,0b01000000,0b10010010,0b01000000,0b10010010,0b01001000,0b10010010,0b01001000,0b10010010,0b01001001,0b10010010,
@@ -263,7 +263,6 @@ void setup()
   SpeakerInit();
   loadDataFromFile();
   outlineMainscreen(); 
-
   setupValves();
   showSprinklerSlider();
   disableRelais();
@@ -274,10 +273,13 @@ void setup()
   connectWithWiFi();
   calculateSolarTime();
   setupTemperature();
-  screen.keyboardInput = false;
-  M5.Rtc.GetTime(&RTCtime); 
+  readTime();
+  Serial.println("SYSTEM: start relaisprogramma");
   startRelaisProgram();
+  Serial.println("SYSTEM: start sprinklerprogramma");
   controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay);
+  screen.keyboardInput = false;
+  Serial.println("SYSTEM: system ready");
 }
 
 void screenTouchCheck()
@@ -356,30 +358,31 @@ void loop()
         calculateSolarTime();
       }
       clockData.previousMinute = RTCtime.Minutes;
-      if (sprinkler.staat == Wacht)
-      {
-        if (WiFi.status() != WL_CONNECTED){
-          if (clockData.previousMinute%5 == 0){
-            connectWithWiFi();
+      if (myServer.connectToWIFI){
+        if (sprinkler.staat == Wacht){
+          if (WiFi.status() != WL_CONNECTED){
+            if (clockData.previousMinute%5 == 0){
+              connectWithWiFi();
+            }
+          } else {
+            clockData.sendData= true;
           }
         } else {
           clockData.sendData= true;
-        }
-      } else {
-        clockData.sendData= true;
-      } 
+        }   
+      }
       if (clockData.debug){
         RTCtime.Seconds = 55;
         M5.Rtc.SetTime(&RTCtime);
       }  
     } 
     checkSprinklerStatus();
+    readTemperature();
+    checkRelaisSettingsTemp();  
     if (clockData.sendData) {
       sendData();
       clockData.sendData= false;
     } 
-    readTemperature();
-    checkRelaisSettingsTemp();  
   }
   if (myServer.connectToWIFI){
     if (WiFi.status() == WL_CONNECTED){
@@ -388,9 +391,7 @@ void loop()
     }
   }
   client = server.available();
-  if (client)
-  {
-    Serial.println("check client");
+  if (client) {
     HTPPcheckClient();
   }
 }

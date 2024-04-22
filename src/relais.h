@@ -200,7 +200,6 @@ void checkRelaisSettingsOnTime(int hour, int min){
 
 
 void startRelaisProgram(){
-  disableRelais();
   for (int hour =0; hour<RTCtime.Hours;hour++ ){
     for (int min =0; min<60;min++ ){
       checkRelaisSettingsOnTime(hour,min);
