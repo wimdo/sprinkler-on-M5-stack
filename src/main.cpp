@@ -274,7 +274,7 @@ void setup()
   calculateSolarTime();
   setupTemperature();
   readTime();
-  Serial.println("SYSTEM: start relaisprogramma");
+  
   startRelaisProgram();
   Serial.println("SYSTEM: start sprinklerprogramma");
   controleerProgramma(RTCtime.Hours, RTCtime.Minutes, RTCDate.WeekDay);

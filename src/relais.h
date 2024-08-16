@@ -200,6 +200,7 @@ void checkRelaisSettingsOnTime(int hour, int min){
 
 
 void startRelaisProgram(){
+  Serial.println("RELAY: start relaisprogramma");
   for (int hour =0; hour<RTCtime.Hours;hour++ ){
     for (int min =0; min<60;min++ ){
       checkRelaisSettingsOnTime(hour,min);

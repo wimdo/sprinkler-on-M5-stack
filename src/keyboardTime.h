@@ -2,6 +2,9 @@
 void readTime()
 {
   M5.Rtc.GetTime(&RTCtime); //Gets the time in the real-time clock.  获取实时时钟内的时间
+  if (clockData.isDST && RTCtime.Hours <23){
+    RTCtime.Hours++; // tijdelijke (?) oplossing voor zomertijd
+  }
   M5.Rtc.GetDate(&RTCDate);
   clockData.checkSecond = false;
   showTimeBar();
@@ -42,7 +45,6 @@ void readTime()
         }
         break;
     }
-    //Serial.printf("dakraam tijd %d dakraam %d status %d\n",relaisBoard.dakraamTime,relaisBoard.sliderStateDakraam,relaisBoard.dakraamState);
   }
   ArduinoOTA.handle();
 }
