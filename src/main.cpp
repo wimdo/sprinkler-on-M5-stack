@@ -15,7 +15,7 @@
 #include <sunset.h>
 
 
-#define VERSION "Version 22/04/24"  
+#define VERSION "Version 07/11/24"  
 #define nameprefix "HOME"
 #define moduletype "SPRINKLER"
 
@@ -383,6 +383,7 @@ void loop()
       sendData();
       clockData.sendData= false;
     } 
+    writeSliderstateToRelais(); // probleem dat licht niet altijd aan gaat. iedere seconde we schrijven voor de zekerheid.
   }
   if (myServer.connectToWIFI){
     if (WiFi.status() == WL_CONNECTED){

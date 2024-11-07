@@ -47,6 +47,17 @@ Serial.println("Scanning Wire1");
     Serial.println("done\n");
 }
 
+void writeSliderstateToRelais(){
+  Wire.requestFrom(RelayI2C, 1);
+  if (Wire.available()) //If the request is available
+  {
+    Wire.beginTransmission(RelayI2C);
+    Wire.write((byte)~relaisBoard.sliderStateRelais);
+    Wire.endTransmission();
+  }
+}
+
+
 void switchRelaisToSliderState(){
   Wire.requestFrom(RelayI2C, 1);
   if (Wire.available()) //If the request is available
